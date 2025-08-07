@@ -165,4 +165,13 @@
 .slider .slides:nth-child(6){
     left: 360;
 }
+    .container{
+    position: absolute;
+    width: 100vw;
+    height: 600vw;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 }
