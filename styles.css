@@ -142,7 +142,7 @@
 
 }.slider .slides{
     width: 100px;
-    height: 70px;
+    height: 100px;
     top: initial;
     bottom: -170px;
     box-shadow: 0 10px 20px rgba(0,0,0,0.25);
@@ -168,7 +168,7 @@
     .container{
     position: absolute;
     width: 100vw;
-    height: 70px;
+    height: 300px;
     overflow: hidden;
     display: flex;
     justify-content: center;
