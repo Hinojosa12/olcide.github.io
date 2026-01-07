@@ -8,28 +8,34 @@
     <style>
         :root {
             /* Paleta de colores rosa pastel */
-            --rosa-pastel-claro: #fff0f5;     /* Fondo principal - rosa pastel muy claro */
-            --rosa-pastel-medio: #ffd6e7;     /* Fondo de tablas - rosa un poco más fuerte */
-            --rosa-pastel-fuerte: #ffc2d6;    /* Bordes y detalles */
-            --rosa-pastel-oscuro: #ff8fab;    /* Para hover y efectos */
+            --rosa-pastel-claro: #fff0f5;
+            --rosa-pastel-medio: #ffd6e7;
+            --rosa-pastel-fuerte: #ffc2d6;
+            --rosa-pastel-oscuro: #ff8fab;
             
             /* Colores funcionales */
-            --primary: #ff6b9d;               /* Rosa más intenso para botones */
-            --secondary: #d81b60;             /* Rosa oscuro para hover */
-            --income-color: #2e8b57;          /* Verde para ingresos */
-            --expense-color: #c71585;         /* Rosa fuerte para gastos */
-            --text-primary: #5a3d5c;          /* Texto principal - morado suave */
-            --text-secondary: #7a5c7c;        /* Texto secundario */
-            --border-color: #ffb6c1;          /* Bordes rosas claros */
-            --table-header: #ffe4ec;          /* Encabezados de tabla */
-            --header-color: #9d4b6e;          /* Color de encabezados */
+            --primary: #ff6b9d;
+            --secondary: #d81b60;
+            --income-color: #2e8b57;
+            --expense-color: #c71585;
+            --text-primary: #5a3d5c;
+            --text-secondary: #7a5c7c;
+            --border-color: #ffb6c1;
+            --table-header: #ffe4ec;
+            --header-color: #9d4b6e;
         }
        
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Arial', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+       
+        html {
+            font-size: 16px;
+            height: 100%;
         }
        
         body {
@@ -38,39 +44,43 @@
             padding: 0;
             margin: 0;
             min-height: 100vh;
-            line-height: 1.4;
+            line-height: 1.5;
+            overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
         }
        
         .container {
             width: 100%;
-            max-width: 1000px;
-            padding: 20px;
+            max-width: 100%;
+            padding: 15px;
             margin: 0 auto;
         }
        
         header {
             background: linear-gradient(135deg, var(--rosa-pastel-fuerte), var(--rosa-pastel-oscuro));
             color: white;
-            padding: 25px;
+            padding: 20px 15px;
             text-align: center;
-            margin-bottom: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.2);
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(255, 107, 157, 0.15);
         }
        
         h1 {
-            font-size: 32px;
-            margin-bottom: 10px;
+            font-size: 1.6rem;
+            margin-bottom: 8px;
             color: white;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+            font-weight: 700;
         }
        
         h2 {
-            font-size: 22px;
-            margin: 25px 0 15px 0;
+            font-size: 1.3rem;
+            margin: 20px 0 12px 0;
             padding-bottom: 8px;
             border-bottom: 2px solid var(--rosa-pastel-fuerte);
             color: var(--header-color);
+            font-weight: 600;
         }
        
         /* ESTILOS CURSIVOS PARA TÍTULOS ESPECÍFICOS */
@@ -81,48 +91,96 @@
        
         .budget-section {
             background: var(--rosa-pastel-medio);
-            border-radius: 10px;
-            padding: 25px;
-            margin-bottom: 30px;
-            box-shadow: 0 3px 10px rgba(255, 182, 193, 0.3);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 8px rgba(255, 182, 193, 0.2);
             border: 1px solid var(--rosa-pastel-fuerte);
+            overflow: hidden;
         }
        
-        /* ESTILOS DE TABLA */
+        /* ESTILOS DE TABLA OPTIMIZADOS PARA MÓVIL */
         .budget-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
-            font-size: 16px;
+            font-size: 0.95rem;
             background-color: var(--rosa-pastel-medio);
             border-radius: 8px;
             overflow: hidden;
+            display: block;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+       
+        .budget-table thead {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+       
+        .budget-table tbody {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
         }
        
         .budget-table th {
             background-color: var(--table-header);
-            padding: 14px 10px;
+            padding: 12px 8px;
             text-align: left;
-            font-weight: bold;
+            font-weight: 600;
             border: 1px solid var(--border-color);
             color: var(--text-primary);
-            font-size: 16px;
+            font-size: 0.9rem;
+            white-space: nowrap;
         }
        
         .budget-table td {
-            padding: 12px 10px;
+            padding: 10px 8px;
             border: 1px solid var(--border-color);
             background-color: rgba(255, 255, 255, 0.7);
+            word-break: break-word;
+            min-height: 44px;
+            vertical-align: middle;
+        }
+       
+        /* Columnas optimizadas para móvil */
+        .budget-table th:nth-child(1),
+        .budget-table td:nth-child(1) {
+            width: 28%;
+            min-width: 90px;
+        }
+       
+        .budget-table th:nth-child(2),
+        .budget-table td:nth-child(2) {
+            width: 32%;
+            min-width: 110px;
+        }
+       
+        .budget-table th:nth-child(3),
+        .budget-table td:nth-child(3) {
+            width: 20%;
+            min-width: 85px;
+        }
+       
+        .budget-table th:nth-child(4),
+        .budget-table td:nth-child(4) {
+            width: 20%;
+            min-width: 85px;
         }
        
         .budget-table input {
             width: 100%;
-            padding: 8px 10px;
+            padding: 10px 8px;
             border: 1px solid var(--border-color);
-            border-radius: 5px;
-            font-size: 15px;
-            background-color: rgba(255, 255, 255, 0.9);
-            transition: all 0.3s;
+            border-radius: 6px;
+            font-size: 1rem;
+            background-color: white;
+            transition: all 0.2s;
+            min-height: 44px;
+            -webkit-appearance: none;
+            appearance: none;
         }
        
         .budget-table input:focus {
@@ -134,59 +192,72 @@
        
         .budget-table input[type="date"] {
             cursor: pointer;
+            font-size: 0.95rem;
         }
        
         .budget-table input[type="number"] {
             text-align: right;
         }
        
+        /* Mejorar usabilidad de inputs en iOS */
+        input[type="date"]::-webkit-inner-spin-button,
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            opacity: 0.7;
+            padding: 5px;
+        }
+       
+        input[type="number"]::-webkit-inner-spin-button {
+            opacity: 1;
+            height: 40px;
+        }
+       
         .subtotal {
-            font-weight: bold;
+            font-weight: 600;
             background-color: rgba(255, 228, 236, 0.8) !important;
         }
        
         .total-row {
-            font-weight: bold;
-            font-size: 18px;
+            font-weight: 700;
+            font-size: 1.05rem;
             background-color: var(--table-header) !important;
         }
        
-        /* Sección de resumen */
+        /* Sección de resumen optimizada para móvil */
         .summary {
             display: flex;
-            justify-content: space-between;
-            margin-top: 30px;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 25px;
         }
        
         .summary-item {
             background: var(--rosa-pastel-medio);
-            padding: 25px;
-            border-radius: 10px;
-            flex: 1;
-            min-width: 200px;
-            margin: 0 10px 20px 10px;
-            box-shadow: 0 3px 10px rgba(255, 182, 193, 0.3);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 3px 8px rgba(255, 182, 193, 0.2);
             border: 1px solid var(--rosa-pastel-fuerte);
             text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
         }
        
-        .summary-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(255, 182, 193, 0.4);
+        .summary-item:active {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(255, 182, 193, 0.3);
         }
        
         .summary-item h3 {
-            font-size: 18px;
-            margin-bottom: 15px;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
             color: var(--text-primary);
+            font-weight: 600;
         }
        
         .summary-amount {
-            font-size: 32px;
-            font-weight: bold;
-            margin: 10px 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 8px 0;
+            line-height: 1.2;
         }
        
         .income-amount {
@@ -201,176 +272,167 @@
             color: var(--primary);
         }
        
-        /* Controles de acción */
+        /* Controles de acción optimizados para móvil */
         .controls {
             display: flex;
-            justify-content: space-between;
-            margin-top: 30px;
-            flex-wrap: wrap;
-            gap: 10px;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 25px;
         }
        
         .control-btn {
             background: linear-gradient(to right, var(--primary), var(--rosa-pastel-oscuro));
             color: white;
             border: none;
-            padding: 14px 28px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
+            padding: 16px 20px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            margin-bottom: 10px;
-            box-shadow: 0 3px 8px rgba(255, 107, 157, 0.3);
+            transition: all 0.2s;
+            box-shadow: 0 3px 8px rgba(255, 107, 157, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
+            min-height: 56px;
+            width: 100%;
+            touch-action: manipulation;
         }
        
-        .control-btn:hover {
+        .control-btn:active {
             background: linear-gradient(to right, var(--secondary), var(--primary));
-            transform: translateY(-2px);
-            box-shadow: 0 5px 12px rgba(255, 107, 157, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(255, 107, 157, 0.3);
         }
        
         .control-btn i {
-            font-size: 18px;
+            font-size: 1.2rem;
         }
        
         .control-btn.secondary {
             background: linear-gradient(to right, #ff8fab, #ff6b9d);
         }
        
-        .control-btn.secondary:hover {
+        .control-btn.secondary:active {
             background: linear-gradient(to right, #ff6b9d, #d81b60);
         }
        
+        /* Selector de mes optimizado para móvil */
         .month-selector {
             display: flex;
-            align-items: center;
+            flex-direction: column;
+            gap: 12px;
             margin-bottom: 20px;
             background-color: var(--rosa-pastel-medio);
-            padding: 15px;
-            border-radius: 8px;
+            padding: 18px;
+            border-radius: 12px;
             border: 1px solid var(--rosa-pastel-fuerte);
         }
        
+        .month-selector-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+       
         .month-selector label {
-            margin-right: 10px;
-            font-weight: bold;
+            font-weight: 600;
             color: var(--text-primary);
+            font-size: 1rem;
         }
        
         .month-selector select {
-            padding: 10px 15px;
+            padding: 14px 16px;
             border: 1px solid var(--border-color);
-            border-radius: 5px;
+            border-radius: 8px;
             background-color: white;
-            font-size: 16px;
+            font-size: 1rem;
             color: var(--text-primary);
             cursor: pointer;
+            min-height: 52px;
+            width: 100%;
+            -webkit-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235a3d5c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 16px;
+            padding-right: 45px;
         }
        
         footer {
             text-align: center;
-            padding: 25px;
-            margin-top: 40px;
+            padding: 20px 15px;
+            margin-top: 30px;
             color: var(--text-secondary);
-            font-size: 14px;
+            font-size: 0.9rem;
             border-top: 2px solid var(--rosa-pastel-fuerte);
             background-color: var(--rosa-pastel-medio);
-            border-radius: 10px;
+            border-radius: 12px;
+            line-height: 1.4;
         }
        
-        /* Gastos extras */
+        /* Gastos extras optimizado para móvil */
         #gastos-extras-section {
             background-color: var(--rosa-pastel-medio);
-            border-radius: 10px;
-            padding: 25px;
+            border-radius: 12px;
+            padding: 18px;
             margin-top: 20px;
             border: 1px solid var(--rosa-pastel-fuerte);
         }
        
         #lista-gastos-extras {
             margin-bottom: 20px;
+            overflow-x: auto;
+        }
+       
+        .gasto-extra-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
         }
        
         #nuevo-gasto-desc, #nuevo-gasto-monto {
-            padding: 10px 15px;
+            padding: 14px 16px;
             border: 1px solid var(--border-color);
-            border-radius: 5px;
+            border-radius: 8px;
             background-color: white;
             color: var(--text-primary);
+            font-size: 1rem;
+            min-height: 52px;
+            width: 100%;
         }
        
-        #nuevo-gasto-desc {
-            width: 300px;
-            margin-right: 10px;
+        /* Botón para agregar gastos extras */
+        #btn-agregar-gasto-lista {
+            margin-top: 10px;
+            padding: 16px;
         }
        
-        #nuevo-gasto-monto {
-            width: 150px;
-            margin-right: 10px;
+        /* Eliminar botón de gastos extras */
+        .btn-eliminar-gasto {
+            background: var(--expense-color);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+            min-height: 44px;
+            touch-action: manipulation;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
         }
        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-           
-            .summary {
-                flex-direction: column;
-            }
-           
-            .summary-item {
-                margin: 0 0 15px 0;
-            }
-           
-            .controls {
-                flex-direction: column;
-            }
-           
-            .control-btn {
-                width: 100%;
-                margin-bottom: 10px;
-            }
-           
-            .budget-table {
-                font-size: 14px;
-            }
-           
-            .budget-table th,
-            .budget-table td {
-                padding: 10px 8px;
-            }
-           
-            #nuevo-gasto-desc {
-                width: 100%;
-                margin-right: 0;
-                margin-bottom: 10px;
-            }
-           
-            #nuevo-gasto-monto {
-                width: 100%;
-                margin-right: 0;
-                margin-bottom: 10px;
-            }
-           
-            .month-selector {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-           
-            .month-selector label {
-                margin-bottom: 10px;
-            }
-           
-            .month-selector select {
-                width: 100%;
-                margin-bottom: 10px;
-            }
+        .btn-eliminar-gasto:active {
+            opacity: 0.8;
+            transform: translateY(1px);
         }
        
         /* Animación para cambios en números */
@@ -381,34 +443,213 @@
         }
        
         .cambio-destacado {
-            animation: cambioNumero 0.5s ease;
+            animation: cambioNumero 0.3s ease;
         }
        
         /* Estilos para el saldo negativo */
         .saldo-negativo {
             color: var(--expense-color) !important;
-            font-weight: bold;
+            font-weight: 700;
         }
        
-        /* Decoración floral */
+        /* Decoración floral para móvil */
         .floral-decoration {
             position: fixed;
             z-index: -1;
-            opacity: 0.1;
-            font-size: 200px;
+            opacity: 0.08;
+            font-size: 120px;
             color: var(--primary);
+            pointer-events: none;
         }
        
         .floral-1 {
-            top: 50px;
-            left: 50px;
+            top: 5%;
+            left: 5%;
             transform: rotate(-15deg);
         }
        
         .floral-2 {
-            bottom: 50px;
-            right: 50px;
+            bottom: 5%;
+            right: 5%;
             transform: rotate(15deg);
+        }
+       
+        /* Notificaciones para móvil */
+        .notificacion {
+            position: fixed;
+            top: 20px;
+            left: 15px;
+            right: 15px;
+            padding: 18px 20px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            animation: slideInMobile 0.3s ease;
+            text-align: center;
+            font-size: 0.95rem;
+            backdrop-filter: blur(10px);
+        }
+       
+        /* Safe areas para iPhone X+ */
+        @supports (padding: max(0px)) {
+            .container {
+                padding-left: max(15px, env(safe-area-inset-left));
+                padding-right: max(15px, env(safe-area-inset-right));
+                padding-top: max(15px, env(safe-area-inset-top));
+                padding-bottom: max(15px, env(safe-area-inset-bottom));
+            }
+           
+            .control-btn, select, input {
+                padding-left: max(16px, env(safe-area-inset-left));
+                padding-right: max(16px, env(safe-area-inset-right));
+            }
+        }
+       
+        /* Animaciones para móvil */
+        @keyframes slideInMobile {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+       
+        @keyframes slideOutMobile {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(-100%); opacity: 0; }
+        }
+       
+        /* MEDIA QUERIES para tablet y desktop */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 700px;
+                padding: 25px;
+            }
+           
+            h1 {
+                font-size: 2rem;
+            }
+           
+            h2 {
+                font-size: 1.5rem;
+            }
+           
+            .summary {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+           
+            .summary-item {
+                flex: 1;
+                min-width: 200px;
+            }
+           
+            .controls {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+           
+            .control-btn {
+                flex: 1;
+                min-width: 200px;
+            }
+           
+            .month-selector {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+           
+            .month-selector-group {
+                flex-direction: row;
+                align-items: center;
+                gap: 15px;
+                flex: 1;
+            }
+           
+            .month-selector select {
+                flex: 1;
+            }
+           
+            .floral-decoration {
+                font-size: 200px;
+            }
+           
+            .notificacion {
+                left: auto;
+                right: 20px;
+                width: auto;
+                max-width: 400px;
+            }
+           
+            @keyframes slideInMobile {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+           
+            @keyframes slideOutMobile {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        }
+       
+        /* Mejoras para pantallas muy pequeñas */
+        @media (max-width: 360px) {
+            html {
+                font-size: 14px;
+            }
+           
+            .budget-table {
+                font-size: 0.85rem;
+            }
+           
+            .budget-table th,
+            .budget-table td {
+                padding: 8px 6px;
+            }
+           
+            .budget-table input {
+                padding: 8px 6px;
+                font-size: 0.9rem;
+            }
+           
+            .budget-table th:nth-child(1),
+            .budget-table td:nth-child(1) {
+                min-width: 80px;
+            }
+        }
+       
+        /* Prevenir zoom en inputs en iOS */
+        @media screen and (max-width: 768px) {
+            input, select, textarea {
+                font-size: 16px !important;
+            }
+           
+            input[type="date"] {
+                font-size: 16px !important;
+            }
+        }
+       
+        /* Mejorar scroll en iOS */
+        .budget-table {
+            -webkit-overflow-scrolling: touch;
+        }
+       
+        /* Estado de carga */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+       
+        /* Placeholder styles */
+        ::placeholder {
+            color: #a88fa3;
+            opacity: 0.7;
+        }
+       
+        /* Focus styles para accesibilidad */
+        *:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
         }
     </style>
 </head>
@@ -428,26 +669,31 @@
         </header>
        
         <div class="month-selector">
-            <label for="select-month">Mes:</label>
-            <select id="select-month">
-                <option value="1">Enero</option>
-                <option value="2">Febrero</option>
-                <option value="3">Marzo</option>
-                <option value="4">Abril</option>
-                <option value="5">Mayo</option>
-                <option value="6">Junio</option>
-                <option value="7">Julio</option>
-                <option value="8">Agosto</option>
-                <option value="9">Septiembre</option>
-                <option value="10">Octubre</option>
-                <option value="11">Noviembre</option>
-                <option value="12">Diciembre</option>
-            </select>
-            <select id="select-year" style="margin-left: 10px;">
-                <option value="2024">2024</option>
-                <option value="2025" selected>2025</option>
-                <option value="2026">2026</option>
-            </select>
+            <div class="month-selector-group">
+                <label for="select-month">Mes:</label>
+                <select id="select-month">
+                    <option value="1">Enero</option>
+                    <option value="2">Febrero</option>
+                    <option value="3">Marzo</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Mayo</option>
+                    <option value="6">Junio</option>
+                    <option value="7">Julio</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Septiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                </select>
+            </div>
+            <div class="month-selector-group">
+                <label for="select-year">Año:</label>
+                <select id="select-year">
+                    <option value="2024">2024</option>
+                    <option value="2025" selected>2025</option>
+                    <option value="2026">2026</option>
+                </select>
+            </div>
         </div>
        
         <!-- SECCIÓN DE INGRESOS -->
@@ -456,10 +702,10 @@
             <table class="budget-table">
                 <thead>
                     <tr>
-                        <th style="width: 120px;">Fecha</th>
+                        <th>Fecha</th>
                         <th>Descripción</th>
-                        <th style="width: 150px;">Estimado</th>
-                        <th style="width: 150px;">Real</th>
+                        <th>Estimado</th>
+                        <th>Real</th>
                     </tr>
                 </thead>
                 <tbody id="ingresos-body">
@@ -467,22 +713,22 @@
                     <tr>
                         <td><input type="date" id="fecha-sueldo"></td>
                         <td>Sueldo</td>
-                        <td><input type="number" id="estimado-sueldo" placeholder="0.00" step="0.01"></td>
-                        <td><input type="number" id="real-sueldo" placeholder="0.00" step="0.01"></td>
+                        <td><input type="number" id="estimado-sueldo" placeholder="0.00" step="0.01" inputmode="decimal"></td>
+                        <td><input type="number" id="real-sueldo" placeholder="0.00" step="0.01" inputmode="decimal"></td>
                     </tr>
                     <!-- Trabajo extra -->
                     <tr>
                         <td><input type="date" id="fecha-extra"></td>
                         <td>Trabajo extra</td>
-                        <td><input type="number" id="estimado-extra" placeholder="0.00" step="0.01"></td>
-                        <td><input type="number" id="real-extra" placeholder="0.00" step="0.01"></td>
+                        <td><input type="number" id="estimado-extra" placeholder="0.00" step="0.01" inputmode="decimal"></td>
+                        <td><input type="number" id="real-extra" placeholder="0.00" step="0.01" inputmode="decimal"></td>
                     </tr>
                     <!-- Inversiones -->
                     <tr>
                         <td><input type="date" id="fecha-inversiones"></td>
                         <td>Inversiones</td>
-                        <td><input type="number" id="estimado-inversiones" placeholder="0.00" step="0.01"></td>
-                        <td><input type="number" id="real-inversiones" placeholder="0.00" step="0.01"></td>
+                        <td><input type="number" id="estimado-inversiones" placeholder="0.00" step="0.01" inputmode="decimal"></td>
+                        <td><input type="number" id="real-inversiones" placeholder="0.00" step="0.01" inputmode="decimal"></td>
                     </tr>
                     <!-- Suma de ingresos -->
                     <tr class="subtotal">
@@ -500,10 +746,10 @@
             <table class="budget-table">
                 <thead>
                     <tr>
-                        <th style="width: 120px;">Fecha</th>
+                        <th>Fecha</th>
                         <th>Descripción</th>
-                        <th style="width: 150px;">Estimado</th>
-                        <th style="width: 150px;">Real</th>
+                        <th>Estimado</th>
+                        <th>Real</th>
                     </tr>
                 </thead>
                 <tbody id="gastos-body">
@@ -511,41 +757,41 @@
                     <tr>
                         <td><input type="date" id="fecha-luz"></td>
                         <td>Servicio de luz</td>
-                        <td><input type="number" id="estimado-luz" placeholder="0.00" step="0.01"></td>
-                        <td><input type="number" id="real-luz" placeholder="0.00" step="0.01"></td>
+                        <td><input type="number" id="estimado-luz" placeholder="0.00" step="0.01" inputmode="decimal"></td>
+                        <td><input type="number" id="real-luz" placeholder="0.00" step="0.01" inputmode="decimal"></td>
                     </tr>
                     <tr>
                         <td><input type="date" id="fecha-agua"></td>
                         <td>Servicio de agua</td>
-                        <td><input type="number" id="estimado-agua" placeholder="0.00" step="0.01"></td>
-                        <td><input type="number" id="real-agua" placeholder="0.00" step="0.01"></td>
+                        <td><input type="number" id="estimado-agua" placeholder="0.00" step="0.01" inputmode="decimal"></td>
+                        <td><input type="number" id="real-agua" placeholder="0.00" step="0.01" inputmode="decimal"></td>
                     </tr>
                     <tr>
                         <td><input type="date" id="fecha-internet"></td>
                         <td>Internet y telefonía</td>
-                        <td><input type="number" id="estimado-internet" placeholder="0.00" step="0.01"></td>
-                        <td><input type="number" id="real-internet" placeholder="0.00" step="0.01"></td>
+                        <td><input type="number" id="estimado-internet" placeholder="0.00" step="0.01" inputmode="decimal"></td>
+                        <td><input type="number" id="real-internet" placeholder="0.00" step="0.01" inputmode="decimal"></td>
                     </tr>
                     <!-- Alimentación -->
                     <tr>
                         <td><input type="date" id="fecha-alimentacion"></td>
                         <td>Alimentación</td>
-                        <td><input type="number" id="estimado-alimentacion" placeholder="0.00" step="0.01"></td>
-                        <td><input type="number" id="real-alimentacion" placeholder="0.00" step="0.01"></td>
+                        <td><input type="number" id="estimado-alimentacion" placeholder="0.00" step="0.01" inputmode="decimal"></td>
+                        <td><input type="number" id="real-alimentacion" placeholder="0.00" step="0.01" inputmode="decimal"></td>
                     </tr>
                     <!-- Ahorro -->
                     <tr>
                         <td><input type="date" id="fecha-ahorro"></td>
                         <td>Ahorro</td>
-                        <td><input type="number" id="estimado-ahorro" placeholder="0.00" step="0.01"></td>
-                        <td><input type="number" id="real-ahorro" placeholder="0.00" step="0.01"></td>
+                        <td><input type="number" id="estimado-ahorro" placeholder="0.00" step="0.01" inputmode="decimal"></td>
+                        <td><input type="number" id="real-ahorro" placeholder="0.00" step="0.01" inputmode="decimal"></td>
                     </tr>
                     <!-- Otros -->
                     <tr>
                         <td><input type="date" id="fecha-otros"></td>
                         <td>Otros</td>
-                        <td><input type="number" id="estimado-otros" placeholder="0.00" step="0.01"></td>
-                        <td><input type="number" id="real-otros" placeholder="0.00" step="0.01"></td>
+                        <td><input type="number" id="estimado-otros" placeholder="0.00" step="0.01" inputmode="decimal"></td>
+                        <td><input type="number" id="real-otros" placeholder="0.00" step="0.01" inputmode="decimal"></td>
                     </tr>
                     <!-- Suma de gastos -->
                     <tr class="subtotal">
@@ -602,7 +848,7 @@
                 <i class="fas fa-broom"></i> Limpiar Todo
             </button>
             <button class="control-btn secondary" id="btn-agregar-gasto">
-                <i class="fas fa-plus-circle"></i> Agregar Gasto Extra
+                <i class="fas fa-plus-circle"></i> Agregar Gasto
             </button>
         </div>
        
@@ -612,19 +858,19 @@
             <div id="lista-gastos-extras">
                 <!-- Los gastos extras se agregarán aquí dinámicamente -->
             </div>
-            <div style="margin-top: 15px;">
+            <div class="gasto-extra-form">
                 <input type="text" id="nuevo-gasto-desc" placeholder="Descripción del gasto">
-                <input type="number" id="nuevo-gasto-monto" placeholder="Monto" step="0.01">
-                <button class="control-btn" id="btn-agregar-gasto-lista" style="padding: 10px 20px; display: inline-block;">
-                    <i class="fas fa-plus"></i> Agregar
+                <input type="number" id="nuevo-gasto-monto" placeholder="Monto" step="0.01" inputmode="decimal">
+                <button class="control-btn" id="btn-agregar-gasto-lista">
+                    <i class="fas fa-plus"></i> Agregar Gasto Extra
                 </button>
             </div>
         </div>
        
         <footer>
-            <p>Presupuesto Mensual &copy; 2026 | Controla tus finanzas con estilo y organización</p>
-            <p style="margin-top: 10px; font-size: 12px; color: var(--rosa-pastel-oscuro);">
-                <i class="fas fa-heart" style="color: var(--primary);"></i> Diseñado con amor y cuidado
+            <p>Presupuesto Mensual &copy; 2026</p>
+            <p style="margin-top: 8px; font-size: 0.8rem; color: var(--rosa-pastel-oscuro);">
+                <i class="fas fa-heart" style="color: var(--primary);"></i> Diseñado para móvil
             </p>
         </footer>
     </div>
@@ -675,8 +921,11 @@
             const selectYear = document.getElementById('select-year');
            
             // Inicializar con el mes actual
-            selectMonth.value = presupuestoActual.mes;
-            selectYear.value = presupuestoActual.año;
+            const hoy = new Date();
+            selectMonth.value = hoy.getMonth() + 1;
+            selectYear.value = hoy.getFullYear();
+            presupuestoActual.mes = hoy.getMonth() + 1;
+            presupuestoActual.año = hoy.getFullYear();
            
             // Cargar datos del mes actual al iniciar
             cargarPresupuestoMes();
@@ -762,25 +1011,30 @@
                 // Remover la clase de animación después de que termine
                 setTimeout(() => {
                     elemento.classList.remove('cambio-destacado');
-                }, 500);
+                }, 300);
             }
            
             // Guardar presupuesto en localStorage
             function guardarPresupuesto() {
+                mostrarCarga(true);
                 calcularTotales(); // Asegurar que los datos están actualizados
                
                 const clave = `presupuesto_${presupuestoActual.año}_${presupuestoActual.mes}`;
                 localStorage.setItem(clave, JSON.stringify(presupuestoActual));
                
-                // Mostrar mensaje bonito
-                mostrarNotificacion(`Presupuesto de ${getNombreMes(presupuestoActual.mes)} ${presupuestoActual.año} guardado correctamente.`, 'success');
-               
                 // También guardar en lista de meses disponibles
                 guardarMesDisponible(presupuestoActual.mes, presupuestoActual.año);
+               
+                setTimeout(() => {
+                    mostrarNotificacion(`✅ Presupuesto de ${getNombreMes(presupuestoActual.mes)} guardado`, 'success');
+                    mostrarCarga(false);
+                }, 300);
             }
            
             // Cargar presupuesto desde localStorage
             function cargarPresupuestoMes() {
+                mostrarCarga(true);
+               
                 const mes = parseInt(selectMonth.value);
                 const año = parseInt(selectYear.value);
                
@@ -790,40 +1044,43 @@
                 const clave = `presupuesto_${año}_${mes}`;
                 const datosGuardados = localStorage.getItem(clave);
                
-                if (datosGuardados) {
-                    presupuestoActual = JSON.parse(datosGuardados);
-                   
-                    // Cargar ingresos
-                    for (let key in ingresosInputs) {
-                        if (presupuestoActual.ingresos[key]) {
-                            document.getElementById(ingresosInputs[key].estimado).value = presupuestoActual.ingresos[key].estimado || '';
-                            document.getElementById(ingresosInputs[key].real).value = presupuestoActual.ingresos[key].real || '';
-                            document.getElementById(ingresosInputs[key].fecha).value = presupuestoActual.ingresos[key].fecha || '';
+                setTimeout(() => {
+                    if (datosGuardados) {
+                        presupuestoActual = JSON.parse(datosGuardados);
+                       
+                        // Cargar ingresos
+                        for (let key in ingresosInputs) {
+                            if (presupuestoActual.ingresos[key]) {
+                                document.getElementById(ingresosInputs[key].estimado).value = presupuestoActual.ingresos[key].estimado || '';
+                                document.getElementById(ingresosInputs[key].real).value = presupuestoActual.ingresos[key].real || '';
+                                document.getElementById(ingresosInputs[key].fecha).value = presupuestoActual.ingresos[key].fecha || '';
+                            }
                         }
+                       
+                        // Cargar gastos
+                        for (let key in gastosInputs) {
+                            if (presupuestoActual.gastos[key]) {
+                                document.getElementById(gastosInputs[key].estimado).value = presupuestoActual.gastos[key].estimado || '';
+                                document.getElementById(gastosInputs[key].real).value = presupuestoActual.gastos[key].real || '';
+                                document.getElementById(gastosInputs[key].fecha).value = presupuestoActual.gastos[key].fecha || '';
+                            }
+                        }
+                       
+                        // Cargar gastos extras
+                        cargarGastosExtras();
+                       
+                        mostrarNotificacion(`📂 ${getNombreMes(mes)} ${año} cargado`, 'info');
+                    } else {
+                        // Limpiar todos los campos si no hay datos guardados
+                        limpiarCampos();
+                        presupuestoActual.extras = [];
+                        cargarGastosExtras();
+                        mostrarNotificacion(`🆕 Nuevo presupuesto para ${getNombreMes(mes)}`, 'info');
                     }
                    
-                    // Cargar gastos
-                    for (let key in gastosInputs) {
-                        if (presupuestoActual.gastos[key]) {
-                            document.getElementById(gastosInputs[key].estimado).value = presupuestoActual.gastos[key].estimado || '';
-                            document.getElementById(gastosInputs[key].real).value = presupuestoActual.gastos[key].real || '';
-                            document.getElementById(gastosInputs[key].fecha).value = presupuestoActual.gastos[key].fecha || '';
-                        }
-                    }
-                   
-                    // Cargar gastos extras
-                    cargarGastosExtras();
-                   
-                    mostrarNotificacion(`Presupuesto de ${getNombreMes(mes)} ${año} cargado.`, 'info');
-                } else {
-                    // Limpiar todos los campos si no hay datos guardados
-                    limpiarCampos();
-                    presupuestoActual.extras = [];
-                    cargarGastosExtras();
-                    mostrarNotificacion(`Nuevo presupuesto para ${getNombreMes(mes)} ${año}.`, 'info');
-                }
-               
-                calcularTotales();
+                    calcularTotales();
+                    mostrarCarga(false);
+                }, 300);
             }
            
             // Limpiar todos los campos
@@ -847,9 +1104,9 @@
                 cargarGastosExtras();
                
                 // Establecer fechas por defecto (fecha actual)
-                const hoy = new Date().toISOString().split('T')[0];
+                const hoyStr = new Date().toISOString().split('T')[0];
                 document.querySelectorAll('input[type="date"]').forEach(input => {
-                    if (!input.value) input.value = hoy;
+                    if (!input.value) input.value = hoyStr;
                 });
             }
            
@@ -880,7 +1137,7 @@
                 lista.innerHTML = '';
                
                 if (presupuestoActual.extras.length === 0) {
-                    lista.innerHTML = '<p style="color: var(--text-secondary); font-style: italic;">No hay gastos extras registrados.</p>';
+                    lista.innerHTML = '<p style="color: var(--text-secondary); font-style: italic; text-align: center; padding: 20px;">No hay gastos extras registrados.</p>';
                     return;
                 }
                
@@ -889,9 +1146,9 @@
                 tabla.innerHTML = `
                     <thead>
                         <tr>
-                            <th>Descripción</th>
-                            <th style="width: 150px;">Monto</th>
-                            <th style="width: 100px;">Acciones</th>
+                            <th style="width: 60%;">Descripción</th>
+                            <th style="width: 25%;">Monto</th>
+                            <th style="width: 15%;">Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="body-gastos-extras"></tbody>
@@ -906,24 +1163,34 @@
                         <td>${gasto.descripcion}</td>
                         <td>$${gasto.monto.toFixed(2)}</td>
                         <td>
-                            <button onclick="eliminarGastoExtra(${index})" style="background: var(--expense-color); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; transition: all 0.3s;">
-                                <i class="fas fa-trash-alt"></i> Eliminar
+                            <button class="btn-eliminar-gasto" data-index="${index}">
+                                <i class="fas fa-trash-alt"></i>
                             </button>
                         </td>
                     `;
                     tbody.appendChild(fila);
                 });
+               
+                // Agregar event listeners a los botones de eliminar
+                setTimeout(() => {
+                    document.querySelectorAll('.btn-eliminar-gasto').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const index = parseInt(this.getAttribute('data-index'));
+                            eliminarGastoExtra(index);
+                        });
+                    });
+                }, 100);
             }
            
-            // Función global para eliminar gasto extra
-            window.eliminarGastoExtra = function(index) {
-                if (confirm('¿Estás seguro de que quieres eliminar este gasto extra?')) {
+            // Eliminar gasto extra
+            function eliminarGastoExtra(index) {
+                if (confirm('¿Eliminar este gasto extra?')) {
                     presupuestoActual.extras.splice(index, 1);
                     cargarGastosExtras();
                     calcularTotales();
                     guardarPresupuesto();
                 }
-            };
+            }
            
             // Agregar nuevo gasto extra
             function agregarGastoExtra() {
@@ -934,13 +1201,13 @@
                 const monto = parseFloat(montoInput.value);
                
                 if (!descripcion) {
-                    mostrarNotificacion('Por favor, ingresa una descripción para el gasto.', 'error');
+                    mostrarNotificacion('📝 Ingresa una descripción', 'error');
                     descInput.focus();
                     return;
                 }
                
                 if (!monto || monto <= 0) {
-                    mostrarNotificacion('Por favor, ingresa un monto válido mayor a cero.', 'error');
+                    mostrarNotificacion('💰 Ingresa un monto válido', 'error');
                     montoInput.focus();
                     return;
                 }
@@ -955,6 +1222,10 @@
                 descInput.value = '';
                 montoInput.value = '';
                
+                // Ocultar teclado en móvil
+                descInput.blur();
+                montoInput.blur();
+               
                 // Actualizar interfaz
                 cargarGastosExtras();
                 calcularTotales();
@@ -962,26 +1233,21 @@
                 // Mostrar sección de gastos extras si estaba oculta
                 document.getElementById('gastos-extras-section').style.display = 'block';
                
-                mostrarNotificacion('Gasto extra agregado correctamente.', 'success');
+                mostrarNotificacion('✅ Gasto extra agregado', 'success');
+               
+                // Guardar automáticamente
+                guardarPresupuesto();
             }
            
-            // Mostrar notificación bonita
+            // Mostrar notificación para móvil
             function mostrarNotificacion(mensaje, tipo) {
+                // Eliminar notificaciones anteriores
+                document.querySelectorAll('.notificacion').forEach(el => el.remove());
+               
                 // Crear elemento de notificación
                 const notificacion = document.createElement('div');
+                notificacion.className = 'notificacion';
                 notificacion.textContent = mensaje;
-                notificacion.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    padding: 15px 25px;
-                    border-radius: 8px;
-                    color: white;
-                    font-weight: bold;
-                    z-index: 1000;
-                    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-                    animation: slideIn 0.3s ease;
-                `;
                
                 // Estilo según tipo
                 if (tipo === 'success') {
@@ -996,33 +1262,35 @@
                
                 // Remover después de 3 segundos
                 setTimeout(() => {
-                    notificacion.style.animation = 'slideOut 0.3s ease';
+                    notificacion.style.animation = 'slideOutMobile 0.3s ease';
                     setTimeout(() => {
-                        document.body.removeChild(notificacion);
+                        if (notificacion.parentNode) {
+                            notificacion.parentNode.removeChild(notificacion);
+                        }
                     }, 300);
                 }, 3000);
             }
            
-            // Animaciones CSS para notificaciones
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes slideIn {
-                    from { transform: translateX(100%); opacity: 0; }
-                    to { transform: translateX(0); opacity: 1; }
+            // Mostrar/ocultar estado de carga
+            function mostrarCarga(mostrar) {
+                if (mostrar) {
+                    document.body.classList.add('loading');
+                } else {
+                    document.body.classList.remove('loading');
                 }
-                @keyframes slideOut {
-                    from { transform: translateX(0); opacity: 1; }
-                    to { transform: translateX(100%); opacity: 0; }
-                }
-            `;
-            document.head.appendChild(style);
+            }
            
-            // EVENT LISTENERS
+            // EVENT LISTENERS OPTIMIZADOS PARA MÓVIL
            
             // Calcular automáticamente cuando cambia cualquier campo
             document.querySelectorAll('input[type="number"], input[type="date"]').forEach(input => {
-                input.addEventListener('input', calcularTotales);
-                input.addEventListener('change', calcularTotales);
+                // Usar input en lugar de change para respuesta inmediata
+                input.addEventListener('input', function() {
+                    calcularTotales();
+                    // Guardar automáticamente después de un delay
+                    clearTimeout(window.autoSaveTimeout);
+                    window.autoSaveTimeout = setTimeout(guardarPresupuesto, 1000);
+                });
             });
            
             // Selectores de mes y año
@@ -1033,13 +1301,11 @@
             document.getElementById('btn-guardar').addEventListener('click', guardarPresupuesto);
            
             // Botón cargar
-            document.getElementById('btn-cargar').addEventListener('click', function() {
-                cargarPresupuestoMes();
-            });
+            document.getElementById('btn-cargar').addEventListener('click', cargarPresupuestoMes);
            
             // Botón limpiar
             document.getElementById('btn-limpiar').addEventListener('click', function() {
-                if (confirm('¿Estás seguro de que quieres limpiar todos los campos? Se perderán los cambios no guardados.')) {
+                if (confirm('¿Limpiar todos los campos?\nSe perderán los cambios no guardados.')) {
                     limpiarCampos();
                     calcularTotales();
                 }
@@ -1048,7 +1314,15 @@
             // Botón agregar gasto extra
             document.getElementById('btn-agregar-gasto').addEventListener('click', function() {
                 const seccion = document.getElementById('gastos-extras-section');
-                seccion.style.display = seccion.style.display === 'none' ? 'block' : 'none';
+                const estaVisible = seccion.style.display !== 'none';
+                seccion.style.display = estaVisible ? 'none' : 'block';
+               
+                if (!estaVisible) {
+                    // Enfocar el primer input
+                    setTimeout(() => {
+                        document.getElementById('nuevo-gasto-desc').focus();
+                    }, 300);
+                }
             });
            
             // Botón agregar gasto a la lista
@@ -1056,21 +1330,48 @@
            
             // Permitir agregar gasto con Enter
             document.getElementById('nuevo-gasto-desc').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') agregarGastoExtra();
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('nuevo-gasto-monto').focus();
+                }
             });
            
             document.getElementById('nuevo-gasto-monto').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') agregarGastoExtra();
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    agregarGastoExtra();
+                }
             });
            
             // Establecer fechas por defecto al cargar
             window.addEventListener('load', function() {
-                const hoy = new Date().toISOString().split('T')[0];
+                const hoyStr = new Date().toISOString().split('T')[0];
                 document.querySelectorAll('input[type="date"]').forEach(input => {
-                    if (!input.value) input.value = hoy;
+                    if (!input.value) input.value = hoyStr;
                 });
                
                 calcularTotales();
+               
+                // Mostrar mensaje de bienvenida
+                setTimeout(() => {
+                    mostrarNotificacion('👋 ¡Bienvenido a tu presupuesto!', 'info');
+                }, 1000);
+            });
+           
+            // Prevenir submit accidental en formularios
+            document.querySelectorAll('input').forEach(input => {
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                    }
+                });
+            });
+           
+            // Mejorar experiencia táctil en tablas
+            document.querySelectorAll('.budget-table input').forEach(input => {
+                input.addEventListener('touchstart', function(e) {
+                    this.focus();
+                });
             });
         });
     </script>
