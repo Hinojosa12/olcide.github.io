@@ -1,1042 +1,1076 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Control de Gastos Mensuales</title>
+    <title>Presupuesto Mensual</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #4361ee;
-            --secondary: #3a0ca3;
-            --success: #4cc9f0;
-            --danger: #f72585;
-            --warning: #f7b801;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --gray: #6c757d;
-            --comida: #ff6b6b;
-            --transporte: #4ecdc4;
-            --entretenimiento: #ff9f1c;
-            --servicios: #6a0572;
-            --compras: #1a936f;
-            --otros: #94a3b8;
-           
-            /* Nuevas variables para modo oscuro */
-            --bg-primary: #f5f5f5;
-            --bg-secondary: #ffffff;
-            --text-primary: #212529;
-            --text-secondary: #6c757d;
-            --border-color: #eeeeee;
-            --header-bg: var(--primary);
-            --footer-bg: #f8f9fa;
-            --modal-bg: #ffffff;
-            --input-bg: #ffffff;
-            --card-shadow: rgba(0, 0, 0, 0.1);
-        }
-       
-        [data-theme="dark"] {
-            --bg-primary: #121212;
-            --bg-secondary: #1e1e1e;
-            --text-primary: #f5f5f5;
-            --text-secondary: #b0b0b0;
-            --border-color: #2d2d2d;
-            --header-bg: #1a1a1a;
-            --footer-bg: #1a1a1a;
-            --modal-bg: #1e1e1e;
-            --input-bg: #2d2d2d;
-            --card-shadow: rgba(0, 0, 0, 0.3);
-           
-            /* Ajustes de colores para modo oscuro */
-            --primary: #5f75ee;
-            --gray: #8f9ba8;
+            /* Paleta de colores rosa pastel */
+            --rosa-pastel-claro: #fff0f5;     /* Fondo principal - rosa pastel muy claro */
+            --rosa-pastel-medio: #ffd6e7;     /* Fondo de tablas - rosa un poco más fuerte */
+            --rosa-pastel-fuerte: #ffc2d6;    /* Bordes y detalles */
+            --rosa-pastel-oscuro: #ff8fab;    /* Para hover y efectos */
+            
+            /* Colores funcionales */
+            --primary: #ff6b9d;               /* Rosa más intenso para botones */
+            --secondary: #d81b60;             /* Rosa oscuro para hover */
+            --income-color: #2e8b57;          /* Verde para ingresos */
+            --expense-color: #c71585;         /* Rosa fuerte para gastos */
+            --text-primary: #5a3d5c;          /* Texto principal - morado suave */
+            --text-secondary: #7a5c7c;        /* Texto secundario */
+            --border-color: #ffb6c1;          /* Bordes rosas claros */
+            --table-header: #ffe4ec;          /* Encabezados de tabla */
+            --header-color: #9d4b6e;          /* Color de encabezados */
         }
        
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            transition: background-color 0.3s, color 0.3s;
+            font-family: 'Arial', sans-serif;
         }
        
         body {
-            background-color: var(--bg-primary);
+            background-color: var(--rosa-pastel-claro);
             color: var(--text-primary);
             padding: 0;
             margin: 0;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            line-height: 1.4;
         }
        
         .container {
             width: 100%;
-            max-width: 100%;
-            padding: 16px;
+            max-width: 1000px;
+            padding: 20px;
             margin: 0 auto;
-            flex: 1;
         }
        
         header {
-            background-color: var(--header-bg);
+            background: linear-gradient(135deg, var(--rosa-pastel-fuerte), var(--rosa-pastel-oscuro));
             color: white;
-            padding: 16px;
+            padding: 25px;
             text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-       
-        .header-actions {
-            display: flex;
-            gap: 15px;
-        }
-       
-        .header-actions button {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.2);
         }
        
         h1 {
-            font-size: 1.5rem;
-            margin: 0;
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
         }
        
-        .card {
-            background: var(--bg-secondary);
+        h2 {
+            font-size: 22px;
+            margin: 25px 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--rosa-pastel-fuerte);
+            color: var(--header-color);
+        }
+       
+        /* ESTILOS CURSIVOS PARA TÍTULOS ESPECÍFICOS */
+        .titulo-cursivo {
+            font-style: italic !important;
+            font-weight: 600;
+        }
+       
+        .budget-section {
+            background: var(--rosa-pastel-medio);
             border-radius: 10px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 2px 8px var(--card-shadow);
-            color: var(--text-primary);
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 3px 10px rgba(255, 182, 193, 0.3);
+            border: 1px solid var(--rosa-pastel-fuerte);
         }
        
-        .resumen {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-       
-        .resumen-item {
-            text-align: center;
-            flex: 1;
-            min-width: 100px;
-        }
-       
-        .resumen-item h3 {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-bottom: 5px;
-        }
-       
-        .resumen-item p {
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-       
-        .gasto-total {
-            color: var(--danger);
-        }
-       
-        .saldo-disponible {
-            color: var(--success);
-        }
-       
-        .form-group {
-            margin-bottom: 15px;
-        }
-       
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-            color: var(--text-primary);
-        }
-       
-        input, select {
+        /* ESTILOS DE TABLA */
+        .budget-table {
             width: 100%;
-            padding: 12px;
-            background-color: var(--input-bg);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 16px;
+            background-color: var(--rosa-pastel-medio);
             border-radius: 8px;
+            overflow: hidden;
+        }
+       
+        .budget-table th {
+            background-color: var(--table-header);
+            padding: 14px 10px;
+            text-align: left;
+            font-weight: bold;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
             font-size: 16px;
         }
        
-        button {
-            background-color: var(--primary);
+        .budget-table td {
+            padding: 12px 10px;
+            border: 1px solid var(--border-color);
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+       
+        .budget-table input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 15px;
+            background-color: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s;
+        }
+       
+        .budget-table input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(255, 107, 157, 0.2);
+            background-color: white;
+        }
+       
+        .budget-table input[type="date"] {
+            cursor: pointer;
+        }
+       
+        .budget-table input[type="number"] {
+            text-align: right;
+        }
+       
+        .subtotal {
+            font-weight: bold;
+            background-color: rgba(255, 228, 236, 0.8) !important;
+        }
+       
+        .total-row {
+            font-weight: bold;
+            font-size: 18px;
+            background-color: var(--table-header) !important;
+        }
+       
+        /* Sección de resumen */
+        .summary {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+       
+        .summary-item {
+            background: var(--rosa-pastel-medio);
+            padding: 25px;
+            border-radius: 10px;
+            flex: 1;
+            min-width: 200px;
+            margin: 0 10px 20px 10px;
+            box-shadow: 0 3px 10px rgba(255, 182, 193, 0.3);
+            border: 1px solid var(--rosa-pastel-fuerte);
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+       
+        .summary-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(255, 182, 193, 0.4);
+        }
+       
+        .summary-item h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+       
+        .summary-amount {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+       
+        .income-amount {
+            color: var(--income-color);
+        }
+       
+        .expense-amount {
+            color: var(--expense-color);
+        }
+       
+        .balance-amount {
+            color: var(--primary);
+        }
+       
+        /* Controles de acción */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+       
+        .control-btn {
+            background: linear-gradient(to right, var(--primary), var(--rosa-pastel-oscuro));
             color: white;
             border: none;
-            padding: 12px;
+            padding: 14px 28px;
             border-radius: 8px;
-            width: 100%;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            transition: background-color 0.3s;
-        }
-       
-        button:hover {
-            background-color: var(--secondary);
-        }
-       
-        .btn-secondary {
-            background-color: var(--gray);
-        }
-       
-        .btn-secondary:hover {
-            background-color: #5a6268;
-        }
-       
-        .lista-gastos {
-            margin-top: 20px;
-        }
-       
-        .gasto-item {
+            transition: all 0.3s;
+            margin-bottom: 10px;
+            box-shadow: 0 3px 8px rgba(255, 107, 157, 0.3);
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border-color);
+            justify-content: center;
+            gap: 8px;
         }
        
-        .gasto-info {
-            flex: 1;
+        .control-btn:hover {
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(255, 107, 157, 0.4);
         }
        
-        .gasto-descripcion {
-            font-weight: 500;
+        .control-btn i {
+            font-size: 18px;
+        }
+       
+        .control-btn.secondary {
+            background: linear-gradient(to right, #ff8fab, #ff6b9d);
+        }
+       
+        .control-btn.secondary:hover {
+            background: linear-gradient(to right, #ff6b9d, #d81b60);
+        }
+       
+        .month-selector {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            background-color: var(--rosa-pastel-medio);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--rosa-pastel-fuerte);
+        }
+       
+        .month-selector label {
+            margin-right: 10px;
+            font-weight: bold;
             color: var(--text-primary);
         }
        
-        .gasto-categoria {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-       
-        .gasto-monto {
-            font-weight: bold;
-            color: var(--danger);
-        }
-       
-        .eliminar-btn {
-            background: none;
-            border: none;
-            color: var(--danger);
-            font-size: 1.2rem;
+        .month-selector select {
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background-color: white;
+            font-size: 16px;
+            color: var(--text-primary);
             cursor: pointer;
-            width: auto;
-            padding: 0 10px;
-        }
-       
-        .filtros {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-       
-        .filtros select {
-            flex: 1;
-            min-width: 120px;
-        }
-       
-        .empty-state {
-            text-align: center;
-            padding: 30px 0;
-            color: var(--text-secondary);
         }
        
         footer {
             text-align: center;
-            padding: 16px;
-            background-color: var(--footer-bg);
+            padding: 25px;
+            margin-top: 40px;
             color: var(--text-secondary);
-            font-size: 0.8rem;
+            font-size: 14px;
+            border-top: 2px solid var(--rosa-pastel-fuerte);
+            background-color: var(--rosa-pastel-medio);
+            border-radius: 10px;
         }
        
-        /* Resumen por categorías */
-        .resumen-categorias {
+        /* Gastos extras */
+        #gastos-extras-section {
+            background-color: var(--rosa-pastel-medio);
+            border-radius: 10px;
+            padding: 25px;
             margin-top: 20px;
+            border: 1px solid var(--rosa-pastel-fuerte);
         }
        
-        .categoria-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid var(--border-color);
+        #lista-gastos-extras {
+            margin-bottom: 20px;
         }
        
-        .categoria-color {
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
+        #nuevo-gasto-desc, #nuevo-gasto-monto {
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background-color: white;
+            color: var(--text-primary);
+        }
+       
+        #nuevo-gasto-desc {
+            width: 300px;
             margin-right: 10px;
         }
        
-        .categoria-info {
-            display: flex;
-            align-items: center;
-            flex: 1;
+        #nuevo-gasto-monto {
+            width: 150px;
+            margin-right: 10px;
         }
        
-        .categoria-nombre {
-            text-transform: capitalize;
-            color: var(--text-primary);
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+           
+            .summary {
+                flex-direction: column;
+            }
+           
+            .summary-item {
+                margin: 0 0 15px 0;
+            }
+           
+            .controls {
+                flex-direction: column;
+            }
+           
+            .control-btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+           
+            .budget-table {
+                font-size: 14px;
+            }
+           
+            .budget-table th,
+            .budget-table td {
+                padding: 10px 8px;
+            }
+           
+            #nuevo-gasto-desc {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+           
+            #nuevo-gasto-monto {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+           
+            .month-selector {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+           
+            .month-selector label {
+                margin-bottom: 10px;
+            }
+           
+            .month-selector select {
+                width: 100%;
+                margin-bottom: 10px;
+            }
         }
        
-        .categoria-monto {
+        /* Animación para cambios en números */
+        @keyframes cambioNumero {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+       
+        .cambio-destacado {
+            animation: cambioNumero 0.5s ease;
+        }
+       
+        /* Estilos para el saldo negativo */
+        .saldo-negativo {
+            color: var(--expense-color) !important;
             font-weight: bold;
         }
        
-        /* Gráfico de barras */
-        .chart-container {
-            margin-top: 20px;
-            height: 200px;
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-around;
-            gap: 5px;
-            padding: 10px 0;
-        }
-       
-        .chart-bar {
-            background-color: var(--primary);
-            width: 30px;
-            border-radius: 5px 5px 0 0;
-            position: relative;
-            transition: height 0.5s ease;
-        }
-       
-        .chart-label {
-            position: absolute;
-            bottom: -25px;
-            width: 100%;
-            text-align: center;
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-        }
-       
-        /* Modal */
-        .modal {
-            display: none;
+        /* Decoración floral */
+        .floral-decoration {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
+            z-index: -1;
+            opacity: 0.1;
+            font-size: 200px;
+            color: var(--primary);
         }
        
-        .modal-content {
-            background-color: var(--modal-bg);
-            padding: 20px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 400px;
-            max-height: 80vh;
-            overflow-y: auto;
-            color: var(--text-primary);
+        .floral-1 {
+            top: 50px;
+            left: 50px;
+            transform: rotate(-15deg);
         }
        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
+        .floral-2 {
+            bottom: 50px;
+            right: 50px;
+            transform: rotate(15deg);
         }
-       
-        .close-modal {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text-secondary);
-        }
-       
-        /* Toast notifications */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #333;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-       
-        .toast.show {
-            opacity: 1;
-        }
-       
-        @media (max-width: 480px) {
-            .resumen {
-                flex-direction: column;
-                gap: 10px;
-            }
-           
-            .resumen-item {
-                text-align: left;
-            }
-           
-            .filtros {
-                flex-direction: column;
-            }
-           
-            .filtros select {
-                width: 100%;
-            }
-        }
-       
-        /* Colores para categorías */
-        .categoria-comida { background-color: var(--comida); }
-        .categoria-transporte { background-color: var(--transporte); }
-        .categoria-entretenimiento { background-color: var(--entretenimiento); }
-        .categoria-servicios { background-color: var(--servicios); }
-        .categoria-compras { background-color: var(--compras); }
-        .categoria-otros { background-color: var(--otros); }
-       
-        .texto-comida { color: var(--comida); }
-        .texto-transporte { color: var(--transporte); }
-        .texto-entretenimiento { color: var(--entretenimiento); }
-        .texto-servicios { color: var(--servicios); }
-        .texto-compras { color: var(--compras); }
-        .texto-otros { color: var(--otros); }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Control de Gastos</h1>
-        <div class="header-actions">
-            <button id="theme-toggle" title="Cambiar tema"><i class="fas fa-moon"></i></button>
-            <button id="exportar-btn" title="Exportar datos"><i class="fas fa-download"></i></button>
-            <button id="graficos-btn" title="Ver gráficos"><i class="fas fa-chart-pie"></i></button>
-        </div>
-    </header>
-   
+    <!-- Decoraciones florales de fondo -->
+    <div class="floral-decoration floral-1">
+        <i class="fas fa-heart"></i>
+    </div>
+    <div class="floral-decoration floral-2">
+        <i class="fas fa-heart"></i>
+    </div>
+    
     <div class="container">
-        <div class="card">
-            <div class="resumen">
-                <div class="resumen-item">
-                    <h3>Presupuesto</h3>
-                    <p id="presupuesto-total">$0.00</p>
-                </div>
-                <div class="resumen-item">
-                    <h3>Gastos</h3>
-                    <p class="gasto-total" id="gasto-total">$0.00</p>
-                </div>
-                <div class="resumen-item">
-                    <h3>Disponible</h3>
-                    <p class="saldo-disponible" id="saldo-disponible">$0.00</p>
-                </div>
-            </div>
-           
-            <div class="form-group">
-                <label for="presupuesto">Presupuesto mensual:</label>
-                <input type="number" id="presupuesto" placeholder="Ingresa tu presupuesto">
-            </div>
-           
-            <h2>Agregar Gasto</h2>
-            <div class="form-group">
-                <label for="descripcion">Descripción:</label>
-                <input type="text" id="descripcion" placeholder="¿En qué gastaste?">
-            </div>
-           
-            <div class="form-group">
-                <label for="monto">Monto:</label>
-                <input type="number" id="monto" placeholder="0.00">
-            </div>
-           
-            <div class="form-group">
-                <label for="categoria">Categoría:</label>
-                <select id="categoria">
-                    <option value="comida">Comida</option>
-                    <option value="transporte">Transporte</option>
-                    <option value="entretenimiento">Entretenimiento</option>
-                    <option value="servicios">Servicios</option>
-                    <option value="compras">Compras</option>
-                    <option value="otros">Otros</option>
-                </select>
-            </div>
-           
-            <button id="agregar-gasto">Agregar Gasto</button>
+        <header>
+            <h1>Presupuesto Mensual</h1>
+            <p>Controla tus ingresos y gastos con estilo</p>
+        </header>
+       
+        <div class="month-selector">
+            <label for="select-month">Mes:</label>
+            <select id="select-month">
+                <option value="1">Enero</option>
+                <option value="2">Febrero</option>
+                <option value="3">Marzo</option>
+                <option value="4">Abril</option>
+                <option value="5">Mayo</option>
+                <option value="6">Junio</option>
+                <option value="7">Julio</option>
+                <option value="8">Agosto</option>
+                <option value="9">Septiembre</option>
+                <option value="10">Octubre</option>
+                <option value="11">Noviembre</option>
+                <option value="12">Diciembre</option>
+            </select>
+            <select id="select-year" style="margin-left: 10px;">
+                <option value="2024">2024</option>
+                <option value="2025" selected>2025</option>
+                <option value="2026">2026</option>
+            </select>
         </div>
        
-        <div class="card">
-            <h2>Resumen por Categoría</h2>
-            <div id="resumen-categorias">
-                <div class="empty-state">No hay gastos registrados</div>
+        <!-- SECCIÓN DE INGRESOS -->
+        <div class="budget-section">
+            <h2 class="titulo-cursivo">(+) <i>Ingresos</i>:</h2>
+            <table class="budget-table">
+                <thead>
+                    <tr>
+                        <th style="width: 120px;">Fecha</th>
+                        <th>Descripción</th>
+                        <th style="width: 150px;">Estimado</th>
+                        <th style="width: 150px;">Real</th>
+                    </tr>
+                </thead>
+                <tbody id="ingresos-body">
+                    <!-- Sueldo -->
+                    <tr>
+                        <td><input type="date" id="fecha-sueldo"></td>
+                        <td>Sueldo</td>
+                        <td><input type="number" id="estimado-sueldo" placeholder="0.00" step="0.01"></td>
+                        <td><input type="number" id="real-sueldo" placeholder="0.00" step="0.01"></td>
+                    </tr>
+                    <!-- Trabajo extra -->
+                    <tr>
+                        <td><input type="date" id="fecha-extra"></td>
+                        <td>Trabajo extra</td>
+                        <td><input type="number" id="estimado-extra" placeholder="0.00" step="0.01"></td>
+                        <td><input type="number" id="real-extra" placeholder="0.00" step="0.01"></td>
+                    </tr>
+                    <!-- Inversiones -->
+                    <tr>
+                        <td><input type="date" id="fecha-inversiones"></td>
+                        <td>Inversiones</td>
+                        <td><input type="number" id="estimado-inversiones" placeholder="0.00" step="0.01"></td>
+                        <td><input type="number" id="real-inversiones" placeholder="0.00" step="0.01"></td>
+                    </tr>
+                    <!-- Suma de ingresos -->
+                    <tr class="subtotal">
+                        <td colspan="2" style="text-align: right; font-style: italic;">Suma de <i>ingresos</i>:</td>
+                        <td id="total-ingresos-estimado">$0.00</td>
+                        <td id="total-ingresos-real">$0.00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+       
+        <!-- SECCIÓN DE GASTOS -->
+        <div class="budget-section">
+            <h2 class="titulo-cursivo">(-) <i>Gastos</i>:</h2>
+            <table class="budget-table">
+                <thead>
+                    <tr>
+                        <th style="width: 120px;">Fecha</th>
+                        <th>Descripción</th>
+                        <th style="width: 150px;">Estimado</th>
+                        <th style="width: 150px;">Real</th>
+                    </tr>
+                </thead>
+                <tbody id="gastos-body">
+                    <!-- Servicios básicos -->
+                    <tr>
+                        <td><input type="date" id="fecha-luz"></td>
+                        <td>Servicio de luz</td>
+                        <td><input type="number" id="estimado-luz" placeholder="0.00" step="0.01"></td>
+                        <td><input type="number" id="real-luz" placeholder="0.00" step="0.01"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="date" id="fecha-agua"></td>
+                        <td>Servicio de agua</td>
+                        <td><input type="number" id="estimado-agua" placeholder="0.00" step="0.01"></td>
+                        <td><input type="number" id="real-agua" placeholder="0.00" step="0.01"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="date" id="fecha-internet"></td>
+                        <td>Internet y telefonía</td>
+                        <td><input type="number" id="estimado-internet" placeholder="0.00" step="0.01"></td>
+                        <td><input type="number" id="real-internet" placeholder="0.00" step="0.01"></td>
+                    </tr>
+                    <!-- Alimentación -->
+                    <tr>
+                        <td><input type="date" id="fecha-alimentacion"></td>
+                        <td>Alimentación</td>
+                        <td><input type="number" id="estimado-alimentacion" placeholder="0.00" step="0.01"></td>
+                        <td><input type="number" id="real-alimentacion" placeholder="0.00" step="0.01"></td>
+                    </tr>
+                    <!-- Ahorro -->
+                    <tr>
+                        <td><input type="date" id="fecha-ahorro"></td>
+                        <td>Ahorro</td>
+                        <td><input type="number" id="estimado-ahorro" placeholder="0.00" step="0.01"></td>
+                        <td><input type="number" id="real-ahorro" placeholder="0.00" step="0.01"></td>
+                    </tr>
+                    <!-- Otros -->
+                    <tr>
+                        <td><input type="date" id="fecha-otros"></td>
+                        <td>Otros</td>
+                        <td><input type="number" id="estimado-otros" placeholder="0.00" step="0.01"></td>
+                        <td><input type="number" id="real-otros" placeholder="0.00" step="0.01"></td>
+                    </tr>
+                    <!-- Suma de gastos -->
+                    <tr class="subtotal">
+                        <td colspan="2" style="text-align: right; font-style: italic;">Suma de <i>gastos</i>:</td>
+                        <td id="total-gastos-estimado">$0.00</td>
+                        <td id="total-gastos-real">$0.00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+       
+        <!-- SECCIÓN DE SALDO NETO -->
+        <div class="budget-section">
+            <h2>(-) Saldo Neto:</h2>
+            <table class="budget-table">
+                <tbody>
+                    <tr class="total-row">
+                        <td colspan="2" style="text-align: right;">Saldo Neto del Mes:</td>
+                        <td id="saldo-estimado">$0.00</td>
+                        <td id="saldo-real">$0.00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+       
+        <!-- RESUMEN RÁPIDO -->
+        <div class="summary">
+            <div class="summary-item">
+                <h3><i>Ingresos</i> Totales</h3>
+                <div class="summary-amount income-amount" id="resumen-ingresos">$0.00</div>
+                <p>Este mes</p>
+            </div>
+            <div class="summary-item">
+                <h3><i>Gastos</i> Totales</h3>
+                <div class="summary-amount expense-amount" id="resumen-gastos">$0.00</div>
+                <p>Este mes</p>
+            </div>
+            <div class="summary-item">
+                <h3>Saldo Final</h3>
+                <div class="summary-amount balance-amount" id="resumen-saldo">$0.00</div>
+                <p>Disponible</p>
             </div>
         </div>
        
-        <div class="card">
-            <h2>Mis Gastos</h2>
-           
-            <div class="filtros">
-                <select id="filtro-categoria">
-                    <option value="todas">Todas las categorías</option>
-                    <option value="comida">Comida</option>
-                    <option value="transporte">Transporte</option>
-                    <option value="entretenimiento">Entretenimiento</option>
-                    <option value="servicios">Servicios</option>
-                    <option value="compras">Compras</option>
-                    <option value="otros">Otros</option>
-                </select>
-               
-                <select id="filtro-mes">
-                    <option value="todos">Todos los meses</option>
-                    <!-- Opciones generadas por JavaScript -->
-                </select>
+        <!-- CONTROLES -->
+        <div class="controls">
+            <button class="control-btn" id="btn-guardar">
+                <i class="fas fa-save"></i> Guardar Presupuesto
+            </button>
+            <button class="control-btn secondary" id="btn-cargar">
+                <i class="fas fa-folder-open"></i> Cargar Mes
+            </button>
+            <button class="control-btn secondary" id="btn-limpiar">
+                <i class="fas fa-broom"></i> Limpiar Todo
+            </button>
+            <button class="control-btn secondary" id="btn-agregar-gasto">
+                <i class="fas fa-plus-circle"></i> Agregar Gasto Extra
+            </button>
+        </div>
+       
+        <!-- LISTA DE GASTOS EXTRAS -->
+        <div class="budget-section" id="gastos-extras-section" style="display: none;">
+            <h2><i>Gastos</i> Extras:</h2>
+            <div id="lista-gastos-extras">
+                <!-- Los gastos extras se agregarán aquí dinámicamente -->
             </div>
-           
-            <div class="lista-gastos" id="lista-gastos">
-                <div class="empty-state">No hay gastos registrados</div>
+            <div style="margin-top: 15px;">
+                <input type="text" id="nuevo-gasto-desc" placeholder="Descripción del gasto">
+                <input type="number" id="nuevo-gasto-monto" placeholder="Monto" step="0.01">
+                <button class="control-btn" id="btn-agregar-gasto-lista" style="padding: 10px 20px; display: inline-block;">
+                    <i class="fas fa-plus"></i> Agregar
+                </button>
             </div>
         </div>
+       
+        <footer>
+            <p>Presupuesto Mensual &copy; 2026 | Controla tus finanzas con estilo y organización</p>
+            <p style="margin-top: 10px; font-size: 12px; color: var(--rosa-pastel-oscuro);">
+                <i class="fas fa-heart" style="color: var(--primary);"></i> Diseñado con amor y cuidado
+            </p>
+        </footer>
     </div>
-   
-    <!-- Modal para gráficos -->
-    <div class="modal" id="graficos-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Resumen Visual de Gastos</h2>
-                <button class="close-modal">&times;</button>
-            </div>
-            <div id="chart-container" class="chart-container">
-                <!-- Gráfico generado por JavaScript -->
-            </div>
-            <div id="leyenda-grafico">
-                <!-- Leyenda generada por JavaScript -->
-            </div>
-        </div>
-    </div>
-   
-    <!-- Toast notification -->
-    <div class="toast" id="toast"></div>
-   
-    <footer>
-        <p>Tu control de gastos mensual &copy; 2025. Tu esposo te ama</p>
-    </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Variables globales
-            let db;
-            let presupuesto = 0;
-            let gastos = [];
-           
-            // Elementos UI
-            const toast = document.getElementById('toast');
-            const themeToggle = document.getElementById('theme-toggle');
-            const themeIcon = themeToggle.querySelector('i');
-           
-            // Cargar tema guardado
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            if (savedTheme === 'dark') {
-                document.body.setAttribute('data-theme', 'dark');
-                themeIcon.classList.remove('fa-moon');
-                themeIcon.classList.add('fa-sun');
-            }
-           
-            // Alternar tema
-            themeToggle.addEventListener('click', function() {
-                if (document.body.getAttribute('data-theme') === 'dark') {
-                    document.body.removeAttribute('data-theme');
-                    localStorage.setItem('theme', 'light');
-                    themeIcon.classList.remove('fa-sun');
-                    themeIcon.classList.add('fa-moon');
-                } else {
-                    document.body.setAttribute('data-theme', 'dark');
-                    localStorage.setItem('theme', 'dark');
-                    themeIcon.classList.remove('fa-moon');
-                    themeIcon.classList.add('fa-sun');
-                }
-            });
-           
-            // Inicializar la base de datos
-            const DB_NAME = 'GastosDB';
-            const DB_VERSION = 2; // Incrementado por cambios en el schema
-            const PRESUPUESTO_STORE = 'presupuesto';
-            const GASTOS_STORE = 'gastos';
-           
-            const request = indexedDB.open(DB_NAME, DB_VERSION);
-           
-            request.onerror = (event) => {
-                console.error('Error al abrir la base de datos:', event.target.error);
-                mostrarToast('Error al inicializar la aplicación. Por favor, recarga la página.', 'error');
+            let presupuestoActual = {
+                mes: new Date().getMonth() + 1,
+                año: new Date().getFullYear(),
+                ingresos: {},
+                gastos: {},
+                extras: []
             };
            
-            request.onsuccess = (event) => {
-                db = event.target.result;
-                cargarPresupuesto();
-                cargarGastos();
-                generarOpcionesMeses();
+            // Referencias a elementos de ingresos
+            const ingresosInputs = {
+                sueldo: { estimado: 'estimado-sueldo', real: 'real-sueldo', fecha: 'fecha-sueldo' },
+                extra: { estimado: 'estimado-extra', real: 'real-extra', fecha: 'fecha-extra' },
+                inversiones: { estimado: 'estimado-inversiones', real: 'real-inversiones', fecha: 'fecha-inversiones' }
             };
            
-            request.onupgradeneeded = (event) => {
-                const db = event.target.result;
-               
-                // Crear almacén para el presupuesto
-                if (!db.objectStoreNames.contains(PRESUPUESTO_STORE)) {
-                    db.createObjectStore(PRESUPUESTO_STORE, { keyPath: 'id' });
-                }
-               
-                // Crear almacén para los gastos
-                if (!db.objectStoreNames.contains(GASTOS_STORE)) {
-                    const gastosStore = db.createObjectStore(GASTOS_STORE, {
-                        keyPath: 'id',
-                        autoIncrement: true
-                    });
-                    gastosStore.createIndex('fecha', 'fecha', { unique: false });
-                    gastosStore.createIndex('categoria', 'categoria', { unique: false });
-                    gastosStore.createIndex('mesAnio', 'mesAnio', { unique: false });
-                }
+            // Referencias a elementos de gastos
+            const gastosInputs = {
+                luz: { estimado: 'estimado-luz', real: 'real-luz', fecha: 'fecha-luz' },
+                agua: { estimado: 'estimado-agua', real: 'real-agua', fecha: 'fecha-agua' },
+                internet: { estimado: 'estimado-internet', real: 'real-internet', fecha: 'fecha-internet' },
+                alimentacion: { estimado: 'estimado-alimentacion', real: 'real-alimentacion', fecha: 'fecha-alimentacion' },
+                ahorro: { estimado: 'estimado-ahorro', real: 'real-ahorro', fecha: 'fecha-ahorro' },
+                otros: { estimado: 'estimado-otros', real: 'real-otros', fecha: 'fecha-otros' }
             };
            
-            // Cargar presupuesto desde la base de datos
-            function cargarPresupuesto() {
-                const transaction = db.transaction([PRESUPUESTO_STORE], 'readonly');
-                const store = transaction.objectStore(PRESUPUESTO_STORE);
-                const request = store.get(1);
-               
-                request.onsuccess = (event) => {
-                    if (request.result) {
-                        presupuesto = request.result.monto;
-                        document.getElementById('presupuesto').value = presupuesto;
-                        actualizarResumen();
-                    }
-                };
-            }
+            // Elementos de totales
+            const totalIngresosEstimado = document.getElementById('total-ingresos-estimado');
+            const totalIngresosReal = document.getElementById('total-ingresos-real');
+            const totalGastosEstimado = document.getElementById('total-gastos-estimado');
+            const totalGastosReal = document.getElementById('total-gastos-real');
+            const saldoEstimado = document.getElementById('saldo-estimado');
+            const saldoReal = document.getElementById('saldo-real');
            
-            // Guardar presupuesto en la base de datos
-            function guardarPresupuesto() {
-                const transaction = db.transaction([PRESUPUESTO_STORE], 'readwrite');
-                const store = transaction.objectStore(PRESUPUESTO_STORE);
-                const presupuestoData = {
-                    id: 1,
-                    monto: presupuesto,
-                    fechaActualizacion: new Date()
-                };
-               
-                store.put(presupuestoData);
-            }
+            // Elementos de resumen
+            const resumenIngresos = document.getElementById('resumen-ingresos');
+            const resumenGastos = document.getElementById('resumen-gastos');
+            const resumenSaldo = document.getElementById('resumen-saldo');
            
-            // Cargar gastos desde la base de datos
-            function cargarGastos() {
-                const transaction = db.transaction([GASTOS_STORE], 'readonly');
-                const store = transaction.objectStore(GASTOS_STORE);
-                const request = store.getAll();
-               
-                request.onsuccess = (event) => {
-                    gastos = request.result;
-                    mostrarGastos();
-                    actualizarResumen();
-                    mostrarResumenCategorias();
-                };
-            }
+            // Selectores de mes y año
+            const selectMonth = document.getElementById('select-month');
+            const selectYear = document.getElementById('select-year');
            
-            // Agregar un nuevo gasto
-            function agregarGasto(descripcion, monto, categoria) {
-                const ahora = new Date();
-                const mes = ahora.getMonth() + 1;
-                const anio = ahora.getFullYear();
-                const mesAnio = `${mes}/${anio}`;
+            // Inicializar con el mes actual
+            selectMonth.value = presupuestoActual.mes;
+            selectYear.value = presupuestoActual.año;
+           
+            // Cargar datos del mes actual al iniciar
+            cargarPresupuestoMes();
+           
+            // FUNCIONES PRINCIPALES
+           
+            // Calcular y actualizar todos los totales
+            function calcularTotales() {
+                let totalEstimadoIngresos = 0;
+                let totalRealIngresos = 0;
+                let totalEstimadoGastos = 0;
+                let totalRealGastos = 0;
                
-                const nuevoGasto = {
-                    descripcion: descripcion,
-                    monto: parseFloat(monto),
-                    categoria: categoria,
-                    fecha: ahora,
-                    mesAnio: mesAnio
-                };
-               
-                const transaction = db.transaction([GASTOS_STORE], 'readwrite');
-                const store = transaction.objectStore(GASTOS_STORE);
-                const request = store.add(nuevoGasto);
-               
-                request.onsuccess = (event) => {
-                    nuevoGasto.id = event.target.result;
-                    gastos.push(nuevoGasto);
-                    mostrarGastos();
-                    actualizarResumen();
-                    mostrarResumenCategorias();
+                // Calcular ingresos
+                for (let key in ingresosInputs) {
+                    const estimado = parseFloat(document.getElementById(ingresosInputs[key].estimado).value) || 0;
+                    const real = parseFloat(document.getElementById(ingresosInputs[key].real).value) || 0;
                    
-                    // Limpiar formulario
-                    document.getElementById('descripcion').value = '';
-                    document.getElementById('monto').value = '';
+                    totalEstimadoIngresos += estimado;
+                    totalRealIngresos += real;
                    
-                    mostrarToast('Gasto agregado correctamente', 'success');
-                };
-               
-                request.onerror = (event) => {
-                    console.error('Error al agregar gasto:', event.target.error);
-                    mostrarToast('Error al agregar el gasto', 'error');
-                };
-            }
-           
-            // Eliminar un gasto
-            function eliminarGasto(id) {
-                const transaction = db.transaction([GASTOS_STORE], 'readwrite');
-                const store = transaction.objectStore(GASTOS_STORE);
-                const request = store.delete(id);
-               
-                request.onsuccess = (event) => {
-                    gastos = gastos.filter(gasto => gasto.id !== id);
-                    mostrarGastos();
-                    actualizarResumen();
-                    mostrarResumenCategorias();
-                    mostrarToast('Gasto eliminado correctamente', 'success');
-                };
-               
-                request.onerror = (event) => {
-                    console.error('Error al eliminar gasto:', event.target.error);
-                    mostrarToast('Error al eliminar el gasto', 'error');
-                };
-            }
-           
-            // Mostrar gastos en la lista
-            function mostrarGastos() {
-                const listaGastos = document.getElementById('lista-gastos');
-                const filtroCategoria = document.getElementById('filtro-categoria').value;
-                const filtroMes = document.getElementById('filtro-mes').value;
-               
-                // Filtrar gastos
-                let gastosFiltrados = gastos;
-                if (filtroCategoria !== 'todas') {
-                    gastosFiltrados = gastosFiltrados.filter(gasto => gasto.categoria === filtroCategoria);
+                    // Guardar en objeto presupuestoActual
+                    presupuestoActual.ingresos[key] = {
+                        estimado: estimado,
+                        real: real,
+                        fecha: document.getElementById(ingresosInputs[key].fecha).value
+                    };
                 }
                
-                if (filtroMes !== 'todos') {
-                    gastosFiltrados = gastosFiltrados.filter(gasto => gasto.mesAnio === filtroMes);
+                // Calcular gastos fijos
+                for (let key in gastosInputs) {
+                    const estimado = parseFloat(document.getElementById(gastosInputs[key].estimado).value) || 0;
+                    const real = parseFloat(document.getElementById(gastosInputs[key].real).value) || 0;
+                   
+                    totalEstimadoGastos += estimado;
+                    totalRealGastos += real;
+                   
+                    // Guardar en objeto presupuestoActual
+                    presupuestoActual.gastos[key] = {
+                        estimado: estimado,
+                        real: real,
+                        fecha: document.getElementById(gastosInputs[key].fecha).value
+                    };
                 }
                
-                if (gastosFiltrados.length === 0) {
-                    listaGastos.innerHTML = '<div class="empty-state">No hay gastos registrados</div>';
-                    return;
-                }
-               
-                // Ordenar gastos por fecha (más recientes primero)
-                gastosFiltrados.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-               
-                listaGastos.innerHTML = '';
-                gastosFiltrados.forEach(gasto => {
-                    const gastoElement = document.createElement('div');
-                    gastoElement.className = 'gasto-item';
-                   
-                    const fecha = new Date(gasto.fecha).toLocaleDateString();
-                    const iconoCategoria = obtenerIconoCategoria(gasto.categoria);
-                   
-                    gastoElement.innerHTML = `
-                        <div class="gasto-info">
-                            <div class="gasto-descripcion">${gasto.descripcion}</div>
-                            <div class="gasto-categoria">
-                                <i class="${iconoCategoria}"></i> ${gasto.categoria} • ${fecha}
-                            </div>
-                        </div>
-                        <div class="gasto-monto">$${gasto.monto.toFixed(2)}</div>
-                        <button class="eliminar-btn" data-id="${gasto.id}">×</button>
-                    `;
-                   
-                    listaGastos.appendChild(gastoElement);
+                // Sumar gastos extras
+                presupuestoActual.extras.forEach(gasto => {
+                    totalRealGastos += gasto.monto;
                 });
                
-                // Agregar event listeners a los botones de eliminar
-                document.querySelectorAll('.eliminar-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const id = parseInt(this.getAttribute('data-id'));
-                        if (confirm('¿Estás seguro de que quieres eliminar este gasto?')) {
-                            eliminarGasto(id);
-                        }
-                    });
-                });
-            }
-           
-            // Mostrar resumen por categorías
-            function mostrarResumenCategorias() {
-                const resumenCategorias = document.getElementById('resumen-categorias');
+                // Calcular saldos
+                const saldoEstimadoCalc = totalEstimadoIngresos - totalEstimadoGastos;
+                const saldoRealCalc = totalRealIngresos - totalRealGastos;
                
-                if (gastos.length === 0) {
-                    resumenCategorias.innerHTML = '<div class="empty-state">No hay gastos registrados</div>';
-                    return;
-                }
+                // Actualizar tabla de totales con animación
+                actualizarConAnimacion(totalIngresosEstimado, totalEstimadoIngresos);
+                actualizarConAnimacion(totalIngresosReal, totalRealIngresos);
+                actualizarConAnimacion(totalGastosEstimado, totalEstimadoGastos);
+                actualizarConAnimacion(totalGastosReal, totalRealGastos);
+                actualizarConAnimacion(saldoEstimado, saldoEstimadoCalc);
+                actualizarConAnimacion(saldoReal, saldoRealCalc);
                
-                // Calcular totales por categoría
-                const totales = {};
-                gastos.forEach(gasto => {
-                    if (!totales[gasto.categoria]) {
-                        totales[gasto.categoria] = 0;
-                    }
-                    totales[gasto.categoria] += gasto.monto;
-                });
+                // Actualizar resumen con animación
+                actualizarConAnimacion(resumenIngresos, totalRealIngresos);
+                actualizarConAnimacion(resumenGastos, totalRealGastos);
+                actualizarConAnimacion(resumenSaldo, saldoRealCalc);
                
-                resumenCategorias.innerHTML = '';
-               
-                // Ordenar categorías por monto (de mayor a menor)
-                const categoriasOrdenadas = Object.keys(totales).sort((a, b) => totales[b] - totales[a]);
-               
-                categoriasOrdenadas.forEach(categoria => {
-                    const item = document.createElement('div');
-                    item.className = 'categoria-item';
-                   
-                    item.innerHTML = `
-                        <div class="categoria-info">
-                            <div class="categoria-color categoria-${categoria}"></div>
-                            <div class="categoria-nombre">${categoria}</div>
-                        </div>
-                        <div class="categoria-monto texto-${categoria}">$${totales[categoria].toFixed(2)}</div>
-                    `;
-                   
-                    resumenCategorias.appendChild(item);
-                });
-            }
-           
-            // Actualizar el resumen de gastos
-            function actualizarResumen() {
-                const totalGastos = gastos.reduce((total, gasto) => total + gasto.monto, 0);
-                const saldoDisponible = presupuesto - totalGastos;
-               
-                document.getElementById('presupuesto-total').textContent = `$${presupuesto.toFixed(2)}`;
-                document.getElementById('gasto-total').textContent = `$${totalGastos.toFixed(2)}`;
-                document.getElementById('saldo-disponible').textContent = `$${saldoDisponible.toFixed(2)}`;
-               
-                // Cambiar color según el saldo
-                const saldoElement = document.getElementById('saldo-disponible');
-                if (saldoDisponible < 0) {
-                    saldoElement.style.color = 'var(--danger)';
-                } else if (saldoDisponible < presupuesto * 0.2) {
-                    saldoElement.style.color = 'var(--warning)';
+                // Cambiar color del saldo según sea positivo o negativo
+                if (saldoRealCalc < 0) {
+                    resumenSaldo.classList.add('saldo-negativo');
+                    saldoReal.classList.add('saldo-negativo');
                 } else {
-                    saldoElement.style.color = 'var(--success)';
+                    resumenSaldo.classList.remove('saldo-negativo');
+                    saldoReal.classList.remove('saldo-negativo');
                 }
             }
            
-            // Generar opciones de meses para el filtro
-            function generarOpcionesMeses() {
-                const filtroMes = document.getElementById('filtro-mes');
-               
-                // Obtener meses únicos de los gastos
-                const mesesUnicos = [...new Set(gastos.map(gasto => gasto.mesAnio))];
-               
-                // Limpiar opciones excepto la primera
-                while (filtroMes.options.length > 1) {
-                    filtroMes.remove(1);
-                }
-               
-                // Agregar opciones de meses
-                mesesUnicos.sort((a, b) => {
-                    const [mesA, anioA] = a.split('/').map(Number);
-                    const [mesB, anioB] = b.split('/').map(Number);
-                    return new Date(anioB, mesB - 1) - new Date(anioA, mesA - 1);
-                });
-               
-                mesesUnicos.forEach(mes => {
-                    const option = document.createElement('option');
-                    option.value = mes;
-                    option.textContent = mes;
-                    filtroMes.appendChild(option);
-                });
-            }
-           
-            // Mostrar gráfico de gastos
-            function mostrarGrafico() {
-                const modal = document.getElementById('graficos-modal');
-                const chartContainer = document.getElementById('chart-container');
-                const leyendaGrafico = document.getElementById('leyenda-grafico');
-               
-                // Calcular totales por categoría
-                const totales = {};
-                gastos.forEach(gasto => {
-                    if (!totales[gasto.categoria]) {
-                        totales[gasto.categoria] = 0;
-                    }
-                    totales[gasto.categoria] += gasto.monto;
-                });
-               
-                const categorias = Object.keys(totales);
-                const montos = Object.values(totales);
-               
-                if (categorias.length === 0) {
-                    chartContainer.innerHTML = '<div class="empty-state">No hay datos para mostrar</div>';
-                    leyendaGrafico.innerHTML = '';
-                    modal.style.display = 'flex';
-                    return;
-                }
-               
-                const maxMonto = Math.max(...montos);
-               
-                // Generar barras del gráfico
-                chartContainer.innerHTML = '';
-                leyendaGrafico.innerHTML = '<h3>Leyenda:</h3><div class="leyenda-items"></div>';
-                const leyendaItems = leyendaGrafico.querySelector('.leyenda-items');
-               
-                categorias.forEach((categoria, index) => {
-                    const altura = (montos[index] / maxMonto) * 150; // 150px es la altura máxima
-                   
-                    const barra = document.createElement('div');
-                    barra.className = `chart-bar categoria-${categoria}`;
-                    barra.style.height = `${altura}px`;
-                   
-                    const label = document.createElement('div');
-                    label.className = 'chart-label';
-                    label.textContent = categoria.substring(0, 3);
-                   
-                    barra.appendChild(label);
-                    chartContainer.appendChild(barra);
-                   
-                    // Agregar item a la leyenda
-                    const leyendaItem = document.createElement('div');
-                    leyendaItem.className = 'categoria-item';
-                    leyendaItem.innerHTML = `
-                        <div class="categoria-info">
-                            <div class="categoria-color categoria-${categoria}"></div>
-                            <div class="categoria-nombre">${categoria}</div>
-                        </div>
-                        <div class="categoria-monto">$${montos[index].toFixed(2)}</div>
-                    `;
-                   
-                    leyendaItems.appendChild(leyendaItem);
-                });
-               
-                modal.style.display = 'flex';
-            }
-           
-            // Exportar datos
-            function exportarDatos() {
-                const datos = {
-                    presupuesto: presupuesto,
-                    gastos: gastos
-                };
-               
-                const datosStr = JSON.stringify(datos);
-                const datosBlob = new Blob([datosStr], {type: 'application/json'});
-               
-                const url = URL.createObjectURL(datosBlob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `gastos-${new Date().toISOString().split('T')[0]}.json`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-               
-                mostrarToast('Datos exportados correctamente', 'success');
-            }
-           
-            // Mostrar notificación toast
-            function mostrarToast(mensaje, tipo = 'info') {
-                toast.textContent = mensaje;
-                toast.className = 'toast show';
-               
-                if (tipo === 'error') {
-                    toast.style.backgroundColor = '#e74c3c';
-                } else if (tipo === 'success') {
-                    toast.style.backgroundColor = '#2ecc71';
-                } else {
-                    toast.style.backgroundColor = '#3498db';
-                }
-               
+            // Función para actualizar con animación
+            function actualizarConAnimacion(elemento, valor) {
+                elemento.classList.add('cambio-destacado');
+                elemento.textContent = `$${valor.toFixed(2)}`;
+                
+                // Remover la clase de animación después de que termine
                 setTimeout(() => {
-                    toast.className = 'toast';
+                    elemento.classList.remove('cambio-destacado');
+                }, 500);
+            }
+           
+            // Guardar presupuesto en localStorage
+            function guardarPresupuesto() {
+                calcularTotales(); // Asegurar que los datos están actualizados
+               
+                const clave = `presupuesto_${presupuestoActual.año}_${presupuestoActual.mes}`;
+                localStorage.setItem(clave, JSON.stringify(presupuestoActual));
+               
+                // Mostrar mensaje bonito
+                mostrarNotificacion(`Presupuesto de ${getNombreMes(presupuestoActual.mes)} ${presupuestoActual.año} guardado correctamente.`, 'success');
+               
+                // También guardar en lista de meses disponibles
+                guardarMesDisponible(presupuestoActual.mes, presupuestoActual.año);
+            }
+           
+            // Cargar presupuesto desde localStorage
+            function cargarPresupuestoMes() {
+                const mes = parseInt(selectMonth.value);
+                const año = parseInt(selectYear.value);
+               
+                presupuestoActual.mes = mes;
+                presupuestoActual.año = año;
+               
+                const clave = `presupuesto_${año}_${mes}`;
+                const datosGuardados = localStorage.getItem(clave);
+               
+                if (datosGuardados) {
+                    presupuestoActual = JSON.parse(datosGuardados);
+                   
+                    // Cargar ingresos
+                    for (let key in ingresosInputs) {
+                        if (presupuestoActual.ingresos[key]) {
+                            document.getElementById(ingresosInputs[key].estimado).value = presupuestoActual.ingresos[key].estimado || '';
+                            document.getElementById(ingresosInputs[key].real).value = presupuestoActual.ingresos[key].real || '';
+                            document.getElementById(ingresosInputs[key].fecha).value = presupuestoActual.ingresos[key].fecha || '';
+                        }
+                    }
+                   
+                    // Cargar gastos
+                    for (let key in gastosInputs) {
+                        if (presupuestoActual.gastos[key]) {
+                            document.getElementById(gastosInputs[key].estimado).value = presupuestoActual.gastos[key].estimado || '';
+                            document.getElementById(gastosInputs[key].real).value = presupuestoActual.gastos[key].real || '';
+                            document.getElementById(gastosInputs[key].fecha).value = presupuestoActual.gastos[key].fecha || '';
+                        }
+                    }
+                   
+                    // Cargar gastos extras
+                    cargarGastosExtras();
+                   
+                    mostrarNotificacion(`Presupuesto de ${getNombreMes(mes)} ${año} cargado.`, 'info');
+                } else {
+                    // Limpiar todos los campos si no hay datos guardados
+                    limpiarCampos();
+                    presupuestoActual.extras = [];
+                    cargarGastosExtras();
+                    mostrarNotificacion(`Nuevo presupuesto para ${getNombreMes(mes)} ${año}.`, 'info');
+                }
+               
+                calcularTotales();
+            }
+           
+            // Limpiar todos los campos
+            function limpiarCampos() {
+                // Limpiar ingresos
+                for (let key in ingresosInputs) {
+                    document.getElementById(ingresosInputs[key].estimado).value = '';
+                    document.getElementById(ingresosInputs[key].real).value = '';
+                    document.getElementById(ingresosInputs[key].fecha).value = '';
+                }
+               
+                // Limpiar gastos
+                for (let key in gastosInputs) {
+                    document.getElementById(gastosInputs[key].estimado).value = '';
+                    document.getElementById(gastosInputs[key].real).value = '';
+                    document.getElementById(gastosInputs[key].fecha).value = '';
+                }
+               
+                // Limpiar extras
+                presupuestoActual.extras = [];
+                cargarGastosExtras();
+               
+                // Establecer fechas por defecto (fecha actual)
+                const hoy = new Date().toISOString().split('T')[0];
+                document.querySelectorAll('input[type="date"]').forEach(input => {
+                    if (!input.value) input.value = hoy;
+                });
+            }
+           
+            // Guardar mes en lista de meses disponibles
+            function guardarMesDisponible(mes, año) {
+                let mesesDisponibles = JSON.parse(localStorage.getItem('meses_disponibles')) || [];
+               
+                const mesKey = `${año}-${mes}`;
+               
+                if (!mesesDisponibles.includes(mesKey)) {
+                    mesesDisponibles.push(mesKey);
+                    localStorage.setItem('meses_disponibles', JSON.stringify(mesesDisponibles));
+                }
+            }
+           
+            // Obtener nombre del mes
+            function getNombreMes(numeroMes) {
+                const meses = [
+                    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+                ];
+                return meses[numeroMes - 1] || 'Desconocido';
+            }
+           
+            // Funciones para gastos extras
+            function cargarGastosExtras() {
+                const lista = document.getElementById('lista-gastos-extras');
+                lista.innerHTML = '';
+               
+                if (presupuestoActual.extras.length === 0) {
+                    lista.innerHTML = '<p style="color: var(--text-secondary); font-style: italic;">No hay gastos extras registrados.</p>';
+                    return;
+                }
+               
+                const tabla = document.createElement('table');
+                tabla.className = 'budget-table';
+                tabla.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>Descripción</th>
+                            <th style="width: 150px;">Monto</th>
+                            <th style="width: 100px;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="body-gastos-extras"></tbody>
+                `;
+               
+                lista.appendChild(tabla);
+                const tbody = document.getElementById('body-gastos-extras');
+               
+                presupuestoActual.extras.forEach((gasto, index) => {
+                    const fila = document.createElement('tr');
+                    fila.innerHTML = `
+                        <td>${gasto.descripcion}</td>
+                        <td>$${gasto.monto.toFixed(2)}</td>
+                        <td>
+                            <button onclick="eliminarGastoExtra(${index})" style="background: var(--expense-color); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; transition: all 0.3s;">
+                                <i class="fas fa-trash-alt"></i> Eliminar
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(fila);
+                });
+            }
+           
+            // Función global para eliminar gasto extra
+            window.eliminarGastoExtra = function(index) {
+                if (confirm('¿Estás seguro de que quieres eliminar este gasto extra?')) {
+                    presupuestoActual.extras.splice(index, 1);
+                    cargarGastosExtras();
+                    calcularTotales();
+                    guardarPresupuesto();
+                }
+            };
+           
+            // Agregar nuevo gasto extra
+            function agregarGastoExtra() {
+                const descInput = document.getElementById('nuevo-gasto-desc');
+                const montoInput = document.getElementById('nuevo-gasto-monto');
+               
+                const descripcion = descInput.value.trim();
+                const monto = parseFloat(montoInput.value);
+               
+                if (!descripcion) {
+                    mostrarNotificacion('Por favor, ingresa una descripción para el gasto.', 'error');
+                    descInput.focus();
+                    return;
+                }
+               
+                if (!monto || monto <= 0) {
+                    mostrarNotificacion('Por favor, ingresa un monto válido mayor a cero.', 'error');
+                    montoInput.focus();
+                    return;
+                }
+               
+                presupuestoActual.extras.push({
+                    descripcion: descripcion,
+                    monto: monto,
+                    fecha: new Date().toISOString().split('T')[0]
+                });
+               
+                // Limpiar inputs
+                descInput.value = '';
+                montoInput.value = '';
+               
+                // Actualizar interfaz
+                cargarGastosExtras();
+                calcularTotales();
+               
+                // Mostrar sección de gastos extras si estaba oculta
+                document.getElementById('gastos-extras-section').style.display = 'block';
+               
+                mostrarNotificacion('Gasto extra agregado correctamente.', 'success');
+            }
+           
+            // Mostrar notificación bonita
+            function mostrarNotificacion(mensaje, tipo) {
+                // Crear elemento de notificación
+                const notificacion = document.createElement('div');
+                notificacion.textContent = mensaje;
+                notificacion.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 15px 25px;
+                    border-radius: 8px;
+                    color: white;
+                    font-weight: bold;
+                    z-index: 1000;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                    animation: slideIn 0.3s ease;
+                `;
+               
+                // Estilo según tipo
+                if (tipo === 'success') {
+                    notificacion.style.backgroundColor = 'var(--income-color)';
+                } else if (tipo === 'error') {
+                    notificacion.style.backgroundColor = 'var(--expense-color)';
+                } else {
+                    notificacion.style.backgroundColor = 'var(--primary)';
+                }
+               
+                document.body.appendChild(notificacion);
+               
+                // Remover después de 3 segundos
+                setTimeout(() => {
+                    notificacion.style.animation = 'slideOut 0.3s ease';
+                    setTimeout(() => {
+                        document.body.removeChild(notificacion);
+                    }, 300);
                 }, 3000);
             }
            
-            // Obtener icono para categoría
-            function obtenerIconoCategoria(categoria) {
-                const iconos = {
-                    'comida': 'fas fa-utensils',
-                    'transporte': 'fas fa-bus',
-                    'entretenimiento': 'fas fa-gamepad',
-                    'servicios': 'fas fa-bolt',
-                    'compras': 'fas fa-shopping-bag',
-                    'otros': 'fas fa-ellipsis-h'
-                };
-               
-                return iconos[categoria] || 'fas fa-ellipsis-h';
-            }
-           
-            // Event listeners
-            document.getElementById('presupuesto').addEventListener('change', function() {
-                presupuesto = parseFloat(this.value) || 0;
-                guardarPresupuesto();
-                actualizarResumen();
-                mostrarToast('Presupuesto actualizado', 'success');
-            });
-           
-            document.getElementById('agregar-gasto').addEventListener('click', function() {
-                const descripcion = document.getElementById('descripcion').value.trim();
-                const monto = document.getElementById('monto').value;
-                const categoria = document.getElementById('categoria').value;
-               
-                if (!descripcion) {
-                    mostrarToast('Por favor, ingresa una descripción para el gasto.', 'error');
-                    return;
+            // Animaciones CSS para notificaciones
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
                 }
-               
-                if (!monto || parseFloat(monto) <= 0) {
-                    mostrarToast('Por favor, ingresa un monto válido.', 'error');
-                    return;
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
                 }
-               
-                agregarGasto(descripcion, monto, categoria);
+            `;
+            document.head.appendChild(style);
+           
+            // EVENT LISTENERS
+           
+            // Calcular automáticamente cuando cambia cualquier campo
+            document.querySelectorAll('input[type="number"], input[type="date"]').forEach(input => {
+                input.addEventListener('input', calcularTotales);
+                input.addEventListener('change', calcularTotales);
             });
            
-            document.getElementById('filtro-categoria').addEventListener('change', function() {
-                mostrarGastos();
-                generarOpcionesMeses();
+            // Selectores de mes y año
+            selectMonth.addEventListener('change', cargarPresupuestoMes);
+            selectYear.addEventListener('change', cargarPresupuestoMes);
+           
+            // Botón guardar
+            document.getElementById('btn-guardar').addEventListener('click', guardarPresupuesto);
+           
+            // Botón cargar
+            document.getElementById('btn-cargar').addEventListener('click', function() {
+                cargarPresupuestoMes();
             });
            
-            document.getElementById('filtro-mes').addEventListener('change', mostrarGastos);
-           
-            document.getElementById('graficos-btn').addEventListener('click', mostrarGrafico);
-           
-            document.getElementById('exportar-btn').addEventListener('click', exportarDatos);
-           
-            document.querySelector('.close-modal').addEventListener('click', function() {
-                document.getElementById('graficos-modal').style.display = 'none';
-            });
-           
-            // Cerrar modal al hacer clic fuera
-            window.addEventListener('click', function(event) {
-                if (event.target === document.getElementById('graficos-modal')) {
-                    document.getElementById('graficos-modal').style.display = 'none';
+            // Botón limpiar
+            document.getElementById('btn-limpiar').addEventListener('click', function() {
+                if (confirm('¿Estás seguro de que quieres limpiar todos los campos? Se perderán los cambios no guardados.')) {
+                    limpiarCampos();
+                    calcularTotales();
                 }
             });
            
-            // Mejora para móviles: evitar zoom en inputs
-            document.querySelectorAll('input[type="number"]').forEach(input => {
-                input.addEventListener('focus', function() {
-                    this.style.fontSize = '16px';
+            // Botón agregar gasto extra
+            document.getElementById('btn-agregar-gasto').addEventListener('click', function() {
+                const seccion = document.getElementById('gastos-extras-section');
+                seccion.style.display = seccion.style.display === 'none' ? 'block' : 'none';
+            });
+           
+            // Botón agregar gasto a la lista
+            document.getElementById('btn-agregar-gasto-lista').addEventListener('click', agregarGastoExtra);
+           
+            // Permitir agregar gasto con Enter
+            document.getElementById('nuevo-gasto-desc').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') agregarGastoExtra();
+            });
+           
+            document.getElementById('nuevo-gasto-monto').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') agregarGastoExtra();
+            });
+           
+            // Establecer fechas por defecto al cargar
+            window.addEventListener('load', function() {
+                const hoy = new Date().toISOString().split('T')[0];
+                document.querySelectorAll('input[type="date"]').forEach(input => {
+                    if (!input.value) input.value = hoy;
                 });
                
-                input.addEventListener('blur', function() {
-                    this.style.fontSize = '';
-                });
+                calcularTotales();
             });
         });
     </script>
