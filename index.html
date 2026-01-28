@@ -527,7 +527,6 @@
         
         footer.visible .footer-section:nth-child(1) { transition-delay: 0.1s; }
         footer.visible .footer-section:nth-child(2) { transition-delay: 0.2s; }
-        footer.visible .footer-section:nth-child(3) { transition-delay: 0.3s; }
         
         .footer-section h3 {
             font-size: 1.3rem;
@@ -1189,11 +1188,6 @@
                     </div>
                     
                     <div class="form-group">
-                        <label class="option-label">Teléfono <span class="required">*</span></label>
-                        <input type="text" id="customerPhone" placeholder="Ej: 51388955">
-                    </div>
-                    
-                    <div class="form-group">
                         <label class="option-label">Dirección de entrega <span class="required">*</span></label>
                         <textarea id="customerAddress" rows="3" placeholder="Calle, número, colonia, ciudad"></textarea>
                     </div>
@@ -1211,15 +1205,6 @@
                             <option value="13:00-15:00">1:00 - 3:00 PM</option>
                             <option value="15:00-17:00">3:00 - 5:00 PM</option>
                             <option value="17:00-19:00">5:00 - 7:00 PM</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="option-label">Método de pago</label>
-                        <select id="paymentMethod">
-                            <option value="efectivo">Efectivo al recibir</option>
-                            <option value="transferencia">Transferencia bancaria</option>
-                            <option value="tarjeta">Tarjeta de crédito/débito</option>
                         </select>
                     </div>
                 </div>
@@ -1263,14 +1248,8 @@
                     <p><i class="fas fa-phone"></i> +1 234 567 890</p>
                     <p><i class="fas fa-envelope"></i> info@vanela.com</p>
                 </div>
-                <div class="footer-section">
-                    <h3>Horario</h3>
-                    <p>Lunes a Viernes: 9:00 - 20:00</p>
-                    <p>Sábados: 9:00 - 18:00</p>
-                    <p>Domingos: 10:00 - 15:00</p>
-                </div>
             </div>
-            <p style="margin-top: 30px; color: #aaa;">&copy; 2023 Vanela. Todos los derechos reservados.</p>
+            <p style="margin-top: 30px; color: #aaa;">&copy; 2026 Vanela. Todos los derechos reservados.</p>
         </div>
     </footer>
 
@@ -1295,11 +1274,9 @@
         // Customer information
         let customerInfo = {
             name: '',
-            phone: '',
             address: '',
             deliveryDate: '',
-            deliveryTime: '9:00-11:00',
-            paymentMethod: 'efectivo'
+            deliveryTime: '9:00-11:00'
         };
 
         // Price multipliers based on size
@@ -1492,11 +1469,9 @@
         
         // Customer form elements
         const customerName = document.getElementById('customerName');
-        const customerPhone = document.getElementById('customerPhone');
         const customerAddress = document.getElementById('customerAddress');
         const deliveryDate = document.getElementById('deliveryDate');
         const deliveryTime = document.getElementById('deliveryTime');
-        const paymentMethod = document.getElementById('paymentMethod');
         
         // Option cards
         const optionCards = document.querySelectorAll('.option-card');
@@ -1697,12 +1672,6 @@
                 return false;
             }
             
-            if (!customerPhone.value.trim()) {
-                showNotification('Por favor ingresa tu número de teléfono');
-                customerPhone.focus();
-                return false;
-            }
-            
             if (!customerAddress.value.trim()) {
                 showNotification('Por favor ingresa tu dirección de entrega');
                 customerAddress.focus();
@@ -1738,11 +1707,9 @@
             
             // Update customer info object
             customerInfo.name = customerName.value.trim();
-            customerInfo.phone = customerPhone.value.trim();
             customerInfo.address = customerAddress.value.trim();
             customerInfo.deliveryDate = deliveryDate.value;
             customerInfo.deliveryTime = deliveryTime.value;
-            customerInfo.paymentMethod = paymentMethod.value;
             
             // Format delivery date
             const deliveryDateObj = new Date(customerInfo.deliveryDate);
@@ -1758,7 +1725,6 @@
 
 *INFORMACIÓN DEL CLIENTE:*
 👤 Nombre: ${customerInfo.name}
-📞 Teléfono: ${customerInfo.phone}
 📍 Dirección: ${customerInfo.address}
 
 *DETALLES DEL PEDIDO:*
@@ -1772,9 +1738,6 @@
 *INFORMACIÓN DE ENTREGA:*
 📅 Fecha: ${formattedDate}
 ⏰ Hora: ${customerInfo.deliveryTime}
-💰 Método de pago: ${customerInfo.paymentMethod === 'efectivo' ? 'Efectivo al recibir' : 
-                     customerInfo.paymentMethod === 'transferencia' ? 'Transferencia bancaria' : 
-                     'Tarjeta de crédito/débito'}
 
 💵 *TOTAL: $${currentCake.price.toFixed(2)}*
 
@@ -1802,11 +1765,9 @@
             setTimeout(() => {
                 // Reset only customer info, keep cake selection
                 customerName.value = '';
-                customerPhone.value = '';
                 customerAddress.value = '';
                 setMinDeliveryDate(); // Reset to default date
                 deliveryTime.value = '9:00-11:00';
-                paymentMethod.value = 'efectivo';
                 
                 // Scroll to top
                 window.scrollTo({
@@ -2047,10 +2008,6 @@
                 customerInfo.name = customerName.value;
             });
             
-            customerPhone.addEventListener('input', () => {
-                customerInfo.phone = customerPhone.value;
-            });
-            
             customerAddress.addEventListener('input', () => {
                 customerInfo.address = customerAddress.value;
             });
@@ -2063,10 +2020,6 @@
                 customerInfo.deliveryTime = deliveryTime.value;
             });
             
-            paymentMethod.addEventListener('change', () => {
-                customerInfo.paymentMethod = paymentMethod.value;
-            });
-            
             // Scroll event for animations
             window.addEventListener('scroll', checkVisibility);
             window.addEventListener('load', checkVisibility);
@@ -2074,9 +2027,6 @@
             
             // Setup image zoom functionality
             setupImageZoom();
-            
-            // Auto-fill phone number with example
-            customerPhone.value = '51388955';
         }
 
         // Initialize the page
