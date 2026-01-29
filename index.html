@@ -888,7 +888,7 @@
     <section class="hero">
         <div class="container">
             <h2>Crea el pastel de tus sueños</h2>
-            <p>Personaliza cada detalle de tu cake: forma, color, sabor, tamaño y más. ¡Hazlo único para cada ocasión!</p>
+            <p>Personaliza cada detalle de tu cake: forma, base, relleno, tamaño y más. ¡Hazlo único para cada ocasión!</p>
         </div>
     </section>
 
@@ -919,85 +919,37 @@
                             </div>
                             <div class="option-name">Cuadrado</div>
                         </div>
-                        <div class="option-card" data-option="shape" data-value="heart">
-                            <div class="image-container">
-                                <div class="image-placeholder">Corazón</div>
-                                <div class="check-mark"><i class="fas fa-check"></i></div>
-                                <div class="zoom-btn" data-target="heart"><i class="fas fa-search-plus"></i></div>
-                            </div>
-                            <div class="option-name">Corazón</div>
-                        </div>
-                        <div class="option-card" data-option="shape" data-value="star">
-                            <div class="image-container">
-                                <div class="image-placeholder">Estrella</div>
-                                <div class="check-mark"><i class="fas fa-check"></i></div>
-                                <div class="zoom-btn" data-target="star"><i class="fas fa-search-plus"></i></div>
-                            </div>
-                            <div class="option-name">Estrella</div>
-                        </div>
                     </div>
                 </div>
                 
-                <!-- Color Selection -->
-                <div class="option-group" id="colorGroup">
-                    <label class="option-label">Color principal</label>
-                    <div class="color-options">
-                        <div class="color-card" data-option="color" data-value="rosa">
-                            <div class="image-container" style="background-color: #ffcce6;">
-                                <div class="image-placeholder">Rosa</div>
-                                <div class="check-mark"><i class="fas fa-check"></i></div>
-                                <div class="zoom-btn" data-target="rosa"><i class="fas fa-search-plus"></i></div>
-                            </div>
-                            <div class="color-name">Rosa</div>
-                        </div>
-                        <div class="color-card" data-option="color" data-value="verde">
-                            <div class="image-container" style="background-color: #c2f0c2;">
-                                <div class="image-placeholder">Verde</div>
-                                <div class="check-mark"><i class="fas fa-check"></i></div>
-                                <div class="zoom-btn" data-target="verde"><i class="fas fa-search-plus"></i></div>
-                            </div>
-                            <div class="color-name">Verde</div>
-                        </div>
-                        <div class="color-card" data-option="color" data-value="azul">
-                            <div class="image-container" style="background-color: #c2e6ff;">
-                                <div class="image-placeholder">Azul</div>
-                                <div class="check-mark"><i class="fas fa-check"></i></div>
-                                <div class="zoom-btn" data-target="azul"><i class="fas fa-search-plus"></i></div>
-                            </div>
-                            <div class="color-name">Azul</div>
-                        </div>
-                        <div class="color-card" data-option="color" data-value="morado">
-                            <div class="image-container" style="background-color: #e6ccff;">
-                                <div class="image-placeholder">Morado</div>
-                                <div class="check-mark"><i class="fas fa-check"></i></div>
-                                <div class="zoom-btn" data-target="morado"><i class="fas fa-search-plus"></i></div>
-                            </div>
-                            <div class="color-name">Morado</div>
-                        </div>
-                        <div class="color-card" data-option="color" data-value="naranja">
-                            <div class="image-container" style="background-color: #ffd9cc;">
-                                <div class="image-placeholder">Naranja</div>
-                                <div class="check-mark"><i class="fas fa-check"></i></div>
-                                <div class="zoom-btn" data-target="naranja"><i class="fas fa-search-plus"></i></div>
-                            </div>
-                            <div class="color-name">Naranja</div>
-                        </div>
-                        <div class="color-card" data-option="color" data-value="amarillo">
-                            <div class="image-container" style="background-color: #fff5cc;">
-                                <div class="image-placeholder">Amarillo</div>
-                                <div class="check-mark"><i class="fas fa-check"></i></div>
-                                <div class="zoom-btn" data-target="amarillo"><i class="fas fa-search-plus"></i></div>
-                            </div>
-                            <div class="color-name">Amarillo</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Flavor Selection -->
-                <div class="option-group" id="flavorGroup">
-                    <label class="option-label">Sabor</label>
+                <!-- Base Selection (instead of color) -->
+                <div class="option-group" id="baseGroup">
+                    <label class="option-label">Base del pastel</label>
                     <div class="options-grid">
-                        <div class="option-card" data-option="flavor" data-value="chocolate">
+                        <div class="option-card" data-option="base" data-value="meringue">
+                            <div class="image-container" style="background-color: #fff5f5;">
+                                <div class="image-placeholder">Merengue</div>
+                                <div class="check-mark"><i class="fas fa-check"></i></div>
+                                <div class="zoom-btn" data-target="meringue"><i class="fas fa-search-plus"></i></div>
+                            </div>
+                            <div class="option-name">Merengue</div>
+                        </div>
+                        <div class="option-card" data-option="base" data-value="whippedcream">
+                            <div class="image-container" style="background-color: #fffaf0;">
+                                <div class="image-placeholder">Nata</div>
+                                <div class="check-mark"><i class="fas fa-check"></i></div>
+                                <div class="zoom-btn" data-target="whippedcream"><i class="fas fa-search-plus"></i></div>
+                            </div>
+                            <div class="option-name">Nata</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Filling Selection (instead of flavor) -->
+                <div class="option-group" id="fillingGroup">
+                    <label class="option-label">Relleno</label>
+                    <div class="options-grid">
+                        <div class="option-card" data-option="filling" data-value="chocolate">
                             <div class="image-container">
                                 <div class="image-placeholder" style="background-color: #8B4513; color: white;">Chocolate</div>
                                 <div class="check-mark"><i class="fas fa-check"></i></div>
@@ -1005,45 +957,29 @@
                             </div>
                             <div class="option-name">Chocolate</div>
                         </div>
-                        <div class="option-card" data-option="flavor" data-value="vainilla">
+                        <div class="option-card" data-option="filling" data-value="vanilla">
                             <div class="image-container">
                                 <div class="image-placeholder" style="background-color: #F5F5DC;">Vainilla</div>
                                 <div class="check-mark"><i class="fas fa-check"></i></div>
-                                <div class="zoom-btn" data-target="vainilla"><i class="fas fa-search-plus"></i></div>
+                                <div class="zoom-btn" data-target="vanilla"><i class="fas fa-search-plus"></i></div>
                             </div>
                             <div class="option-name">Vainilla</div>
                         </div>
-                        <div class="option-card" data-option="flavor" data-value="fresa">
-                            <div class="image-container">
-                                <div class="image-placeholder" style="background-color: #FFB6C1;">Fresa</div>
-                                <div class="check-mark"><i class="fas fa-check"></i></div>
-                                <div class="zoom-btn" data-target="fresa"><i class="fas fa-search-plus"></i></div>
-                            </div>
-                            <div class="option-name">Fresa</div>
-                        </div>
-                        <div class="option-card" data-option="flavor" data-value="limon">
+                        <div class="option-card" data-option="filling" data-value="lemon">
                             <div class="image-container">
                                 <div class="image-placeholder" style="background-color: #FFFACD;">Limón</div>
                                 <div class="check-mark"><i class="fas fa-check"></i></div>
-                                <div class="zoom-btn" data-target="limon"><i class="fas fa-search-plus"></i></div>
+                                <div class="zoom-btn" data-target="lemon"><i class="fas fa-search-plus"></i></div>
                             </div>
                             <div class="option-name">Limón</div>
                         </div>
-                        <div class="option-card" data-option="flavor" data-value="redvelvet">
+                        <div class="option-card" data-option="filling" data-value="dulceLeche">
                             <div class="image-container">
-                                <div class="image-placeholder" style="background-color: #8B0000; color: white;">Red Velvet</div>
+                                <div class="image-placeholder" style="background-color: #D2691E; color: white;">Dulce de Leche</div>
                                 <div class="check-mark"><i class="fas fa-check"></i></div>
-                                <div class="zoom-btn" data-target="redvelvet"><i class="fas fa-search-plus"></i></div>
+                                <div class="zoom-btn" data-target="dulceLeche"><i class="fas fa-search-plus"></i></div>
                             </div>
-                            <div class="option-name">Red Velvet</div>
-                        </div>
-                        <div class="option-card" data-option="flavor" data-value="cafe">
-                            <div class="image-container">
-                                <div class="image-placeholder" style="background-color: #8B4513; color: white;">Café</div>
-                                <div class="check-mark"><i class="fas fa-check"></i></div>
-                                <div class="zoom-btn" data-target="cafe"><i class="fas fa-search-plus"></i></div>
-                            </div>
-                            <div class="option-name">Café</div>
+                            <div class="option-name">Dulce de Leche</div>
                         </div>
                     </div>
                 </div>
@@ -1054,66 +990,19 @@
                     <div class="options-grid">
                         <div class="option-card" data-option="size" data-value="small">
                             <div class="image-container">
-                                <div class="image-placeholder">Pequeño</div>
+                                <div class="image-placeholder">20 cm</div>
                                 <div class="check-mark"><i class="fas fa-check"></i></div>
                                 <div class="zoom-btn" data-target="small"><i class="fas fa-search-plus"></i></div>
                             </div>
-                            <div class="option-name">Pequeño (8 porciones)</div>
-                        </div>
-                        <div class="option-card" data-option="size" data-value="medium">
-                            <div class="image-container">
-                                <div class="image-placeholder">Mediano</div>
-                                <div class="check-mark"><i class="fas fa-check"></i></div>
-                                <div class="zoom-btn" data-target="medium"><i class="fas fa-search-plus"></i></div>
-                            </div>
-                            <div class="option-name">Mediano (12 porciones)</div>
+                            <div class="option-name">Pequeño (20 cm)</div>
                         </div>
                         <div class="option-card" data-option="size" data-value="large">
                             <div class="image-container">
-                                <div class="image-placeholder">Grande</div>
+                                <div class="image-placeholder">26 cm</div>
                                 <div class="check-mark"><i class="fas fa-check"></i></div>
                                 <div class="zoom-btn" data-target="large"><i class="fas fa-search-plus"></i></div>
                             </div>
-                            <div class="option-name">Grande (20 porciones)</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Dough Type Selection -->
-                <div class="option-group" id="doughGroup">
-                    <label class="option-label">Tipo de masa</label>
-                    <div class="options-grid">
-                        <div class="option-card" data-option="dough" data-value="normal">
-                            <div class="image-container">
-                                <div class="image-placeholder">Normal</div>
-                                <div class="check-mark"><i class="fas fa-check"></i></div>
-                                <div class="zoom-btn" data-target="normal"><i class="fas fa-search-plus"></i></div>
-                            </div>
-                            <div class="option-name">Normal</div>
-                        </div>
-                        <div class="option-card" data-option="dough" data-value="chocolate">
-                            <div class="image-container">
-                                <div class="image-placeholder" style="background-color: #8B4513; color: white;">Chocolate</div>
-                                <div class="check-mark"><i class="fas fa-check"></i></div>
-                                <div class="zoom-btn" data-target="chocolate-dough"><i class="fas fa-search-plus"></i></div>
-                            </div>
-                            <div class="option-name">Chocolate</div>
-                        </div>
-                        <div class="option-card" data-option="dough" data-value="integral">
-                            <div class="image-container">
-                                <div class="image-placeholder" style="background-color: #D2B48C;">Integral</div>
-                                <div class="check-mark"><i class="fas fa-check"></i></div>
-                                <div class="zoom-btn" data-target="integral"><i class="fas fa-search-plus"></i></div>
-                            </div>
-                            <div class="option-name">Integral</div>
-                        </div>
-                        <div class="option-card" data-option="dough" data-value="almendra">
-                            <div class="image-container">
-                                <div class="image-placeholder" style="background-color: #F4E4C1;">Almendra</div>
-                                <div class="check-mark"><i class="fas fa-check"></i></div>
-                                <div class="zoom-btn" data-target="almendra"><i class="fas fa-search-plus"></i></div>
-                            </div>
-                            <div class="option-name">Almendra</div>
+                            <div class="option-name">Grande (26 cm)</div>
                         </div>
                     </div>
                 </div>
@@ -1143,23 +1032,18 @@
                 </div>
                 
                 <div class="summary-item">
-                    <div class="summary-label">Color:</div>
-                    <div class="summary-value" id="summaryColor">Rosa</div>
+                    <div class="summary-label">Base:</div>
+                    <div class="summary-value" id="summaryBase">Merengue</div>
                 </div>
                 
                 <div class="summary-item">
-                    <div class="summary-label">Sabor:</div>
-                    <div class="summary-value" id="summaryFlavor">Chocolate</div>
+                    <div class="summary-label">Relleno:</div>
+                    <div class="summary-value" id="summaryFilling">Chocolate</div>
                 </div>
                 
                 <div class="summary-item">
                     <div class="summary-label">Tamaño:</div>
-                    <div class="summary-value" id="summarySize">Mediano (12 porciones)</div>
-                </div>
-                
-                <div class="summary-item">
-                    <div class="summary-label">Tipo de masa:</div>
-                    <div class="summary-value" id="summaryDough">Normal</div>
+                    <div class="summary-value" id="summarySize">Pequeño (20 cm)</div>
                 </div>
                 
                 <div class="summary-item">
@@ -1169,7 +1053,7 @@
                 
                 <div class="summary-total">
                     <div class="summary-label">Total:</div>
-                    <div class="total-price" id="summaryPrice">$25.00</div>
+                    <div class="total-price" id="summaryPrice">$18.00</div>
                 </div>
                 
                 <button class="add-to-cart-btn glow-effect" id="addToCartBtn">
@@ -1211,10 +1095,10 @@
                 
                 <div class="order-summary-box">
                     <h4>Resumen del Pedido</h4>
-                    <p><strong>Pastel:</strong> <span id="finalShape">Redondo</span> - <span id="finalColor">Rosa</span> - <span id="finalFlavor">Chocolate</span></p>
-                    <p><strong>Tamaño:</strong> <span id="finalSize">Mediano (12 porciones)</span></p>
+                    <p><strong>Pastel:</strong> <span id="finalShape">Redondo</span> - <span id="finalBase">Merengue</span> - <span id="finalFilling">Chocolate</span></p>
+                    <p><strong>Tamaño:</strong> <span id="finalSize">Pequeño (20 cm)</span></p>
                     <p><strong>Personalización:</strong> <span id="finalCustom">Feliz Cumpleaños</span></p>
-                    <p><strong>Total:</strong> <span id="finalPrice">$25.00</span></p>
+                    <p><strong>Total:</strong> <span id="finalPrice">$18.00</span></p>
                 </div>
                 
                 <button class="whatsapp-btn glow-effect" id="whatsappBtn">
@@ -1257,18 +1141,16 @@
         // Current cake configuration
         let currentCake = {
             shape: 'round',
-            color: 'rosa',
-            flavor: 'chocolate',
-            size: 'medium',
-            dough: 'normal',
+            base: 'meringue',
+            filling: 'chocolate',
+            size: 'small',
             customText: 'Feliz Cumpleaños',
             additionalDetails: '',
-            price: 25.00,
+            price: 18.00,
             shapeName: 'Redondo',
-            colorName: 'Rosa',
-            flavorName: 'Chocolate',
-            sizeName: 'Mediano (12 porciones)',
-            doughName: 'Normal'
+            baseName: 'Merengue',
+            fillingName: 'Chocolate',
+            sizeName: 'Pequeño (20 cm)'
         };
 
         // Customer information
@@ -1281,51 +1163,34 @@
 
         // Price multipliers based on size
         const sizePrices = {
-            small: 0.8,
-            medium: 1,
-            large: 1.5
+            small: 1,
+            large: 1.6
         };
 
-        // Base price
-        const basePrice = 25.00;
+        // Base price for small size
+        const basePrice = 18.00;
 
         // Name mappings
         const shapeNames = {
             round: 'Redondo',
-            square: 'Cuadrado',
-            heart: 'Corazón',
-            star: 'Estrella'
+            square: 'Cuadrado'
         };
         
-        const colorNames = {
-            rosa: 'Rosa',
-            verde: 'Verde',
-            azul: 'Azul',
-            amarillo: 'Amarillo',
-            morado: 'Morado',
-            naranja: 'Naranja'
+        const baseNames = {
+            meringue: 'Merengue',
+            whippedcream: 'Nata'
         };
         
-        const flavorNames = {
+        const fillingNames = {
             chocolate: 'Chocolate',
-            vainilla: 'Vainilla',
-            fresa: 'Fresa',
-            limon: 'Limón',
-            redvelvet: 'Red Velvet',
-            cafe: 'Café'
+            vanilla: 'Vainilla',
+            lemon: 'Limón',
+            dulceLeche: 'Dulce de Leche'
         };
         
         const sizeNames = {
-            small: 'Pequeño (8 porciones)',
-            medium: 'Mediano (12 porciones)',
-            large: 'Grande (20 porciones)'
-        };
-        
-        const doughNames = {
-            normal: 'Normal',
-            chocolate: 'Chocolate',
-            integral: 'Integral',
-            almendra: 'Almendra'
+            small: 'Pequeño (20 cm)',
+            large: 'Grande (26 cm)'
         };
 
         // Product descriptions for zoom modal
@@ -1333,103 +1198,49 @@
             // Formas
             'round': {
                 title: 'Pastel Redondo',
-                description: 'La forma clásica y elegante perfecta para cualquier celebración. Nuestro pastel redondo es el favorito para cumpleaños y eventos especiales. Disponible en varios tamaños para adaptarse a tu reunión.'
+                description: 'La forma clásica y elegante perfecta para cualquier celebración. Nuestro pastel redondo es el favorito para cumpleaños y eventos especiales. Ideal para cortes uniformes y presentación tradicional.'
             },
             'square': {
                 title: 'Pastel Cuadrado',
                 description: 'Un diseño moderno y único que se destaca en cualquier mesa. Perfecto para ocasiones contemporáneas y celebraciones de aniversario. Cada porción es uniforme y fácil de servir.'
             },
-            'heart': {
-                title: 'Pastel en Forma de Corazón',
-                description: 'El símbolo perfecto del amor y la pasión. Ideal para San Valentín, aniversarios y propuestas. Un detalle romántico que derretirá corazones junto con su delicioso sabor.'
+            
+            // Bases
+            'meringue': {
+                title: 'Base de Merengue',
+                description: 'Una cobertura ligera y dulce hecha con claras de huevo y azúcar. Perfecta para quienes prefieren una textura suave y un sabor menos empalagoso. Se mantiene firme y es ideal para decoraciones detalladas.'
             },
-            'star': {
-                title: 'Pastel en Forma de Estrella',
-                description: 'Para que tu pequeño se sienta como una superestrella en su cumpleaños. También perfecto para celebraciones de logros y eventos especiales donde quieres brillar.'
+            'whippedcream': {
+                title: 'Base de Nata',
+                description: 'Cobertura cremosa y suave hecha con nata montada. Más rica y cremosa que el merengue, perfecta para quienes aman la textura suave y el sabor lácteo. Se mantiene bien refrigerada.'
             },
             
-            // Colores
-            'rosa': {
-                title: 'Merengue Rosa',
-                description: 'Un tono suave y romántico perfecto para celebraciones de niñas, baby showers o simplemente para agregar un toque de dulzura a tu pastel. El color rosa simboliza ternura y amor.'
-            },
-            'verde': {
-                title: 'Merengue Verde',
-                description: 'Color fresco y natural que evoca la primavera y la renovación. Ideal para celebraciones ecológicas, de primavera o simplemente para quienes aman los tonos naturales.'
-            },
-            'azul': {
-                title: 'Merengue Azul',
-                description: 'Un azul sereno que trae calma y elegancia a tu celebración. Perfecto para baby showers de niño, celebraciones marinas o para quienes buscan un look sofisticado.'
-            },
-            'morado': {
-                title: 'Merengue Morado',
-                description: 'Color real y místico que agrega un toque de magia a tu pastel. Ideal para celebraciones de fantasía, cumpleaños temáticos o simplemente para los amantes del púrpura.'
-            },
-            'naranja': {
-                title: 'Merengue Naranja',
-                description: 'Un color vibrante y energético que evoca alegría y creatividad. Perfecto para fiestas de otoño, celebraciones de Halloween o para agregar un toque de diversión.'
-            },
-            'amarillo': {
-                title: 'Merengue Amarillo',
-                description: 'El color del sol y la felicidad. Este tono brillante iluminará cualquier celebración, perfecto para fiestas de verano, eventos soleados o para alegrar el día de alguien especial.'
-            },
-            
-            // Sabores
+            // Rellenos
             'chocolate': {
-                title: 'Sabor Chocolate',
-                description: 'Nuestro chocolate belga premium crea un pastel rico y decadente que satisface los antojos más dulces. Perfecto para los amantes del chocolate de todas las edades.'
+                title: 'Relleno de Chocolate',
+                description: 'Nuestro chocolate belga premium crea un relleno rico y decadente que satisface los antojos más dulces. Perfecto para los amantes del chocolate de todas las edades. Textura suave y sabor intenso.'
             },
-            'vainilla': {
-                title: 'Sabor Vainilla',
-                description: 'Un clásico atemporal con notas suaves y aromáticas de vainilla de Madagascar. Versátil y delicioso, complementa perfectamente cualquier relleno o decoración.'
+            'vanilla': {
+                title: 'Relleno de Vainilla',
+                description: 'Un clásico atemporal con notas suaves y aromáticas de vainilla de Madagascar. Versátil y delicioso, complementa perfectamente cualquier base o decoración. Sabor elegante y refinado.'
             },
-            'fresa': {
-                title: 'Sabor Fresa',
-                description: 'El dulce y jugoso sabor de fresas frescas en cada bocado. Un favorito para celebraciones de primavera y verano, o simplemente para quienes aman las frutas frescas.'
+            'lemon': {
+                title: 'Relleno de Limón',
+                description: 'Refrescante y ligeramente ácido, este relleno es perfecto para celebraciones de verano o como contraste dulce. Hecho con jugo de limón natural para un sabor auténtico y vibrante.'
             },
-            'limon': {
-                title: 'Sabor Limón',
-                description: 'Refrescante y ligeramente ácido, este pastel es perfecto para celebraciones de verano o como postre ligero después de una comida abundante.'
-            },
-            'redvelvet': {
-                title: 'Sabor Red Velvet',
-                description: 'Un elegante equilibrio entre chocolate y vainilla con un distintivo color rojo. Suave, húmedo y tradicionalmente acompañado de frosting de queso crema.'
-            },
-            'cafe': {
-                title: 'Sabor Café',
-                description: 'Para los amantes del café, este pastel ofrece un sabor robusto y aromático que combina perfectamente con rellenos de crema de café o chocolate.'
+            'dulceLeche': {
+                title: 'Relleno de Dulce de Leche',
+                description: 'El clásico favorito latinoamericano. Crema de leche caramelizada con un sabor dulce y textura sedosa. Perfecto para quienes buscan un sabor tradicional y reconfortante en cada bocado.'
             },
             
             // Tamaños
             'small': {
-                title: 'Tamaño Pequeño (8 porciones)',
-                description: 'Perfecto para celebraciones íntimas, cenas románticas o pequeños grupos familiares. Cada porción es generosa para satisfacer a tus invitados.'
-            },
-            'medium': {
-                title: 'Tamaño Mediano (12 porciones)',
-                description: 'El tamaño más popular para cumpleaños y reuniones familiares. Suficiente para una celebración moderada sin dejar sobras excesivas.'
+                title: 'Tamaño Pequeño (20 cm)',
+                description: 'Perfecto para celebraciones íntimas, cenas románticas o pequeños grupos familiares (6-8 personas). Cada porción es generosa para satisfacer a tus invitados sin dejar sobras excesivas.'
             },
             'large': {
-                title: 'Tamaño Grande (20 porciones)',
-                description: 'Ideal para fiestas grandes, eventos corporativos o celebraciones especiales. Asegura que todos tus invitados disfruten de una deliciosa porción.'
-            },
-            
-            // Masas
-            'normal': {
-                title: 'Masa Normal',
-                description: 'Nuestra masa clásica, esponjosa y ligera, hecha con los ingredientes más finos. La base perfecta para cualquier sabor y decoración.'
-            },
-            'chocolate-dough': {
-                title: 'Masa de Chocolate',
-                description: 'Una masa rica en cacao que intensifica el sabor chocolateado de tu pastel. Perfecta para los verdaderos amantes del chocolate.'
-            },
-            'integral': {
-                title: 'Masa Integral',
-                description: 'Una opción más saludable con harina integral que agrega un sabor a nuez y una textura interesante. Perfecta para quienes buscan una alternativa más nutritiva.'
-            },
-            'almendra': {
-                title: 'Masa de Almendra',
-                description: 'Deliciosamente húmeda con el sabor distintivo de las almendras molidas. Una opción gourmet que eleva cualquier pastel a un nuevo nivel.'
+                title: 'Tamaño Grande (26 cm)',
+                description: 'Ideal para fiestas grandes, eventos corporativos o celebraciones especiales (12-16 personas). Asegura que todos tus invitados disfruten de una deliciosa porción.'
             }
         };
 
@@ -1452,17 +1263,16 @@
         
         // Summary elements
         const summaryShape = document.getElementById('summaryShape');
-        const summaryColor = document.getElementById('summaryColor');
-        const summaryFlavor = document.getElementById('summaryFlavor');
+        const summaryBase = document.getElementById('summaryBase');
+        const summaryFilling = document.getElementById('summaryFilling');
         const summarySize = document.getElementById('summarySize');
-        const summaryDough = document.getElementById('summaryDough');
         const summaryCustom = document.getElementById('summaryCustom');
         const summaryPrice = document.getElementById('summaryPrice');
         
         // Final order summary elements
         const finalShape = document.getElementById('finalShape');
-        const finalColor = document.getElementById('finalColor');
-        const finalFlavor = document.getElementById('finalFlavor');
+        const finalBase = document.getElementById('finalBase');
+        const finalFilling = document.getElementById('finalFilling');
         const finalSize = document.getElementById('finalSize');
         const finalCustom = document.getElementById('finalCustom');
         const finalPrice = document.getElementById('finalPrice');
@@ -1475,7 +1285,6 @@
         
         // Option cards
         const optionCards = document.querySelectorAll('.option-card');
-        const colorCards = document.querySelectorAll('.color-card');
         const customTextInput = document.getElementById('customText');
         const additionalDetailsInput = document.getElementById('additionalDetails');
         
@@ -1621,17 +1430,16 @@
             
             // Update summary display
             summaryShape.textContent = currentCake.shapeName;
-            summaryColor.textContent = currentCake.colorName;
-            summaryFlavor.textContent = currentCake.flavorName;
+            summaryBase.textContent = currentCake.baseName;
+            summaryFilling.textContent = currentCake.fillingName;
             summarySize.textContent = currentCake.sizeName;
-            summaryDough.textContent = currentCake.doughName;
             summaryCustom.textContent = currentCake.customText || 'Sin texto personalizado';
             summaryPrice.textContent = `$${currentCake.price.toFixed(2)}`;
             
             // Update final order summary
             finalShape.textContent = currentCake.shapeName;
-            finalColor.textContent = currentCake.colorName;
-            finalFlavor.textContent = currentCake.flavorName;
+            finalBase.textContent = currentCake.baseName;
+            finalFilling.textContent = currentCake.fillingName;
             finalSize.textContent = currentCake.sizeName;
             finalCustom.textContent = currentCake.customText || 'Sin texto personalizado';
             finalPrice.textContent = `$${currentCake.price.toFixed(2)}`;
@@ -1641,18 +1449,6 @@
         function updateActiveOptions() {
             // Update option cards
             optionCards.forEach(card => {
-                const option = card.getAttribute('data-option');
-                const value = card.getAttribute('data-value');
-                
-                if (currentCake[option] === value) {
-                    card.classList.add('active');
-                } else {
-                    card.classList.remove('active');
-                }
-            });
-            
-            // Update color cards
-            colorCards.forEach(card => {
                 const option = card.getAttribute('data-option');
                 const value = card.getAttribute('data-value');
                 
@@ -1728,10 +1524,10 @@
 📍 Dirección: ${customerInfo.address}
 
 *DETALLES DEL PEDIDO:*
-🎂 Pastel: ${currentCake.shapeName} - ${currentCake.colorName}
-🍰 Sabor: ${currentCake.flavorName}
+🎂 Forma: ${currentCake.shapeName}
+🥮 Base: ${currentCake.baseName}
+🍰 Relleno: ${currentCake.fillingName}
 📏 Tamaño: ${currentCake.sizeName}
-🥮 Masa: ${currentCake.doughName}
 💝 Personalización: ${currentCake.customText || 'Sin texto personalizado'}
 📝 Detalles adicionales: ${currentCake.additionalDetails || 'Ninguno'}
 
@@ -1831,7 +1627,7 @@
                     e.stopPropagation(); // Prevent card selection when clicking zoom
                     
                     const target = this.getAttribute('data-target');
-                    const card = this.closest('.option-card, .color-card');
+                    const card = this.closest('.option-card');
                     const imageContainer = card.querySelector('.image-container');
                     
                     // Find image or placeholder
@@ -1848,7 +1644,7 @@
                         
                         // Get background color or text
                         const bgColor = placeholderElement.style.backgroundColor || imageContainer.style.backgroundColor || '#f0f0f0';
-                        const cardText = card.querySelector('.option-name, .color-name').textContent;
+                        const cardText = card.querySelector('.option-name').textContent;
                         
                         placeholder.style.backgroundColor = bgColor;
                         placeholder.textContent = cardText;
@@ -1864,7 +1660,7 @@
                     
                     // Update description in zoom modal
                     const description = productDescriptions[target] || {
-                        title: card.querySelector('.option-name, .color-name').textContent,
+                        title: card.querySelector('.option-name').textContent,
                         description: 'Un delicioso pastel personalizado hecho con ingredientes de la más alta calidad. Perfecto para cualquier celebración especial.'
                     };
                     
@@ -1911,14 +1707,14 @@
 
         // Initialize event listeners
         function initEventListeners() {
-            // Option cards (including shape, flavor, size, dough)
+            // Option cards (including shape, base, filling, size)
             optionCards.forEach(card => {
                 card.addEventListener('click', () => {
                     const option = card.getAttribute('data-option');
                     const value = card.getAttribute('data-value');
                     
                     // Deselect all cards in the same category
-                    const sameCategoryCards = document.querySelectorAll(`.option-card[data-option="${option}"], .color-card[data-option="${option}"]`);
+                    const sameCategoryCards = document.querySelectorAll(`.option-card[data-option="${option}"]`);
                     sameCategoryCards.forEach(sameCard => {
                         sameCard.classList.remove('active');
                     });
@@ -1932,41 +1728,13 @@
                     // Update names based on selected value
                     if (option === 'shape') {
                         currentCake.shapeName = shapeNames[value];
-                    } else if (option === 'flavor') {
-                        currentCake.flavorName = flavorNames[value];
+                    } else if (option === 'base') {
+                        currentCake.baseName = baseNames[value];
+                    } else if (option === 'filling') {
+                        currentCake.fillingName = fillingNames[value];
                     } else if (option === 'size') {
                         currentCake.sizeName = sizeNames[value];
-                    } else if (option === 'dough') {
-                        currentCake.doughName = doughNames[value];
-                    } else if (option === 'color') {
-                        currentCake.colorName = colorNames[value];
                     }
-                    
-                    // Change logo color on selection
-                    changeLogoColor();
-                    
-                    updateCakeSummary();
-                });
-            });
-            
-            // Color cards
-            colorCards.forEach(card => {
-                card.addEventListener('click', () => {
-                    const option = card.getAttribute('data-option');
-                    const value = card.getAttribute('data-value');
-                    
-                    // Deselect all cards in the same category
-                    const sameCategoryCards = document.querySelectorAll(`.option-card[data-option="${option}"], .color-card[data-option="${option}"]`);
-                    sameCategoryCards.forEach(sameCard => {
-                        sameCard.classList.remove('active');
-                    });
-                    
-                    // Select the clicked card
-                    card.classList.add('active');
-                    
-                    // Update current cake configuration
-                    currentCake[option] = value;
-                    currentCake.colorName = colorNames[value];
                     
                     // Change logo color on selection
                     changeLogoColor();
