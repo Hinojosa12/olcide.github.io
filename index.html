@@ -106,54 +106,6 @@
             margin-right: 0.5rem;
         }
 
-        /* Formulario agregar */
-        .card-form {
-            background: white;
-            border-radius: 28px;
-            padding: 1.8rem 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 20px 30px -12px rgba(0,20,40,0.2);
-        }
-        .card-form h2 {
-            font-size: 1.6rem;
-            font-weight: 500;
-            margin-bottom: 1.5rem;
-            color: #0b253a;
-            border-left: 7px solid #2c7da0;
-            padding-left: 1rem;
-        }
-        .form-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem 1.5rem;
-            align-items: flex-end;
-        }
-        .form-grid input, .form-grid select {
-            padding: 0.9rem 1.2rem;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 60px;
-            font-size: 0.95rem;
-            background: #f9fcff;
-            flex: 1 1 160px;
-        }
-        @media (max-width:600px){
-            .form-grid input, .form-grid select { padding:0.6rem 1rem; font-size:0.85rem; }
-        }
-        .form-grid button {
-            background: #0b253a;
-            color: white;
-            font-weight: 600;
-            padding: 0.9rem 2.5rem;
-            border-radius: 60px;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 8px 14px -6px #0b253a70;
-        }
-        .form-grid button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
         /* Paneles */
         .dashboard {
             display: grid;
@@ -193,6 +145,60 @@
             cursor: pointer;
             padding: 0 0.5rem;
         }
+        /* Botón nuevo producto dentro del panel */
+        .new-product-btn {
+            background: #0b253a;
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 0.5rem 1.2rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            margin-left: 0.5rem;
+        }
+        .new-product-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        /* Formulario de nuevo producto oculto inicialmente */
+        .new-product-form {
+            background: #eef3f8;
+            border-radius: 24px;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            display: none;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.8rem;
+            align-items: center;
+        }
+        .new-product-form.visible {
+            display: grid;
+        }
+        .new-product-form input, .new-product-form select {
+            padding: 0.7rem 1rem;
+            border: 1.5px solid #d4dfea;
+            border-radius: 60px;
+            font-size: 0.9rem;
+            background: white;
+        }
+        .new-product-form button {
+            background: #0b253a;
+            color: white;
+            border: none;
+            border-radius: 60px;
+            padding: 0.7rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .new-product-form button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .search-box {
             background: #eef3f8;
             border-radius: 40px;
@@ -359,7 +365,7 @@
             cursor: pointer;
         }
 
-        /* Modal edición (mismo estilo que login) */
+        /* Modal edición */
         #editModal .modal-content { max-width: 450px; }
         #editModal input, #editModal select { margin-bottom: 1rem; }
 
@@ -384,28 +390,30 @@
             </div>
         </div>
 
-        <!-- Formulario agregar (solo usable si autenticado) -->
-        <div class="card-form">
-            <h2>➕ Registrar nueva mercancía (almacén)</h2>
-            <form id="addProductForm" class="form-grid">
-                <input type="text" id="addName" placeholder="Nombre *" required>
-                <input type="text" id="addBrand" placeholder="Marca *" required>
-                <input type="text" id="addColor" placeholder="Color *" required>
-                <input type="text" id="addProductId" placeholder="ID producto *" required>
-                <input type="text" id="addSize" placeholder="Talla (opcional)">
-                <input type="number" id="addPrice" placeholder="Precio € *" step="0.01" required>
-                <select id="addCategory" required><option value="">— Categoría —</option></select>
-                <button type="submit" id="addProductBtn" disabled>Agregar a almacén</button>
-            </form>
-        </div>
-
         <!-- Paneles -->
         <div class="dashboard">
             <!-- Almacén (con blur inicial) -->
             <div class="panel blurred" id="warehousePanel">
-                <h3>📦 Almacén <span id="warehouseCount">0</span>
+                <h3>
+                    📦 Almacén <span id="warehouseCount">0</span>
+                    <button class="new-product-btn" id="showNewProductBtn" title="Agregar producto">➕ Nuevo</button>
                     <button class="search-toggle" id="toggleWarehouseSearch">🔍</button>
                 </h3>
+
+                <!-- Formulario de nuevo producto (oculto por defecto) -->
+                <div class="new-product-form" id="newProductForm">
+                    <input type="text" id="addName" placeholder="Nombre *" required>
+                    <input type="text" id="addBrand" placeholder="Marca *" required>
+                    <input type="text" id="addColor" placeholder="Color *" required>
+                    <input type="text" id="addProductId" placeholder="ID producto *" required>
+                    <input type="text" id="addSize" placeholder="Talla (opcional)">
+                    <input type="number" id="addPrice" placeholder="Precio € *" step="0.01" required>
+                    <select id="addCategory" required>
+                        <option value="">— Categoría —</option>
+                    </select>
+                    <button type="submit" id="addProductBtn" disabled>Agregar</button>
+                </div>
+
                 <div class="search-box" id="warehouseSearchBox">
                     <select id="whCatFilter"><option value="">Categoría</option></select>
                     <input type="text" id="whSizeFilter" placeholder="Talla">
@@ -442,7 +450,7 @@
                 </div>
             </div>
 
-            <!-- Vendidos (sin acciones) -->
+            <!-- Vendidos -->
             <div class="panel">
                 <h3>📋 Vendidos <span id="soldCount">0</span></h3>
                 <div class="scrollable">
@@ -484,7 +492,7 @@
         </div>
     </div>
 
-    <!-- Modal Edición (siempre presente) -->
+    <!-- Modal Edición -->
     <div id="editModal" class="modal">
         <div class="modal-content">
             <span class="close" id="closeEditModal" style="float:right; font-size:2rem; cursor:pointer;">&times;</span>
@@ -559,7 +567,7 @@
                 renderLogs();
             }
 
-            // ---------- NOTIFICACIONES (actualizar contenido, pero ocultas hasta clic) ----------
+            // ---------- NOTIFICACIONES ----------
             function updateNotifications() {
                 const catCount = {};
                 inventory.forEach(item => { catCount[item.category] = (catCount[item.category] || 0) + 1; });
@@ -704,7 +712,7 @@
                 renderInventory();
                 renderSold();
                 renderLogs();
-                updateNotifications();  // Esto actualiza el contenido aunque esté oculto
+                updateNotifications();
             }
 
             // ---------- AUTENTICACIÓN ----------
@@ -715,7 +723,7 @@
                     else panel.classList.add('blurred');
                 }
                 // Habilitar/deshabilitar botones globales
-                document.querySelectorAll('.btn-icon, .sell-selected-btn, #addProductBtn, #sellSelectedBtn, .inv-checkbox').forEach(el => {
+                document.querySelectorAll('.btn-icon, .sell-selected-btn, #addProductBtn, #sellSelectedBtn, .inv-checkbox, #showNewProductBtn').forEach(el => {
                     if (isAuthenticated) el.removeAttribute('disabled');
                     else el.setAttribute('disabled', 'disabled');
                 });
@@ -884,6 +892,12 @@
                     document.getElementById('editModal').style.display = 'none';
                 });
 
+                // Mostrar/ocultar formulario de nuevo producto
+                document.getElementById('showNewProductBtn').addEventListener('click', () => {
+                    const form = document.getElementById('newProductForm');
+                    form.classList.toggle('visible');
+                });
+
                 // Agregar producto
                 document.getElementById('addProductForm').addEventListener('submit', (e) => {
                     e.preventDefault();
@@ -906,6 +920,8 @@
                     addLog('AGREGADO a almacén', `${name} (ID: ${productId})`);
                     renderAll();
                     e.target.reset();
+                    // Ocultar el formulario después de agregar (opcional)
+                    document.getElementById('newProductForm').classList.remove('visible');
                 });
 
                 // Delegación de eventos para botones dentro de tablas
@@ -913,7 +929,7 @@
                     const target = e.target.closest('button');
                     if (!target) return;
                     
-                    if (!isAuthenticated && !target.closest('.modal') && target.id !== 'adminLoginBtn' && target.id !== 'openStatsBtn' && target.id !== 'notificationToggle') {
+                    if (!isAuthenticated && !target.closest('.modal') && target.id !== 'adminLoginBtn' && target.id !== 'openStatsBtn' && target.id !== 'notificationToggle' && target.id !== 'showNewProductBtn') {
                         alert('Debe iniciar sesión como administrador');
                         return;
                     }
@@ -1107,7 +1123,7 @@
             fillCategorySelects();
             initEventListeners();
             isAuthenticated = false;
-            actualizarUIporAuth(); // Esto también hace renderAll
+            actualizarUIporAuth();
         })();
     </script>
 </body>
