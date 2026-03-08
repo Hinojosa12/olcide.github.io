@@ -411,7 +411,7 @@
                     <select id="addCategory" required>
                         <option value="">— Categoría —</option>
                     </select>
-                    <button type="submit" id="addProductBtn" disabled>Agregar</button>
+                    <button type="button" id="addProductBtn" disabled>Agregar</button>
                 </div>
 
                 <div class="search-box" id="warehouseSearchBox">
@@ -845,6 +845,44 @@
                 });
             }
 
+            // ---------- FUNCIÓN PARA AGREGAR PRODUCTO ----------
+            function addNewProduct() {
+                if (!isAuthenticated) { alert('Debe iniciar sesión como administrador'); return; }
+                const name = document.getElementById('addName').value.trim();
+                const brand = document.getElementById('addBrand').value.trim();
+                const color = document.getElementById('addColor').value.trim();
+                const productId = document.getElementById('addProductId').value.trim();
+                const size = document.getElementById('addSize').value.trim() || '';
+                const price = parseFloat(document.getElementById('addPrice').value);
+                const category = document.getElementById('addCategory').value;
+                
+                if (!name || !brand || !color || !productId || isNaN(price) || !category) {
+                    alert('Por favor, complete todos los campos obligatorios');
+                    return;
+                }
+
+                const newItem = {
+                    internalId: Date.now() + '-' + Math.random().toString(36).substr(2, 6),
+                    productId, name, brand, color, size, price, category
+                };
+                warehouse.push(newItem);
+                saveToStorage();
+                addLog('AGREGADO a almacén', `${name} (ID: ${productId})`);
+                renderAll();
+                
+                // Limpiar el formulario
+                document.getElementById('addName').value = '';
+                document.getElementById('addBrand').value = '';
+                document.getElementById('addColor').value = '';
+                document.getElementById('addProductId').value = '';
+                document.getElementById('addSize').value = '';
+                document.getElementById('addPrice').value = '';
+                document.getElementById('addCategory').value = '';
+                
+                // Ocultar el formulario después de agregar
+                document.getElementById('newProductForm').classList.remove('visible');
+            }
+
             // ---------- EVENTOS ----------
             function initEventListeners() {
                 // Toggle notificaciones
@@ -898,37 +936,15 @@
                     form.classList.toggle('visible');
                 });
 
-                // Agregar producto
-                document.getElementById('addProductForm').addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    if (!isAuthenticated) { alert('Debe iniciar sesión como administrador'); return; }
-                    const name = document.getElementById('addName').value.trim();
-                    const brand = document.getElementById('addBrand').value.trim();
-                    const color = document.getElementById('addColor').value.trim();
-                    const productId = document.getElementById('addProductId').value.trim();
-                    const size = document.getElementById('addSize').value.trim() || '';
-                    const price = parseFloat(document.getElementById('addPrice').value);
-                    const category = document.getElementById('addCategory').value;
-                    if (!name || !brand || !color || !productId || isNaN(price) || !category) return;
-
-                    const newItem = {
-                        internalId: Date.now() + '-' + Math.random().toString(36).substr(2, 6),
-                        productId, name, brand, color, size, price, category
-                    };
-                    warehouse.push(newItem);
-                    saveToStorage();
-                    addLog('AGREGADO a almacén', `${name} (ID: ${productId})`);
-                    renderAll();
-                    e.target.reset();
-                    // Ocultar el formulario después de agregar (opcional)
-                    document.getElementById('newProductForm').classList.remove('visible');
-                });
+                // Botón Agregar producto
+                document.getElementById('addProductBtn').addEventListener('click', addNewProduct);
 
                 // Delegación de eventos para botones dentro de tablas
                 document.addEventListener('click', (e) => {
                     const target = e.target.closest('button');
                     if (!target) return;
                     
+                    // Permitir botones específicos sin autenticación
                     if (!isAuthenticated && !target.closest('.modal') && target.id !== 'adminLoginBtn' && target.id !== 'openStatsBtn' && target.id !== 'notificationToggle' && target.id !== 'showNewProductBtn') {
                         alert('Debe iniciar sesión como administrador');
                         return;
@@ -962,13 +978,11 @@
                 document.getElementById('payCash').addEventListener('click', () => completeSale('EFECTIVO'));
                 document.getElementById('payCard').addEventListener('click', () => completeSale('TARJETA'));
 
-                // Búsqueda
+                // Búsqueda en Almacén
                 document.getElementById('toggleWarehouseSearch').addEventListener('click', () => {
                     document.getElementById('warehouseSearchBox').classList.toggle('visible');
                 });
-                document.getElementById('toggleInventorySearch').addEventListener('click', () => {
-                    document.getElementById('inventorySearchBox').classList.toggle('visible');
-                });
+                
                 document.getElementById('applyWhSearch').addEventListener('click', () => {
                     whFilter.cat = document.getElementById('whCatFilter').value;
                     whFilter.size = document.getElementById('whSizeFilter').value;
@@ -976,6 +990,12 @@
                     whFilter.name = document.getElementById('whNameFilter').value;
                     renderWarehouse();
                 });
+
+                // Búsqueda en Inventario
+                document.getElementById('toggleInventorySearch').addEventListener('click', () => {
+                    document.getElementById('inventorySearchBox').classList.toggle('visible');
+                });
+                
                 document.getElementById('applyInvSearch').addEventListener('click', () => {
                     invFilter.cat = document.getElementById('invCatFilter').value;
                     invFilter.size = document.getElementById('invSizeFilter').value;
