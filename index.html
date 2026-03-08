@@ -22,7 +22,7 @@
             max-width: 1600px;
             margin: 0 auto;
         }
-        /* BARRA DE NOTIFICACIONES STICKY */
+        /* BARRA DE NOTIFICACIONES STICKY - solo icono visible por defecto */
         .notify-sticky {
             position: sticky;
             top: 0;
@@ -39,11 +39,22 @@
             box-shadow: 0 10px 20px -8px #0b253a;
             font-weight: 500;
         }
-        .notify-sticky span {
+        .notify-sticky .icon {
             background: #334155;
             padding: 0.3rem 1rem;
             border-radius: 40px;
             font-size: 0.9rem;
+            cursor: pointer;
+            user-select: none;
+        }
+        #notificationList {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            transition: opacity 0.2s;
+        }
+        .notify-sticky.collapsed #notificationList {
+            display: none;  /* Oculta las notificaciones */
         }
         .notify-item {
             background: #2d3b4f;
@@ -358,10 +369,10 @@
     </style>
 </head>
 <body>
-    <!-- BARRA DE NOTIFICACIONES STICKY (se actualiza dinámicamente) -->
-    <div class="notify-sticky" id="notificationBar">
-        <span>🔔 Alertas de stock</span>
-        <div id="notificationList" style="display: flex; flex-wrap: wrap; gap: 0.5rem;"></div>
+    <!-- BARRA DE NOTIFICACIONES STICKY (colapsada por defecto) -->
+    <div class="notify-sticky collapsed" id="notificationBar">
+        <span class="icon" id="notificationToggle">🔔 Alertas</span>
+        <div id="notificationList"></div>
     </div>
 
     <div class="container">
@@ -548,7 +559,7 @@
                 renderLogs();
             }
 
-            // ---------- NOTIFICACIONES ----------
+            // ---------- NOTIFICACIONES (actualizar contenido, pero ocultas hasta clic) ----------
             function updateNotifications() {
                 const catCount = {};
                 inventory.forEach(item => { catCount[item.category] = (catCount[item.category] || 0) + 1; });
@@ -693,7 +704,7 @@
                 renderInventory();
                 renderSold();
                 renderLogs();
-                updateNotifications();
+                updateNotifications();  // Esto actualiza el contenido aunque esté oculto
             }
 
             // ---------- AUTENTICACIÓN ----------
@@ -708,7 +719,6 @@
                     if (isAuthenticated) el.removeAttribute('disabled');
                     else el.setAttribute('disabled', 'disabled');
                 });
-                // Re-render para actualizar estado de botones en tablas (por si acaso)
                 renderAll();
             }
 
@@ -829,6 +839,11 @@
 
             // ---------- EVENTOS ----------
             function initEventListeners() {
+                // Toggle notificaciones
+                document.getElementById('notificationToggle').addEventListener('click', () => {
+                    document.getElementById('notificationBar').classList.toggle('collapsed');
+                });
+
                 // Login
                 document.getElementById('adminLoginBtn').addEventListener('click', () => {
                     document.getElementById('loginModal').style.display = 'flex';
@@ -898,8 +913,7 @@
                     const target = e.target.closest('button');
                     if (!target) return;
                     
-                    // Si no está autenticado y no es un botón de login o modal, bloquear
-                    if (!isAuthenticated && !target.closest('.modal') && target.id !== 'adminLoginBtn' && target.id !== 'openStatsBtn') {
+                    if (!isAuthenticated && !target.closest('.modal') && target.id !== 'adminLoginBtn' && target.id !== 'openStatsBtn' && target.id !== 'notificationToggle') {
                         alert('Debe iniciar sesión como administrador');
                         return;
                     }
