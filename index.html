@@ -348,6 +348,10 @@
             cursor: pointer;
         }
 
+        /* Modal edición (mismo estilo que login) */
+        #editModal .modal-content { max-width: 450px; }
+        #editModal input, #editModal select { margin-bottom: 1rem; }
+
         @media (max-width: 1000px) {
             .dashboard { grid-template-columns: 1fr; }
         }
@@ -469,18 +473,38 @@
         </div>
     </div>
 
+    <!-- Modal Edición (siempre presente) -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeEditModal" style="float:right; font-size:2rem; cursor:pointer;">&times;</span>
+            <h3>✎ Editar producto</h3>
+            <form id="editForm">
+                <input type="hidden" id="editInternalId">
+                <input type="hidden" id="editType">
+                <input type="text" id="editName" placeholder="Nombre" required>
+                <input type="text" id="editBrand" placeholder="Marca" required>
+                <input type="text" id="editColor" placeholder="Color" required>
+                <input type="text" id="editProductId" placeholder="ID producto" required>
+                <input type="text" id="editSize" placeholder="Talla">
+                <input type="number" id="editPrice" placeholder="Precio" step="0.01" required>
+                <select id="editCategory" required></select>
+                <button type="submit">Guardar cambios</button>
+            </form>
+        </div>
+    </div>
+
     <script>
         (function() {
             // ---------- CONSTANTES ----------
             const AUTH_USER = 'Clarence';
             const AUTH_PASS = 'Clarense';
-            let isAuthenticated = false;  // controla blur y enabled
-
+            
             const menCats = ["T-shirts (Men)","Jeans (Men)","Shorts (Men)","Shirts (Men)","Suits (Men)","Blazers (Men)","Taes (Men)","Pants (Men)","Shoes (Men)","Snickers (Men)","Boxers (Men)","Socks (Men)","Belts (Men)","Watches (Men)","Wallets (Men)","Sandals (Men)","Back Pack (Men)"];
             const womenCats = ["Fancy Dress (Women)","Casual Dress (Women)","Skirt (Women)","T-shirts (Women)","Jeans (Women)","Shorts (Women)","Shirts (Women)","Suits (Women)","Blazers (Women)","Taes (Women)","Pants (Women)","Shoes (Women)","Snickers (Women)","Sandals (Women)","Bras (Women)","Panties (Women)","Jewels (Women)","Purses (Women)","Back pack (Women)","Sunglasses (Women)","Hat (Women)","Makeups (Women)","Skincares (Women)"];
             const ALL_CATEGORIES = [...menCats, ...womenCats];
 
             // ---------- ESTADO ----------
+            let isAuthenticated = false;
             let warehouse = [];
             let inventory = [];
             let sold = [];
@@ -489,10 +513,9 @@
             // Filtros
             let whFilter = { cat: '', size: '', brand: '', name: '' };
             let invFilter = { cat: '', size: '', brand: '', name: '' };
-
             let pendingSaleIds = [];
 
-            // Persistencia
+            // Claves localStorage
             const STORAGE_KEYS = {
                 warehouse: 'clarance_warehouse',
                 inventory: 'clarance_inventory',
@@ -500,6 +523,7 @@
                 logs: 'clarance_logs'
             };
 
+            // ---------- FUNCIONES DE PERSISTENCIA ----------
             function loadFromStorage() {
                 try {
                     warehouse = JSON.parse(localStorage.getItem(STORAGE_KEYS.warehouse)) || [];
@@ -515,7 +539,7 @@
                 localStorage.setItem(STORAGE_KEYS.logs, JSON.stringify(logs));
             }
 
-            // Logs
+            // ---------- LOGS ----------
             function addLog(action, details) {
                 const timestamp = new Date().toLocaleString('es-ES', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit' });
                 logs.unshift({ timestamp, action, details });
@@ -524,11 +548,11 @@
                 renderLogs();
             }
 
-            // Notificaciones: actualizar barra sticky
+            // ---------- NOTIFICACIONES ----------
             function updateNotifications() {
                 const catCount = {};
                 inventory.forEach(item => { catCount[item.category] = (catCount[item.category] || 0) + 1; });
-                const notifMap = new Map(); // categoría -> { count, status }
+                const notifMap = new Map();
                 ALL_CATEGORIES.forEach(cat => {
                     const count = catCount[cat] || 0;
                     if (count <= 5) {
@@ -550,7 +574,7 @@
                 }
             }
 
-            // Render (con filtros)
+            // ---------- FILTROS ----------
             function filterWarehouse() {
                 return warehouse.filter(item => 
                     (!whFilter.cat || item.category === whFilter.cat) &&
@@ -566,6 +590,18 @@
                     (!invFilter.brand || item.brand.toLowerCase().includes(invFilter.brand.toLowerCase())) &&
                     (!invFilter.name || item.name.toLowerCase().includes(invFilter.name.toLowerCase()))
                 );
+            }
+
+            // ---------- RENDERIZADO ----------
+            function escapeHtml(unsafe) {
+                if (!unsafe) return '';
+                return String(unsafe).replace(/[&<>"]/g, c => {
+                    if (c === '&') return '&amp;';
+                    if (c === '<') return '&lt;';
+                    if (c === '>') return '&gt;';
+                    if (c === '"') return '&quot;';
+                    return c;
+                });
             }
 
             function renderWarehouse() {
@@ -638,7 +674,7 @@
                         <td>${escapeHtml(item.size || '—')}</td>
                         <td>${item.price} €</td>
                         <td><span class="badge-cat">${escapeHtml(item.category)}</span></td>
-                    `;  // sin botones
+                    `;
                     tbody.appendChild(tr);
                 });
                 countSpan.textContent = sold.length;
@@ -660,110 +696,26 @@
                 updateNotifications();
             }
 
-            function escapeHtml(unsafe) {
-                if (!unsafe) return '';
-                return String(unsafe).replace(/[&<>"]/g, c => {
-                    if (c === '&') return '&amp;'; if (c === '<') return '&lt;'; if (c === '>') return '&gt;'; if (c === '"') return '&quot;';
-                    return c;
-                });
-            }
-
-            // Autenticación: quitar blur y habilitar botones
-            function setAuth(state) {
-                isAuthenticated = state;
+            // ---------- AUTENTICACIÓN ----------
+            function actualizarUIporAuth() {
                 const panel = document.getElementById('warehousePanel');
                 if (panel) {
-                    if (state) panel.classList.remove('blurred');
+                    if (isAuthenticated) panel.classList.remove('blurred');
                     else panel.classList.add('blurred');
                 }
                 // Habilitar/deshabilitar botones globales
                 document.querySelectorAll('.btn-icon, .sell-selected-btn, #addProductBtn, #sellSelectedBtn, .inv-checkbox').forEach(el => {
-                    if (state) el.removeAttribute('disabled');
+                    if (isAuthenticated) el.removeAttribute('disabled');
                     else el.setAttribute('disabled', 'disabled');
                 });
-                // El formulario de agregar también
-                document.getElementById('addProductBtn').disabled = !state;
+                // Re-render para actualizar estado de botones en tablas (por si acaso)
                 renderAll();
             }
 
-            // Login modal
-            const loginModal = document.getElementById('loginModal');
-            document.getElementById('adminLoginBtn').addEventListener('click', () => {
-                loginModal.style.display = 'flex';
-            });
-            document.getElementById('loginSubmit').addEventListener('click', () => {
-                const user = document.getElementById('loginUser').value.trim();
-                const pass = document.getElementById('loginPass').value.trim();
-                if (user === AUTH_USER && pass === AUTH_PASS) {
-                    setAuth(true);
-                    loginModal.style.display = 'none';
-                    document.getElementById('loginError').textContent = '';
-                } else {
-                    document.getElementById('loginError').textContent = 'Credenciales incorrectas';
-                }
-            });
-            // Cerrar modal haciendo clic fuera
-            window.addEventListener('click', (e) => {
-                if (e.target === loginModal) loginModal.style.display = 'none';
-            });
-
-            // Agregar producto (solo si autenticado)
-            document.getElementById('addProductForm').addEventListener('submit', (e) => {
-                e.preventDefault();
-                if (!isAuthenticated) { alert('Debe iniciar sesión como administrador'); return; }
-                const name = document.getElementById('addName').value.trim();
-                const brand = document.getElementById('addBrand').value.trim();
-                const color = document.getElementById('addColor').value.trim();
-                const productId = document.getElementById('addProductId').value.trim();
-                const size = document.getElementById('addSize').value.trim() || '';
-                const price = parseFloat(document.getElementById('addPrice').value);
-                const category = document.getElementById('addCategory').value;
-                if (!name || !brand || !color || !productId || isNaN(price) || !category) return;
-
-                const newItem = {
-                    internalId: Date.now() + '-' + Math.random().toString(36).substr(2, 6),
-                    productId, name, brand, color, size, price, category
-                };
-                warehouse.push(newItem);
-                saveToStorage();
-                addLog('AGREGADO a almacén', `${name} (ID: ${productId})`);
-                renderAll();
-                e.target.reset();
-            });
-
-            // Acciones (delegación)
-            document.addEventListener('click', (e) => {
-                const target = e.target.closest('button');
-                if (!target) return;
-                if (!isAuthenticated && !target.classList.contains('admin-badge') && !target.closest('.modal')) {
-                    alert('Debe iniciar sesión como administrador');
-                    return;
-                }
-                const type = target.dataset.type;
-                const id = target.dataset.id;
-
-                if (target.classList.contains('delete') && type && id) {
-                    deleteItem(type, id);
-                } else if (target.classList.contains('send') && type === 'warehouse' && id) {
-                    moveToInventory(id);
-                } else if (target.classList.contains('sell') && type === 'inventory' && id) {
-                    openPaymentModal([id]);
-                } else if (target.classList.contains('edit') && type && id) {
-                    openEditModal(id, type);
-                }
-            });
-
-            // Venta seleccionados
-            document.getElementById('sellSelectedBtn').addEventListener('click', () => {
-                if (!isAuthenticated) return alert('Autenticación requerida');
-                const checkboxes = document.querySelectorAll('#inventoryBody .inv-checkbox:checked');
-                const ids = Array.from(checkboxes).map(cb => cb.value);
-                if (ids.length) openPaymentModal(ids);
-            });
-
-            // Funciones de negocio
+            // ---------- ACCIONES CRUD ----------
             function deleteItem(type, internalId) {
                 if (!isAuthenticated) return;
+                if (!confirm('¿Estás seguro de eliminar este producto?')) return;
                 let item = null;
                 if (type === 'warehouse') {
                     const idx = warehouse.findIndex(i => i.internalId === internalId);
@@ -790,7 +742,7 @@
                 renderAll();
             }
 
-            // Pago
+            // ---------- VENTAS ----------
             function openPaymentModal(ids) {
                 if (!ids.length) return;
                 pendingSaleIds = ids;
@@ -805,7 +757,6 @@
                     if (idx !== -1) itemsToSell.push(...inventory.splice(idx, 1));
                 });
                 if (!itemsToSell.length) return;
-                // Añadir timestamp de venta a cada item
                 const now = new Date();
                 itemsToSell.forEach(item => item.soldAt = now.toISOString());
                 sold.push(...itemsToSell);
@@ -820,7 +771,7 @@
 
             function generarFactura(items, method) {
                 const win = window.open('', '_blank');
-                if (!win) { alert('Permite ventanas emergentes'); return; }
+                if (!win) { alert('Permite ventanas emergentes para ver la factura'); return; }
                 const total = items.reduce((acc, i) => acc + i.price, 0).toFixed(2);
                 const fecha = new Date().toLocaleString();
                 const invoiceId = 'INV-' + Date.now();
@@ -828,6 +779,7 @@
                     <html><head><title>Factura Clarance</title><style>
                         body { font-family: Inter, sans-serif; padding: 2rem; }
                         .metodo { background:#eaf2f9; padding:0.8rem; border-radius:60px; display:inline-block; }
+                        button { margin-top:1rem; padding:0.8rem 2rem; border-radius:40px; background:#0b253a; color:white; border:none; cursor:pointer; }
                     </style></head><body>
                     <h1>CLARANCE · FACTURA</h1>
                     <p>Nº: ${invoiceId}</p>
@@ -838,80 +790,15 @@
                         ${items.map(i => `<tr><td>${i.productId}</td><td>${i.name}</td><td>${i.brand}</td><td>${i.color}</td><td>${i.size || '—'}</td><td>${i.price} €</td></tr>`).join('')}
                     </table>
                     <h3>TOTAL: ${total} €</h3>
-                    <button onclick="window.print()">🖨 Imprimir</button>
-                    <script>window.print();<\/script>
+                    <button onclick="window.print()">🖨 Imprimir factura</button>
+                    <p><small>Gracias por su compra</small></p>
                     </body></html>
                 `);
                 win.document.close();
             }
 
-            // Búsqueda con lupa
-            document.getElementById('toggleWarehouseSearch').addEventListener('click', () => {
-                document.getElementById('warehouseSearchBox').classList.toggle('visible');
-            });
-            document.getElementById('toggleInventorySearch').addEventListener('click', () => {
-                document.getElementById('inventorySearchBox').classList.toggle('visible');
-            });
-            document.getElementById('applyWhSearch').addEventListener('click', () => {
-                whFilter.cat = document.getElementById('whCatFilter').value;
-                whFilter.size = document.getElementById('whSizeFilter').value;
-                whFilter.brand = document.getElementById('whBrandFilter').value;
-                whFilter.name = document.getElementById('whNameFilter').value;
-                renderWarehouse();
-            });
-            document.getElementById('applyInvSearch').addEventListener('click', () => {
-                invFilter.cat = document.getElementById('invCatFilter').value;
-                invFilter.size = document.getElementById('invSizeFilter').value;
-                invFilter.brand = document.getElementById('invBrandFilter').value;
-                invFilter.name = document.getElementById('invNameFilter').value;
-                renderInventory();
-            });
-
-            // Rellenar selects de categorías
-            function fillCategorySelects() {
-                const selects = ['addCategory', 'whCatFilter', 'invCatFilter', 'editCategory'];
-                selects.forEach(id => {
-                    const sel = document.getElementById(id);
-                    if (sel) {
-                        sel.innerHTML = '<option value="">— Categoría —</option>' + ALL_CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('');
-                    }
-                });
-            }
-            fillCategorySelects();
-
-            // Modal de edición (simplificado, existente)
-            const editModal = document.getElementById('editModal');
-            if (!editModal) {
-                // Crear modal de edición si no existe (lo agregamos al final del body)
-                const modalHTML = `
-                <div id="editModal" class="modal">
-                    <div class="modal-content">
-                        <span class="close" id="closeEditModal">&times;</span>
-                        <h3>✎ Editar producto</h3>
-                        <form id="editForm">
-                            <input type="hidden" id="editInternalId">
-                            <input type="hidden" id="editType">
-                            <input type="text" id="editName" placeholder="Nombre" required>
-                            <input type="text" id="editBrand" placeholder="Marca" required>
-                            <input type="text" id="editColor" placeholder="Color" required>
-                            <input type="text" id="editProductId" placeholder="ID producto" required>
-                            <input type="text" id="editSize" placeholder="Talla">
-                            <input type="number" id="editPrice" placeholder="Precio" step="0.01" required>
-                            <select id="editCategory" required></select>
-                            <button type="submit">Guardar cambios</button>
-                        </form>
-                    </div>
-                </div>`;
-                document.body.insertAdjacentHTML('beforeend', modalHTML);
-                fillCategorySelects(); // rellenar el nuevo select
-            }
-
-            // Configurar modal de edición
-            const closeEdit = document.getElementById('closeEditModal');
-            if (closeEdit) {
-                closeEdit.onclick = () => document.getElementById('editModal').style.display = 'none';
-            }
-            window.openEditModal = function(internalId, type) {
+            // ---------- EDICIÓN ----------
+            function openEditModal(internalId, type) {
                 if (!isAuthenticated) return alert('Autenticación requerida');
                 let item = null;
                 if (type === 'warehouse') item = warehouse.find(i => i.internalId === internalId);
@@ -927,154 +814,286 @@
                 document.getElementById('editPrice').value = item.price;
                 document.getElementById('editCategory').value = item.category;
                 document.getElementById('editModal').style.display = 'flex';
-            };
+            }
 
-            document.getElementById('editForm')?.addEventListener('submit', (e) => {
-                e.preventDefault();
-                if (!isAuthenticated) return;
-                const internalId = document.getElementById('editInternalId').value;
-                const type = document.getElementById('editType').value;
-                const name = document.getElementById('editName').value.trim();
-                const brand = document.getElementById('editBrand').value.trim();
-                const color = document.getElementById('editColor').value.trim();
-                const productId = document.getElementById('editProductId').value.trim();
-                const size = document.getElementById('editSize').value.trim();
-                const price = parseFloat(document.getElementById('editPrice').value);
-                const category = document.getElementById('editCategory').value;
-
-                let item = null;
-                if (type === 'warehouse') item = warehouse.find(i => i.internalId === internalId);
-                else if (type === 'inventory') item = inventory.find(i => i.internalId === internalId);
-                if (!item) return;
-
-                const oldDesc = `${item.name} (${item.productId})`;
-                item.name = name; item.brand = brand; item.color = color; item.productId = productId; item.size = size; item.price = price; item.category = category;
-                saveToStorage();
-                addLog('EDITADO', `${oldDesc} → ${name} (${productId}) en ${type}`);
-                renderAll();
-                document.getElementById('editModal').style.display = 'none';
-            });
-
-            // Pago modales
-            document.getElementById('payCash').addEventListener('click', () => completeSale('EFECTIVO'));
-            document.getElementById('payCard').addEventListener('click', () => completeSale('TARJETA'));
-            document.getElementById('closePaymentModal').addEventListener('click', () => {
-                document.getElementById('paymentModal').style.display = 'none';
-                pendingSaleIds = [];
-            });
-
-            // Estadísticas con datos reales
-            document.getElementById('openStatsBtn').addEventListener('click', () => {
-                const win = window.open('', '_blank');
-                if (!win) { alert('Permite ventanas emergentes'); return; }
-                // Procesar datos reales de ventas (sold)
-                const now = new Date();
-                const oneDay = 24*60*60*1000;
-                const oneWeek = 7*oneDay;
-                const oneMonth = 30*oneDay; // aproximado
-                const oneYear = 365*oneDay;
-
-                function filterByPeriod(items, period) {
-                    const cutoff = new Date(now.getTime() - period);
-                    return items.filter(item => item.soldAt && new Date(item.soldAt) >= cutoff);
-                }
-
-                const dailySold = filterByPeriod(sold, oneDay);
-                const weeklySold = filterByPeriod(sold, oneWeek);
-                const monthlySold = filterByPeriod(sold, oneMonth);
-                const yearlySold = filterByPeriod(sold, oneYear);
-
-                // Agrupar por categoría
-                function groupByCat(items) {
-                    const map = new Map();
-                    items.forEach(item => {
-                        map.set(item.category, (map.get(item.category) || 0) + 1);
-                    });
-                    return map;
-                }
-
-                const dailyCat = groupByCat(dailySold);
-                const weeklyCat = groupByCat(weeklySold);
-                const monthlyCat = groupByCat(monthlySold);
-                const yearlyCat = groupByCat(yearlySold);
-
-                // Horas y días con más ventas (usar todas las ventas con fecha)
-                const hourCount = new Array(24).fill(0);
-                const dayCount = new Array(7).fill(0);
-                sold.forEach(item => {
-                    if (item.soldAt) {
-                        const d = new Date(item.soldAt);
-                        hourCount[d.getHours()]++;
-                        dayCount[d.getDay()]++; // 0 domingo, etc.
+            // ---------- INICIALIZACIÓN DE SELECTORES DE CATEGORÍA ----------
+            function fillCategorySelects() {
+                const selects = ['addCategory', 'whCatFilter', 'invCatFilter', 'editCategory'];
+                selects.forEach(id => {
+                    const sel = document.getElementById(id);
+                    if (sel) {
+                        sel.innerHTML = '<option value="">— Categoría —</option>' + ALL_CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('');
                     }
                 });
-                const maxHour = hourCount.indexOf(Math.max(...hourCount));
-                const maxDayIndex = dayCount.indexOf(Math.max(...dayCount));
-                const days = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
-                const maxDay = days[maxDayIndex];
+            }
 
-                win.document.write(`
-                    <html><head><title>Clarance - Estadísticas reales</title>
-                    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"><\/script>
-                    <style>
-                        body { font-family: Inter, sans-serif; padding:2rem; background:#f4f6fa; }
-                        .card { background:white; border-radius:38px; padding:2rem; margin:2rem 0; }
-                        .chart-box { max-width:600px; margin:auto; }
-                        h1 { color:#0b253a; }
-                    </style></head><body>
-                    <h1>📊 Estadísticas de ventas reales - Clarance</h1>
-                    <div class="card">
-                        <h2>Ventas por categoría (último día)</h2>
-                        <div class="chart-box"><canvas id="chartDay"></canvas></div>
-                    </div>
-                    <div class="card">
-                        <h2>Ventas por categoría (última semana)</h2>
-                        <div class="chart-box"><canvas id="chartWeek"></canvas></div>
-                    </div>
-                    <div class="card">
-                        <h2>Ventas por categoría (último mes)</h2>
-                        <div class="chart-box"><canvas id="chartMonth"></canvas></div>
-                    </div>
-                    <div class="card">
-                        <h2>Ventas por categoría (último año)</h2>
-                        <div class="chart-box"><canvas id="chartYear"></canvas></div>
-                    </div>
-                    <div class="card">
-                        <h2>Horas con más ventas</h2>
-                        <p>La hora con más ventas es las <strong>${maxHour}:00</strong> (${Math.max(...hourCount)} ventas)</p>
-                        <p>El día con más ventas es el <strong>${maxDay}</strong> (${Math.max(...dayCount)} ventas)</p>
-                    </div>
-                    <script>
-                        const ctxDay = document.getElementById('chartDay').getContext('2d');
-                        new Chart(ctxDay, { type: 'bar', data: {
-                            labels: ${JSON.stringify(Array.from(dailyCat.keys()))},
-                            datasets: [{ label: 'Unidades', data: ${JSON.stringify(Array.from(dailyCat.values()))} }]
-                        }});
-                        const ctxWeek = document.getElementById('chartWeek').getContext('2d');
-                        new Chart(ctxWeek, { type: 'bar', data: {
-                            labels: ${JSON.stringify(Array.from(weeklyCat.keys()))},
-                            datasets: [{ label: 'Unidades', data: ${JSON.stringify(Array.from(weeklyCat.values()))} }]
-                        }});
-                        const ctxMonth = document.getElementById('chartMonth').getContext('2d');
-                        new Chart(ctxMonth, { type: 'bar', data: {
-                            labels: ${JSON.stringify(Array.from(monthlyCat.keys()))},
-                            datasets: [{ label: 'Unidades', data: ${JSON.stringify(Array.from(monthlyCat.values()))} }]
-                        }});
-                        const ctxYear = document.getElementById('chartYear').getContext('2d');
-                        new Chart(ctxYear, { type: 'bar', data: {
-                            labels: ${JSON.stringify(Array.from(yearlyCat.keys()))},
-                            datasets: [{ label: 'Unidades', data: ${JSON.stringify(Array.from(yearlyCat.values()))} }]
-                        }});
-                    <\/script>
-                    </body></html>
-                `);
-                win.document.close();
-            });
+            // ---------- EVENTOS ----------
+            function initEventListeners() {
+                // Login
+                document.getElementById('adminLoginBtn').addEventListener('click', () => {
+                    document.getElementById('loginModal').style.display = 'flex';
+                });
+                document.getElementById('loginSubmit').addEventListener('click', () => {
+                    const user = document.getElementById('loginUser').value.trim();
+                    const pass = document.getElementById('loginPass').value.trim();
+                    if (user === AUTH_USER && pass === AUTH_PASS) {
+                        isAuthenticated = true;
+                        actualizarUIporAuth();
+                        document.getElementById('loginModal').style.display = 'none';
+                        document.getElementById('loginError').textContent = '';
+                    } else {
+                        document.getElementById('loginError').textContent = 'Credenciales incorrectas';
+                    }
+                });
 
-            // Inicializar
+                // Cerrar modales al hacer clic fuera
+                window.addEventListener('click', (e) => {
+                    if (e.target === document.getElementById('loginModal')) {
+                        document.getElementById('loginModal').style.display = 'none';
+                    }
+                    if (e.target === document.getElementById('paymentModal')) {
+                        document.getElementById('paymentModal').style.display = 'none';
+                        pendingSaleIds = [];
+                    }
+                    if (e.target === document.getElementById('editModal')) {
+                        document.getElementById('editModal').style.display = 'none';
+                    }
+                });
+
+                // Botones de cierre de modales
+                document.getElementById('closePaymentModal').addEventListener('click', () => {
+                    document.getElementById('paymentModal').style.display = 'none';
+                    pendingSaleIds = [];
+                });
+                document.getElementById('closeEditModal').addEventListener('click', () => {
+                    document.getElementById('editModal').style.display = 'none';
+                });
+
+                // Agregar producto
+                document.getElementById('addProductForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    if (!isAuthenticated) { alert('Debe iniciar sesión como administrador'); return; }
+                    const name = document.getElementById('addName').value.trim();
+                    const brand = document.getElementById('addBrand').value.trim();
+                    const color = document.getElementById('addColor').value.trim();
+                    const productId = document.getElementById('addProductId').value.trim();
+                    const size = document.getElementById('addSize').value.trim() || '';
+                    const price = parseFloat(document.getElementById('addPrice').value);
+                    const category = document.getElementById('addCategory').value;
+                    if (!name || !brand || !color || !productId || isNaN(price) || !category) return;
+
+                    const newItem = {
+                        internalId: Date.now() + '-' + Math.random().toString(36).substr(2, 6),
+                        productId, name, brand, color, size, price, category
+                    };
+                    warehouse.push(newItem);
+                    saveToStorage();
+                    addLog('AGREGADO a almacén', `${name} (ID: ${productId})`);
+                    renderAll();
+                    e.target.reset();
+                });
+
+                // Delegación de eventos para botones dentro de tablas
+                document.addEventListener('click', (e) => {
+                    const target = e.target.closest('button');
+                    if (!target) return;
+                    
+                    // Si no está autenticado y no es un botón de login o modal, bloquear
+                    if (!isAuthenticated && !target.closest('.modal') && target.id !== 'adminLoginBtn' && target.id !== 'openStatsBtn') {
+                        alert('Debe iniciar sesión como administrador');
+                        return;
+                    }
+
+                    const type = target.dataset.type;
+                    const id = target.dataset.id;
+
+                    if (target.classList.contains('delete') && type && id) {
+                        deleteItem(type, id);
+                    } else if (target.classList.contains('send') && type === 'warehouse' && id) {
+                        moveToInventory(id);
+                    } else if (target.classList.contains('sell') && type === 'inventory' && id) {
+                        if (confirm('¿Vender este artículo?')) openPaymentModal([id]);
+                    } else if (target.classList.contains('edit') && type && id) {
+                        openEditModal(id, type);
+                    }
+                });
+
+                // Vender seleccionados
+                document.getElementById('sellSelectedBtn').addEventListener('click', () => {
+                    if (!isAuthenticated) return alert('Autenticación requerida');
+                    const checkboxes = document.querySelectorAll('#inventoryBody .inv-checkbox:checked');
+                    const ids = Array.from(checkboxes).map(cb => cb.value);
+                    if (ids.length && confirm(`¿Vender ${ids.length} artículo(s)?`)) {
+                        openPaymentModal(ids);
+                    }
+                });
+
+                // Pago
+                document.getElementById('payCash').addEventListener('click', () => completeSale('EFECTIVO'));
+                document.getElementById('payCard').addEventListener('click', () => completeSale('TARJETA'));
+
+                // Búsqueda
+                document.getElementById('toggleWarehouseSearch').addEventListener('click', () => {
+                    document.getElementById('warehouseSearchBox').classList.toggle('visible');
+                });
+                document.getElementById('toggleInventorySearch').addEventListener('click', () => {
+                    document.getElementById('inventorySearchBox').classList.toggle('visible');
+                });
+                document.getElementById('applyWhSearch').addEventListener('click', () => {
+                    whFilter.cat = document.getElementById('whCatFilter').value;
+                    whFilter.size = document.getElementById('whSizeFilter').value;
+                    whFilter.brand = document.getElementById('whBrandFilter').value;
+                    whFilter.name = document.getElementById('whNameFilter').value;
+                    renderWarehouse();
+                });
+                document.getElementById('applyInvSearch').addEventListener('click', () => {
+                    invFilter.cat = document.getElementById('invCatFilter').value;
+                    invFilter.size = document.getElementById('invSizeFilter').value;
+                    invFilter.brand = document.getElementById('invBrandFilter').value;
+                    invFilter.name = document.getElementById('invNameFilter').value;
+                    renderInventory();
+                });
+
+                // Edición
+                document.getElementById('editForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    if (!isAuthenticated) return;
+                    const internalId = document.getElementById('editInternalId').value;
+                    const type = document.getElementById('editType').value;
+                    const name = document.getElementById('editName').value.trim();
+                    const brand = document.getElementById('editBrand').value.trim();
+                    const color = document.getElementById('editColor').value.trim();
+                    const productId = document.getElementById('editProductId').value.trim();
+                    const size = document.getElementById('editSize').value.trim();
+                    const price = parseFloat(document.getElementById('editPrice').value);
+                    const category = document.getElementById('editCategory').value;
+
+                    let item = null;
+                    if (type === 'warehouse') item = warehouse.find(i => i.internalId === internalId);
+                    else if (type === 'inventory') item = inventory.find(i => i.internalId === internalId);
+                    if (!item) return;
+
+                    const oldDesc = `${item.name} (${item.productId})`;
+                    item.name = name; item.brand = brand; item.color = color; item.productId = productId; item.size = size; item.price = price; item.category = category;
+                    saveToStorage();
+                    addLog('EDITADO', `${oldDesc} → ${name} (${productId}) en ${type}`);
+                    renderAll();
+                    document.getElementById('editModal').style.display = 'none';
+                });
+
+                // Estadísticas
+                document.getElementById('openStatsBtn').addEventListener('click', () => {
+                    const win = window.open('', '_blank');
+                    if (!win) { alert('Permite ventanas emergentes'); return; }
+                    
+                    const now = new Date();
+                    const oneDay = 24*60*60*1000;
+                    const oneWeek = 7*oneDay;
+                    const oneMonth = 30*oneDay;
+                    const oneYear = 365*oneDay;
+
+                    function filterByPeriod(items, period) {
+                        const cutoff = new Date(now.getTime() - period);
+                        return items.filter(item => item.soldAt && new Date(item.soldAt) >= cutoff);
+                    }
+
+                    const dailySold = filterByPeriod(sold, oneDay);
+                    const weeklySold = filterByPeriod(sold, oneWeek);
+                    const monthlySold = filterByPeriod(sold, oneMonth);
+                    const yearlySold = filterByPeriod(sold, oneYear);
+
+                    function groupByCat(items) {
+                        const map = new Map();
+                        items.forEach(item => {
+                            map.set(item.category, (map.get(item.category) || 0) + 1);
+                        });
+                        return map;
+                    }
+
+                    const dailyCat = groupByCat(dailySold);
+                    const weeklyCat = groupByCat(weeklySold);
+                    const monthlyCat = groupByCat(monthlySold);
+                    const yearlyCat = groupByCat(yearlySold);
+
+                    const hourCount = new Array(24).fill(0);
+                    const dayCount = new Array(7).fill(0);
+                    sold.forEach(item => {
+                        if (item.soldAt) {
+                            const d = new Date(item.soldAt);
+                            hourCount[d.getHours()]++;
+                            dayCount[d.getDay()]++;
+                        }
+                    });
+                    const maxHour = hourCount.indexOf(Math.max(...hourCount));
+                    const maxDayIndex = dayCount.indexOf(Math.max(...dayCount));
+                    const days = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+                    const maxDay = days[maxDayIndex];
+
+                    win.document.write(`
+                        <html><head><title>Clarance - Estadísticas reales</title>
+                        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"><\/script>
+                        <style>
+                            body { font-family: Inter, sans-serif; padding:2rem; background:#f4f6fa; }
+                            .card { background:white; border-radius:38px; padding:2rem; margin:2rem 0; }
+                            .chart-box { max-width:600px; margin:auto; }
+                            h1 { color:#0b253a; }
+                        </style></head><body>
+                        <h1>📊 Estadísticas de ventas reales - Clarance</h1>
+                        <div class="card">
+                            <h2>Ventas por categoría (último día)</h2>
+                            <div class="chart-box"><canvas id="chartDay"></canvas></div>
+                        </div>
+                        <div class="card">
+                            <h2>Ventas por categoría (última semana)</h2>
+                            <div class="chart-box"><canvas id="chartWeek"></canvas></div>
+                        </div>
+                        <div class="card">
+                            <h2>Ventas por categoría (último mes)</h2>
+                            <div class="chart-box"><canvas id="chartMonth"></canvas></div>
+                        </div>
+                        <div class="card">
+                            <h2>Ventas por categoría (último año)</h2>
+                            <div class="chart-box"><canvas id="chartYear"></canvas></div>
+                        </div>
+                        <div class="card">
+                            <h2>Horas con más ventas</h2>
+                            <p>La hora con más ventas es las <strong>${maxHour}:00</strong> (${Math.max(...hourCount)} ventas)</p>
+                            <p>El día con más ventas es el <strong>${maxDay}</strong> (${Math.max(...dayCount)} ventas)</p>
+                        </div>
+                        <script>
+                            const ctxDay = document.getElementById('chartDay').getContext('2d');
+                            new Chart(ctxDay, { type: 'bar', data: {
+                                labels: ${JSON.stringify(Array.from(dailyCat.keys()))},
+                                datasets: [{ label: 'Unidades', data: ${JSON.stringify(Array.from(dailyCat.values()))} }]
+                            }});
+                            const ctxWeek = document.getElementById('chartWeek').getContext('2d');
+                            new Chart(ctxWeek, { type: 'bar', data: {
+                                labels: ${JSON.stringify(Array.from(weeklyCat.keys()))},
+                                datasets: [{ label: 'Unidades', data: ${JSON.stringify(Array.from(weeklyCat.values()))} }]
+                            }});
+                            const ctxMonth = document.getElementById('chartMonth').getContext('2d');
+                            new Chart(ctxMonth, { type: 'bar', data: {
+                                labels: ${JSON.stringify(Array.from(monthlyCat.keys()))},
+                                datasets: [{ label: 'Unidades', data: ${JSON.stringify(Array.from(monthlyCat.values()))} }]
+                            }});
+                            const ctxYear = document.getElementById('chartYear').getContext('2d');
+                            new Chart(ctxYear, { type: 'bar', data: {
+                                labels: ${JSON.stringify(Array.from(yearlyCat.keys()))},
+                                datasets: [{ label: 'Unidades', data: ${JSON.stringify(Array.from(yearlyCat.values()))} }]
+                            }});
+                        <\/script>
+                        </body></html>
+                    `);
+                    win.document.close();
+                });
+            }
+
+            // ---------- ARRANQUE ----------
             loadFromStorage();
-            setAuth(false); // comienza desautenticado
-            renderAll();
+            fillCategorySelects();
+            initEventListeners();
+            isAuthenticated = false;
+            actualizarUIporAuth(); // Esto también hace renderAll
         })();
     </script>
 </body>
