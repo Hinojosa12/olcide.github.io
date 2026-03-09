@@ -77,12 +77,13 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 0.8rem;
+      gap: 0.5rem;
     }
     .app-logo {
       display: flex;
       align-items: center;
       gap: 0.7rem;
+      flex-shrink: 0;
     }
     .logo-icon {
       width: 40px; height: 40px;
@@ -106,21 +107,23 @@
     }
     .header-actions {
       display: flex;
-      gap: 0.5rem;
+      gap: 0.3rem;
       align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
     .btn-header {
       background: rgba(255,255,255,0.12);
       color: white;
       border: none;
       border-radius: var(--radius-pill);
-      padding: 0.5rem 1rem;
+      padding: 0.4rem 0.7rem;
       font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 0.35rem;
+      gap: 0.2rem;
       transition: var(--transition);
       white-space: nowrap;
     }
@@ -134,7 +137,7 @@
     }
     #langToggle {
       font-size: 1.1rem;
-      padding: 0.5rem 0.7rem;
+      padding: 0.4rem 0.5rem;
     }
 
     /* ───── NOTIFICATION BAR ───── */
@@ -443,7 +446,7 @@
       width: 100%;
       border-collapse: collapse;
       font-size: 0.82rem;
-      min-width: 580px;
+      min-width: 550px; /* reduced because name column removed */
     }
     .items-table th {
       text-align: left;
@@ -1022,7 +1025,7 @@
       <span class="stat-chip-sub" data-i18n="items">items</span>
     </div>
     <div class="stat-chip">
-      <span class="stat-chip-label" data-i18n="inventory">Inventory</span>
+      <span class="stat-chip-label" data-i18n="store">Store</span>
       <span class="stat-chip-value" id="statInventory">0</span>
       <span class="stat-chip-sub" data-i18n="available">available</span>
     </div>
@@ -1041,7 +1044,7 @@
   <!-- ═══════════ TABS (mobile) ═══════════ -->
   <div class="panel-tabs">
     <button class="tab-btn active" data-tab="warehouse">📦 <span data-i18n="warehouse">Warehouse</span> <span class="tab-count" id="tabCountW">0</span></button>
-    <button class="tab-btn" data-tab="inventory">🏷️ <span data-i18n="inventory">Inventory</span> <span class="tab-count" id="tabCountI">0</span></button>
+    <button class="tab-btn" data-tab="inventory">🏷️ <span data-i18n="store">Store</span> <span class="tab-count" id="tabCountI">0</span></button>
     <button class="tab-btn" data-tab="sold">📋 <span data-i18n="sold">Sold</span> <span class="tab-count" id="tabCountS">0</span></button>
     <button class="tab-btn" data-tab="history">📜 <span data-i18n="history">History</span></button>
   </div>
@@ -1059,36 +1062,34 @@
             <button class="btn btn-ghost btn-sm btn-icon-only" id="toggleWhSearch" title="Search">🔍</button>
           </div>
         </div>
-        <!-- Add form -->
+        <!-- Add form (name removed) -->
         <div class="add-form-area" id="addFormArea">
           <div class="form-grid">
-            <input class="form-input" id="addName" data-i18n-placeholder="name" placeholder="Name *">
             <input class="form-input" id="addBrand" data-i18n-placeholder="brand" placeholder="Brand *">
             <input class="form-input" id="addColor" data-i18n-placeholder="color" placeholder="Color *">
             <input class="form-input" id="addProductId" data-i18n-placeholder="productId" placeholder="Product ID *">
             <input class="form-input" id="addSize" data-i18n-placeholder="size" placeholder="Size">
             <input class="form-input" type="number" id="addPrice" data-i18n-placeholder="price" placeholder="Price € *" step="0.01">
             <select class="form-select" id="addCategory">
-              <option value="" data-i18n="selectCategory">— Category —</option>
+              <option value="" data-i18n="selectProduct">— Product —</option>
             </select>
           </div>
           <button class="btn btn-primary btn-full" id="addProductBtn">✔ <span data-i18n="addProduct">Add product</span></button>
         </div>
-        <!-- Search -->
+        <!-- Search (name removed) -->
         <div class="search-area" id="whSearchArea">
           <div class="search-row">
-            <select class="search-select" id="whCatFilter"><option value="" data-i18n="category">Category</option></select>
+            <select class="search-select" id="whCatFilter"><option value="" data-i18n="product">Product</option></select>
             <input class="search-input" id="whBrandFilter" data-i18n-placeholder="brand" placeholder="Brand">
-            <input class="search-input" id="whNameFilter" data-i18n-placeholder="name" placeholder="Name">
             <input class="search-input" id="whSizeFilter" data-i18n-placeholder="size" placeholder="Size">
           </div>
         </div>
-        <!-- Table -->
+        <!-- Table (name column removed) -->
         <div class="items-table-wrap">
           <table class="items-table">
             <thead>
               <tr>
-                <th data-i18n="id">ID</th><th data-i18n="name">Name</th><th data-i18n="brand">Brand</th><th data-i18n="color">Color</th><th data-i18n="size">Size</th><th data-i18n="price">Price</th><th data-i18n="category">Category</th><th data-i18n="actions">Actions</th>
+                <th data-i18n="id">ID</th><th data-i18n="brand">Brand</th><th data-i18n="color">Color</th><th data-i18n="size">Size</th><th data-i18n="price">Price</th><th data-i18n="product">Product</th><th data-i18n="actions">Actions</th>
               </tr>
             </thead>
             <tbody id="warehouseBody"></tbody>
@@ -1105,21 +1106,20 @@
       </div>
     </div>
 
-    <!-- INVENTORY -->
+    <!-- STORE (formerly Inventory) -->
     <div class="panel-section" id="tab-inventory">
       <div class="panel-card">
         <div class="panel-card-header">
-          <span class="panel-card-title">🏷️ <span data-i18n="inventory">Inventory</span></span>
+          <span class="panel-card-title">🏷️ <span data-i18n="store">Store</span></span>
           <div class="panel-card-actions">
             <button class="btn btn-ghost btn-sm btn-icon-only" id="toggleInvSearch" title="Search">🔍</button>
           </div>
         </div>
-        <!-- Search -->
+        <!-- Search (name removed) -->
         <div class="search-area" id="invSearchArea">
           <div class="search-row">
-            <select class="search-select" id="invCatFilter"><option value="" data-i18n="category">Category</option></select>
+            <select class="search-select" id="invCatFilter"><option value="" data-i18n="product">Product</option></select>
             <input class="search-input" id="invBrandFilter" data-i18n-placeholder="brand" placeholder="Brand">
-            <input class="search-input" id="invNameFilter" data-i18n-placeholder="name" placeholder="Name">
             <input class="search-input" id="invSizeFilter" data-i18n-placeholder="size" placeholder="Size">
           </div>
         </div>
@@ -1129,20 +1129,20 @@
           <button class="btn btn-primary btn-sm" id="sellSelectedBtn" disabled>💰 <span data-i18n="sellSelected">Sell sel.</span></button>
           <button class="btn btn-ghost btn-sm" id="selectAllInvBtn">☑ <span data-i18n="all">All</span></button>
         </div>
-        <!-- Table -->
+        <!-- Table (name column removed) -->
         <div class="items-table-wrap">
           <table class="items-table">
             <thead>
               <tr>
-                <th>✓</th><th data-i18n="id">ID</th><th data-i18n="name">Name</th><th data-i18n="brand">Brand</th><th data-i18n="color">Color</th><th data-i18n="size">Size</th><th data-i18n="price">Price</th><th data-i18n="category">Category</th><th data-i18n="actions">Actions</th>
+                <th>✓</th><th data-i18n="id">ID</th><th data-i18n="brand">Brand</th><th data-i18n="color">Color</th><th data-i18n="size">Size</th><th data-i18n="price">Price</th><th data-i18n="product">Product</th><th data-i18n="actions">Actions</th>
               </tr>
             </thead>
             <tbody id="inventoryBody"></tbody>
           </table>
           <div id="inventoryEmpty" class="empty-state" style="display:none">
             <div class="empty-icon">🏷️</div>
-            <div class="empty-title" data-i18n="emptyInventoryTitle">Inventory empty</div>
-            <div class="empty-sub" data-i18n="emptyInventorySub">Move items from warehouse</div>
+            <div class="empty-title" data-i18n="emptyStoreTitle">Store empty</div>
+            <div class="empty-sub" data-i18n="emptyStoreSub">Move items from warehouse</div>
           </div>
         </div>
         <div class="export-row">
@@ -1151,7 +1151,7 @@
       </div>
     </div>
 
-    <!-- SOLD -->
+    <!-- SOLD (name column removed) -->
     <div class="panel-section" id="tab-sold">
       <div class="panel-card">
         <div class="panel-card-header">
@@ -1165,7 +1165,7 @@
           <table class="items-table">
             <thead>
               <tr>
-                <th data-i18n="id">ID</th><th data-i18n="name">Name</th><th data-i18n="brand">Brand</th><th data-i18n="color">Color</th><th data-i18n="size">Size</th><th data-i18n="price">Price</th><th data-i18n="category">Category</th><th data-i18n="method">Method</th><th data-i18n="date">Date</th>
+                <th data-i18n="id">ID</th><th data-i18n="brand">Brand</th><th data-i18n="color">Color</th><th data-i18n="size">Size</th><th data-i18n="price">Price</th><th data-i18n="product">Product</th><th data-i18n="method">Method</th><th data-i18n="date">Date</th>
               </tr>
             </thead>
             <tbody id="soldBody"></tbody>
@@ -1208,7 +1208,7 @@
     <button class="nav-item" data-nav="inventory">
       <div class="nav-indicator"></div>
       <span class="nav-icon">🏷️</span>
-      <span data-i18n="inventory">Inventory</span>
+      <span data-i18n="store">Store</span>
       <span class="nav-badge" id="navBadgeInv" style="display:none">0</span>
     </button>
     <button class="nav-item" data-nav="sold">
@@ -1264,7 +1264,7 @@
     </div>
   </div>
 
-  <!-- ═══════════ MODAL: EDIT ═══════════ -->
+  <!-- ═══════════ MODAL: EDIT (name removed) ═══════════ -->
   <div class="modal-overlay" id="editModal">
     <div class="modal-sheet">
       <div class="modal-handle"></div>
@@ -1273,14 +1273,13 @@
         <input type="hidden" id="editInternalId">
         <input type="hidden" id="editType">
         <div class="form-grid">
-          <input class="form-input" id="editName" data-i18n-placeholder="name" placeholder="Name *" required>
           <input class="form-input" id="editBrand" data-i18n-placeholder="brand" placeholder="Brand *" required>
           <input class="form-input" id="editColor" data-i18n-placeholder="color" placeholder="Color *" required>
           <input class="form-input" id="editProductId" data-i18n-placeholder="productId" placeholder="Product ID *" required>
           <input class="form-input" id="editSize" data-i18n-placeholder="size" placeholder="Size">
           <input class="form-input" type="number" id="editPrice" data-i18n-placeholder="price" placeholder="Price € *" step="0.01" required>
           <select class="form-select" id="editCategory" required>
-            <option value="" data-i18n="selectCategory">— Category —</option>
+            <option value="" data-i18n="selectProduct">— Product —</option>
           </select>
         </div>
         <button type="submit" class="btn btn-primary btn-full" style="margin-top:0.5rem">💾 <span data-i18n="saveChanges">Save changes</span></button>
@@ -1373,7 +1372,7 @@
         install: 'Install',
         stockAlerts: '🔔 Stock alerts',
         warehouse: 'Warehouse',
-        inventory: 'Inventory',
+        store: 'Store',
         sold: 'Sold',
         revenue: 'Revenue',
         items: 'items',
@@ -1381,21 +1380,20 @@
         totalSales: 'total sales',
         history: 'History',
         new: 'New',
-        name: 'Name',
         brand: 'Brand',
         color: 'Color',
         productId: 'Product ID',
         size: 'Size',
         price: 'Price',
-        category: 'Category',
-        selectCategory: '— Category —',
+        product: 'Product',
+        selectProduct: '— Product —',
         addProduct: 'Add product',
         id: 'ID',
         actions: 'Actions',
         emptyWarehouseTitle: 'Warehouse empty',
         emptyWarehouseSub: 'Add products with the ➕ New button',
-        emptyInventoryTitle: 'Inventory empty',
-        emptyInventorySub: 'Move items from warehouse',
+        emptyStoreTitle: 'Store empty',
+        emptyStoreSub: 'Move items from warehouse',
         emptySoldTitle: 'No sales yet',
         emptySoldSub: 'Sales will appear here',
         exportCSV: 'Export CSV',
@@ -1429,10 +1427,6 @@
         avgTicket: 'Avg. ticket',
         close: 'Close',
         search: 'Search',
-        // for toasts (some are dynamic, but we'll keep simple)
-        toastSold: '✅ Sale completed',
-        toastError: '❌ Error',
-        toastWarning: '⚠️ Warning',
       },
       es: {
         headerSub: 'Gestión Integral',
@@ -1444,7 +1438,7 @@
         install: 'Instalar',
         stockAlerts: '🔔 Alertas de stock',
         warehouse: 'Almacén',
-        inventory: 'Inventario',
+        store: 'Tienda',
         sold: 'Vendidos',
         revenue: 'Ingresos',
         items: 'artículos',
@@ -1452,21 +1446,20 @@
         totalSales: 'total ventas',
         history: 'Historial',
         new: 'Nuevo',
-        name: 'Nombre',
         brand: 'Marca',
         color: 'Color',
         productId: 'ID producto',
         size: 'Talla',
         price: 'Precio',
-        category: 'Categoría',
-        selectCategory: '— Categoría —',
+        product: 'Producto',
+        selectProduct: '— Producto —',
         addProduct: 'Agregar producto',
         id: 'ID',
         actions: 'Acciones',
         emptyWarehouseTitle: 'Almacén vacío',
         emptyWarehouseSub: 'Agrega productos con el botón ➕ Nuevo',
-        emptyInventoryTitle: 'Inventario vacío',
-        emptyInventorySub: 'Envía artículos desde el almacén',
+        emptyStoreTitle: 'Tienda vacía',
+        emptyStoreSub: 'Envía artículos desde el almacén',
         emptySoldTitle: 'Sin ventas aún',
         emptySoldSub: 'Las ventas aparecerán aquí',
         exportCSV: 'Exportar CSV',
@@ -1512,12 +1505,11 @@
     const uid = () => Date.now() + '-' + Math.random().toString(36).substr(2, 6);
     const fmt = n => typeof n === 'number' ? n.toFixed(2).replace('.', ',') : '—';
 
-    // ─── TOAST (with simple translation support) ───
+    // ─── TOAST ───
     function toast(msg, type = 'default', duration = 2800) {
       const el = document.createElement('div');
       el.className = `toast${type !== 'default' ? ' ' + type : ''}`;
       const icons = { success: '✅', error: '❌', warning: '⚠️' };
-      // For common messages, we could translate, but keep simple
       el.textContent = (icons[type] || '') + (icons[type] ? ' ' : '') + msg;
       $('toastContainer').appendChild(el);
       setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity 0.3s'; setTimeout(() => el.remove(), 300); }, duration);
@@ -1527,7 +1519,7 @@
     function showConfirm(title, text, okLabel = 'Confirm', danger = true) {
       return new Promise(resolve => {
         confirmResolve = resolve;
-        $('confirmTitle').innerHTML = title; // title already translated if needed
+        $('confirmTitle').innerHTML = title;
         $('confirmText').textContent = text;
         $('confirmOk').innerHTML = okLabel;
         $('confirmOk').className = `btn ${danger ? 'btn-danger' : 'btn-primary'}`;
@@ -1593,17 +1585,17 @@
       }
     }
 
-    // ─── FILTROS (realtime) ───
+    // ─── FILTROS (realtime) - removed name filters ───
     function getWhFiltered() {
-      const cat = $('whCatFilter').value, br = $('whBrandFilter').value.toLowerCase(), nm = $('whNameFilter').value.toLowerCase(), sz = $('whSizeFilter').value.toLowerCase();
-      return warehouse.filter(i => (!cat || i.category===cat) && (!br || i.brand.toLowerCase().includes(br)) && (!nm || i.name.toLowerCase().includes(nm)) && (!sz || (i.size||'').toLowerCase().includes(sz)));
+      const cat = $('whCatFilter').value, br = $('whBrandFilter').value.toLowerCase(), sz = $('whSizeFilter').value.toLowerCase();
+      return warehouse.filter(i => (!cat || i.category===cat) && (!br || i.brand.toLowerCase().includes(br)) && (!sz || (i.size||'').toLowerCase().includes(sz)));
     }
     function getInvFiltered() {
-      const cat = $('invCatFilter').value, br = $('invBrandFilter').value.toLowerCase(), nm = $('invNameFilter').value.toLowerCase(), sz = $('invSizeFilter').value.toLowerCase();
-      return inventory.filter(i => (!cat || i.category===cat) && (!br || i.brand.toLowerCase().includes(br)) && (!nm || i.name.toLowerCase().includes(nm)) && (!sz || (i.size||'').toLowerCase().includes(sz)));
+      const cat = $('invCatFilter').value, br = $('invBrandFilter').value.toLowerCase(), sz = $('invSizeFilter').value.toLowerCase();
+      return inventory.filter(i => (!cat || i.category===cat) && (!br || i.brand.toLowerCase().includes(br)) && (!sz || (i.size||'').toLowerCase().includes(sz)));
     }
 
-    // ─── RENDER ───
+    // ─── RENDER (all name fields removed) ───
     function renderWarehouse() {
       const tbody = $('warehouseBody'), empty = $('warehouseEmpty');
       const filtered = getWhFiltered();
@@ -1612,7 +1604,6 @@
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td style="font-family:monospace;font-size:0.75rem;color:var(--text-muted)">${esc(item.productId)}</td>
-          <td style="font-weight:600">${esc(item.name)}</td>
           <td>${esc(item.brand)}</td>
           <td>${esc(item.color)}</td>
           <td>${esc(item.size||'—')}</td>
@@ -1641,7 +1632,6 @@
         tr.innerHTML = `
           <td><input type="checkbox" class="inv-cb" value="${item.internalId}" ${!isAuth?'disabled':''}></td>
           <td style="font-family:monospace;font-size:0.75rem;color:var(--text-muted)">${esc(item.productId)}</td>
-          <td style="font-weight:600">${esc(item.name)}</td>
           <td>${esc(item.brand)}</td>
           <td>${esc(item.color)}</td>
           <td>${esc(item.size||'—')}</td>
@@ -1671,7 +1661,6 @@
         const d = item.soldAt ? new Date(item.soldAt).toLocaleDateString('es-ES') : '—';
         tr.innerHTML = `
           <td style="font-family:monospace;font-size:0.75rem;color:var(--text-muted)">${esc(item.productId)}</td>
-          <td style="font-weight:600">${esc(item.name)}</td>
           <td>${esc(item.brand)}</td>
           <td>${esc(item.color)}</td>
           <td>${esc(item.size||'—')}</td>
@@ -1686,7 +1675,6 @@
       $('tabCountS').textContent = sold.length;
       const totalRev = sold.reduce((a,i) => a + (i.price||0), 0);
       $('statRevenue').textContent = fmt(totalRev) + ' €';
-      // Show/hide delete all button based on auth
       $('deleteAllSoldBtn').style.display = isAuth ? 'inline-flex' : 'none';
     }
 
@@ -1737,13 +1725,11 @@
       if (name === 'history') {
         const histTab = $('tab-history');
         histTab.classList.add('active');
-        // Move log panel inside tab on mobile
         if (window.innerWidth < 768) {
           histTab.appendChild($('logPanel'));
         }
       } else {
         $('tab-' + name).classList.add('active');
-        // Ensure log panel is back at root on mobile
         if (window.innerWidth < 768 && $('logPanel').parentElement !== document.body) {
           document.body.insertBefore($('logPanel'), $('toastContainer'));
         }
@@ -1757,7 +1743,7 @@
       $('sellSelectedBtn').disabled = !isAuth || checked.length === 0;
     }
 
-    // ─── CRUD ───
+    // ─── CRUD (name removed from logs) ───
     async function deleteItem(type, id) {
       if (!isAuth) return;
       const arr = type === 'warehouse' ? warehouse : inventory;
@@ -1765,7 +1751,7 @@
       if (!item) return;
       const ok = await showConfirm(
         currentLang === 'en' ? 'Delete product?' : '¿Eliminar producto?',
-        `${currentLang === 'en' ? 'Product' : 'Producto'} "${item.name}" (${item.productId}) ${currentLang === 'en' ? 'will be permanently deleted.' : 'será eliminado permanentemente.'}`,
+        `${currentLang === 'en' ? 'Product' : 'Producto'} ID ${item.productId} (${item.brand}) ${currentLang === 'en' ? 'will be permanently deleted.' : 'será eliminado permanentemente.'}`,
         currentLang === 'en' ? 'Delete' : 'Eliminar',
         true
       );
@@ -1773,7 +1759,7 @@
       const idx = arr.findIndex(i => i.internalId === id);
       arr.splice(idx, 1);
       save();
-      addLog('DELETED', `${item.name} (${item.productId}) - ${item.brand} from ${type}`);
+      addLog('DELETED', `${item.productId} - ${item.brand} from ${type}`);
       renderAll();
       toast(currentLang === 'en' ? 'Product deleted' : 'Producto eliminado', 'warning');
     }
@@ -1785,9 +1771,9 @@
       const [item] = warehouse.splice(idx, 1);
       inventory.push(item);
       save();
-      addLog('MOVED TO INVENTORY', `${item.name} (${item.productId}) - ${item.brand}`);
+      addLog('MOVED TO STORE', `${item.productId} - ${item.brand}`);
       renderAll();
-      toast(`📤 "${item.name}" ${currentLang === 'en' ? 'sent to inventory' : 'enviado al inventario'}`, 'success');
+      toast(`📤 "${item.productId}" ${currentLang === 'en' ? 'sent to store' : 'enviado a tienda'}`, 'success');
     }
 
     function moveBackToWarehouse(id) {
@@ -1797,9 +1783,9 @@
       const [item] = inventory.splice(idx, 1);
       warehouse.push(item);
       save();
-      addLog('RETURNED TO WAREHOUSE', `${item.name} (${item.productId}) - ${item.brand}`);
+      addLog('RETURNED TO WAREHOUSE', `${item.productId} - ${item.brand}`);
       renderAll();
-      toast(`↩️ "${item.name}" ${currentLang === 'en' ? 'returned to warehouse' : 'devuelto al almacén'}`, 'default');
+      toast(`↩️ "${item.productId}" ${currentLang === 'en' ? 'returned to warehouse' : 'devuelto al almacén'}`, 'default');
     }
 
     // ─── VENTAS ───
@@ -1824,7 +1810,7 @@
       toSell.forEach(item => { item.soldAt = now.toISOString(); item.payMethod = method; });
       sold.push(...toSell);
       save();
-      const detail = toSell.map(i => `${i.name} (${i.productId}) - ${i.brand}`).join(', ');
+      const detail = toSell.map(i => `${i.productId} - ${i.brand}`).join(', ');
       addLog('SALE', `${toSell.length} art. · ${method} · ${detail}`);
       renderAll();
       generarFactura(toSell, method);
@@ -1860,8 +1846,8 @@
       <div class="inv-header"><div><h1>CLAR<span>ANCE</span></h1><p style="font-size:0.75rem;color:#64748b;margin-top:0.2rem">Professional Management · Sales Invoice</p></div>
       <div class="inv-meta"><p><strong>${invoiceId}</strong></p><p>${fecha}</p></div></div>
       <div class="method-badge">${method === 'EFECTIVO' ? '💵' : '💳'} Paid with: ${method}</div>
-      <table><thead><tr><th>ID</th><th>Item</th><th>Brand</th><th>Color</th><th>Size</th><th style="text-align:right">Price</th></tr></thead><tbody>
-      ${items.map(i=>`<tr><td style="font-family:monospace;font-size:0.75rem;color:#64748b">${i.productId}</td><td style="font-weight:600">${i.name}</td><td>${i.brand}</td><td>${i.color}</td><td>${i.size||'—'}</td><td style="text-align:right;font-weight:700">${parseFloat(i.price).toFixed(2)} €</td></tr>`).join('')}
+      <table><thead><tr><th>ID</th><th>Brand</th><th>Color</th><th>Size</th><th style="text-align:right">Price</th></tr></thead><tbody>
+      ${items.map(i=>`<tr><td style="font-family:monospace;font-size:0.75rem;color:#64748b">${i.productId}</td><td>${i.brand}</td><td>${i.color}</td><td>${i.size||'—'}</td><td style="text-align:right;font-weight:700">${parseFloat(i.price).toFixed(2)} €</td></tr>`).join('')}
       </tbody></table>
       <div class="total-row"><span class="total-label">TOTAL</span><span class="total-val">${total} €</span></div>
       <button class="btn-print" onclick="window.print()">🖨️ Print / Save PDF</button>
@@ -1871,7 +1857,7 @@
       win.document.close();
     }
 
-    // ─── EDICIÓN ───
+    // ─── EDICIÓN (name removed) ───
     function openEditModal(id, type) {
       if (!isAuth) return;
       const arr = type === 'warehouse' ? warehouse : inventory;
@@ -1879,7 +1865,6 @@
       if (!item) return;
       $('editInternalId').value = id;
       $('editType').value = type;
-      $('editName').value = item.name;
       $('editBrand').value = item.brand;
       $('editColor').value = item.color;
       $('editProductId').value = item.productId;
@@ -1913,7 +1898,6 @@
       $('kpiRevenue').textContent = fmt(revenue) + ' €';
       $('kpiAvg').textContent = fmt(avg) + ' €';
 
-      // Chart by category
       const catMap = {};
       filtered.forEach(i => { catMap[i.category] = (catMap[i.category]||0) + 1; });
       const entries = Object.entries(catMap).sort((a,b) => b[1]-a[1]).slice(0, 10);
@@ -1925,28 +1909,14 @@
       const ctx = $('statsChart').getContext('2d');
       statsChartInst = new Chart(ctx, {
         type: 'bar',
-        data: {
-          labels,
-          datasets: [{
-            label: 'Units sold',
-            data,
-            backgroundColor: colors.slice(0, data.length),
-            borderRadius: 8,
-            borderSkipped: false,
-          }]
-        },
+        data: { labels, datasets: [{ label: 'Units sold', data, backgroundColor: colors.slice(0, data.length), borderRadius: 8, borderSkipped: false }] },
         options: {
-          responsive: true,
-          maintainAspectRatio: false,
+          responsive: true, maintainAspectRatio: false,
           plugins: { legend: { display: false } },
-          scales: {
-            x: { grid: { display: false }, ticks: { font: { size: 11 } } },
-            y: { grid: { color: '#f1f5f9' }, ticks: { font: { size: 11 }, stepSize: 1 } }
-          }
+          scales: { x: { grid: { display: false }, ticks: { font: { size: 11 } } }, y: { grid: { color: '#f1f5f9' }, ticks: { font: { size: 11 }, stepSize: 1 } } }
         }
       });
 
-      // Insights
       const hourCount = new Array(24).fill(0);
       const dayCount = new Array(7).fill(0);
       filtered.forEach(i => {
@@ -1965,7 +1935,7 @@
       insightsEl.innerHTML = '';
       if (units > 0) {
         const insights = [
-          entries.length ? `<strong>${entries[0][0]}</strong> ${currentLang === 'en' ? 'is the best selling category with' : 'es la categoría más vendida con'} <strong>${entries[0][1]} uds.</strong>` : null,
+          entries.length ? `<strong>${entries[0][0]}</strong> ${currentLang === 'en' ? 'is the best selling product with' : 'es el producto más vendido con'} <strong>${entries[0][1]} uds.</strong>` : null,
           `${currentLang === 'en' ? 'Peak hour:' : 'Hora pico:'} <strong>${maxH}:00 – ${maxH+1}:00h</strong>`,
           `${currentLang === 'en' ? 'Most active day:' : 'Día más activo:'} <strong>${dayNames[maxD]}</strong>`,
           `${currentLang === 'en' ? 'Payments:' : 'Pagos:'} <strong>${cashCount} cash</strong> / <strong>${cardCount} card</strong>`
@@ -1981,7 +1951,7 @@
       }
     }
 
-    // ─── EXPORT CSV ───
+    // ─── EXPORT CSV (updated columns) ───
     function exportCSV(data, filename, cols) {
       if (!data.length) { toast(currentLang === 'en' ? 'No data to export' : 'No hay datos para exportar', 'warning'); return; }
       const header = cols.map(c => c.label).join(',');
@@ -1997,8 +1967,8 @@
     }
 
     const CSV_COLS = [
-      { label:'ID', key:'productId' }, { label:'Name', key:'name' }, { label:'Brand', key:'brand' },
-      { label:'Color', key:'color' }, { label:'Size', key:'size' }, { label:'Price', key:'price' }, { label:'Category', key:'category' }
+      { label:'ID', key:'productId' }, { label:'Brand', key:'brand' }, { label:'Color', key:'color' },
+      { label:'Size', key:'size' }, { label:'Price', key:'price' }, { label:'Product', key:'category' }
     ];
 
     // ─── FILL SELECTS ───
@@ -2007,7 +1977,7 @@
         const sel = $(id);
         if (!sel) return;
         const isFilter = id.includes('Filter');
-        sel.innerHTML = `<option value="">${isFilter ? (currentLang==='en'?'Category':'Categoría') : (currentLang==='en'?'— Category —':'— Categoría —')}</option>` +
+        sel.innerHTML = `<option value="">${isFilter ? (currentLang==='en'?'Product':'Producto') : (currentLang==='en'?'— Product —':'— Producto —')}</option>` +
           ALL_CATEGORIES.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
       });
     }
@@ -2016,25 +1986,16 @@
     function applyLanguage(lang) {
       currentLang = lang;
       document.documentElement.lang = lang;
-      // Update all elements with data-i18n
       document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
-        if (i18n[lang][key]) {
-          el.textContent = i18n[lang][key];
-        }
+        if (i18n[lang][key]) el.textContent = i18n[lang][key];
       });
-      // Update placeholders
       document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
         const key = el.getAttribute('data-i18n-placeholder');
-        if (i18n[lang][key]) {
-          el.placeholder = i18n[lang][key];
-        }
+        if (i18n[lang][key]) el.placeholder = i18n[lang][key];
       });
-      // Update selects' first option (they are manually set above, but we also have options with data-i18n inside? we already filled selects, so we need to re-fill selects with translated placeholder)
-      fillSelects(); // this uses currentLang to set the placeholder option
-      renderLogs(); // update "No movements" message
-      // Update stats insights if modal open? not needed
-      // Update invoice back button text is dynamic when generating
+      fillSelects();
+      renderLogs();
     }
 
     // ─── PWA / SERVICE WORKER ───
@@ -2043,17 +2004,9 @@
       const swCode = `
         const CACHE = 'clarance-v1';
         const URLS = [location.href];
-        self.addEventListener('install', e => {
-          e.waitUntil(caches.open(CACHE).then(c => c.addAll(URLS)).catch(()=>{}));
-          self.skipWaiting();
-        });
-        self.addEventListener('activate', e => {
-          e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));
-          self.clients.claim();
-        });
-        self.addEventListener('fetch', e => {
-          e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
-        });
+        self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(URLS)).catch(()=>{})); self.skipWaiting(); });
+        self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))); self.clients.claim(); });
+        self.addEventListener('fetch', e => { e.respondWith(fetch(e.request).catch(() => caches.match(e.request))); });
       `;
       const blob = new Blob([swCode], { type: 'application/javascript' });
       const swURL = URL.createObjectURL(blob);
@@ -2100,33 +2053,27 @@
     // ─── EVENT LISTENERS ───
     function initEvents() {
 
-      // Language toggle
       $('langToggle').addEventListener('click', () => {
         applyLanguage(currentLang === 'en' ? 'es' : 'en');
       });
 
-      // Tabs
       document.querySelectorAll('.tab-btn, .nav-item').forEach(btn => {
         btn.addEventListener('click', () => switchTab(btn.dataset.tab || btn.dataset.nav));
       });
 
-      // Notify toggle
       $('notifyToggle').addEventListener('click', () => $('notifyBar').classList.toggle('open'));
 
-      // Admin login
       $('adminBtn').addEventListener('click', () => openModal('loginModal'));
       $('loginCancel').addEventListener('click', () => closeModal('loginModal'));
       $('loginSubmit').addEventListener('click', handleLogin);
       $('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
 
-      // Logout
       $('logoutBtn').addEventListener('click', () => {
         isAuth = false;
         toast(currentLang === 'en' ? 'Logged out' : 'Sesión cerrada', 'default');
         updateAuthUI();
       });
 
-      // Stats
       $('statsBtn').addEventListener('click', openStats);
       $('closeStats').addEventListener('click', () => closeModal('statsModal'));
       document.querySelectorAll('.period-btn').forEach(btn => {
@@ -2137,39 +2084,31 @@
         });
       });
 
-      // Close modals on overlay click
       ['paymentModal','editModal','statsModal','loginModal'].forEach(id => {
         $(id).addEventListener('click', e => { if (e.target === $(id)) closeModal(id); });
       });
 
-      // Payment
       $('payCash').addEventListener('click', () => completeSale('EFECTIVO'));
       $('payCard').addEventListener('click', () => completeSale('TARJETA'));
       $('cancelPayment').addEventListener('click', () => { closeModal('paymentModal'); pendingSaleIds = []; });
 
-      // Add form toggle
       $('showAddBtn').addEventListener('click', () => {
         $('addFormArea').classList.toggle('visible');
         $('showAddBtn').innerHTML = $('addFormArea').classList.contains('visible') ? '✕ ' + (currentLang==='en'?'Close':'Cerrar') : '➕ ' + (currentLang==='en'?'New':'Nuevo');
       });
 
-      // Add product
       $('addProductBtn').addEventListener('click', addProduct);
 
-      // Search toggles
       $('toggleWhSearch').addEventListener('click', () => $('whSearchArea').classList.toggle('visible'));
       $('toggleInvSearch').addEventListener('click', () => $('invSearchArea').classList.toggle('visible'));
 
-      // Realtime search
-      ['whCatFilter','whBrandFilter','whNameFilter','whSizeFilter'].forEach(id => $(id).addEventListener('input', renderWarehouse));
-      ['invCatFilter','invBrandFilter','invNameFilter','invSizeFilter'].forEach(id => $(id).addEventListener('input', renderInventory));
+      ['whCatFilter','whBrandFilter','whSizeFilter'].forEach(id => $(id).addEventListener('input', renderWarehouse));
+      ['invCatFilter','invBrandFilter','invSizeFilter'].forEach(id => $(id).addEventListener('input', renderInventory));
 
-      // Checkbox events (delegated)
       $('inventoryBody').addEventListener('change', e => {
         if (e.target.classList.contains('inv-cb')) updateSelectedCount();
       });
 
-      // Select all inventory
       $('selectAllInvBtn').addEventListener('click', () => {
         const cbs = document.querySelectorAll('.inv-cb');
         const allChecked = Array.from(cbs).every(cb => cb.checked);
@@ -2177,14 +2116,12 @@
         updateSelectedCount();
       });
 
-      // Sell selected
       $('sellSelectedBtn').addEventListener('click', () => {
         if (!isAuth) return toast(currentLang === 'en' ? 'Authentication required' : 'Autenticación requerida', 'error');
         const ids = Array.from(document.querySelectorAll('.inv-cb:checked')).map(cb => cb.value);
         if (ids.length) openPaymentModal(ids);
       });
 
-      // Action buttons (delegated)
       document.addEventListener('click', async e => {
         const btn = e.target.closest('.action-btn');
         if (!btn) return;
@@ -2197,7 +2134,6 @@
         else if (action === 'edit') openEditModal(id, type);
       });
 
-      // Edit form
       $('editForm').addEventListener('submit', e => {
         e.preventDefault();
         if (!isAuth) return;
@@ -2206,8 +2142,7 @@
         const arr = type === 'warehouse' ? warehouse : inventory;
         const item = arr.find(i => i.internalId === id);
         if (!item) return;
-        const oldDesc = `${item.name} (${item.productId})`;
-        item.name = $('editName').value.trim();
+        const oldDesc = `${item.productId} - ${item.brand}`;
         item.brand = $('editBrand').value.trim();
         item.color = $('editColor').value.trim();
         item.productId = $('editProductId').value.trim();
@@ -2215,19 +2150,17 @@
         item.price = parseFloat($('editPrice').value);
         item.category = $('editCategory').value;
         save();
-        addLog('EDITED', `${oldDesc} → ${item.name} (${item.productId}) - ${item.brand}`);
+        addLog('EDITED', `${oldDesc} → ${item.productId} - ${item.brand}`);
         renderAll();
         closeModal('editModal');
         toast('✅ ' + (currentLang === 'en' ? 'Product updated' : 'Producto actualizado'), 'success');
       });
       $('cancelEdit').addEventListener('click', () => closeModal('editModal'));
 
-      // Export
       $('exportWarehouseBtn').addEventListener('click', () => exportCSV(warehouse, 'clarance_warehouse.csv', CSV_COLS));
-      $('exportInventoryBtn').addEventListener('click', () => exportCSV(inventory, 'clarance_inventory.csv', CSV_COLS));
+      $('exportInventoryBtn').addEventListener('click', () => exportCSV(inventory, 'clarance_store.csv', CSV_COLS));
       $('exportSoldBtn').addEventListener('click', () => exportCSV(sold, 'clarance_sold.csv', [...CSV_COLS, {label:'Method',key:'payMethod'},{label:'Sale Date',key:'soldAt'}]));
 
-      // Clear logs
       $('clearLogsBtn').addEventListener('click', async () => {
         const ok = await showConfirm(
           currentLang === 'en' ? 'Clear history?' : '¿Limpiar historial?',
@@ -2238,7 +2171,6 @@
         if (ok) { logs = []; save(); renderLogs(); toast(currentLang === 'en' ? 'History cleared' : 'Historial limpiado', 'warning'); }
       });
 
-      // Delete all sold
       $('deleteAllSoldBtn').addEventListener('click', deleteAllSold);
     }
 
@@ -2260,10 +2192,9 @@
       }
     }
 
-    // ─── ADD PRODUCT ───
+    // ─── ADD PRODUCT (name removed) ───
     function addProduct() {
       if (!isAuth) { toast(currentLang === 'en' ? 'Authentication required' : 'Autenticación requerida', 'error'); return; }
-      const name = $('addName').value.trim();
       const brand = $('addBrand').value.trim();
       const color = $('addColor').value.trim();
       const productId = $('addProductId').value.trim();
@@ -2271,9 +2202,8 @@
       const price = parseFloat($('addPrice').value);
       const category = $('addCategory').value;
 
-      // Validation
       const fields = [
-        [$('addName'), name],[$('addBrand'), brand],[$('addColor'), color],[$('addProductId'), productId]
+        [$('addBrand'), brand],[$('addColor'), color],[$('addProductId'), productId]
       ];
       let valid = true;
       fields.forEach(([el, val]) => {
@@ -2286,15 +2216,14 @@
       if (!category) valid = false;
       if (!valid) { toast(currentLang === 'en' ? 'Complete all required fields' : 'Completa todos los campos obligatorios', 'error'); return; }
 
-      warehouse.push({ internalId: uid(), productId, name, brand, color, size, price, category });
+      warehouse.push({ internalId: uid(), productId, brand, color, size, price, category });
       save();
-      addLog('ADDED', `${name} (${productId}) - ${brand} to warehouse`);
-      // Clear
-      ['addName','addBrand','addColor','addProductId','addSize','addPrice'].forEach(id => { $(id).value=''; $(id).classList.remove('error'); });
+      addLog('ADDED', `${productId} - ${brand} to warehouse`);
+      ['addBrand','addColor','addProductId','addSize','addPrice'].forEach(id => { $(id).value=''; $(id).classList.remove('error'); });
       $('addCategory').value = '';
       $('addCategory').style.border = '';
       renderAll();
-      toast(`✅ "${name}" ${currentLang === 'en' ? 'added to warehouse' : 'agregado al almacén'}`, 'success');
+      toast(`✅ "${productId}" ${currentLang === 'en' ? 'added to warehouse' : 'agregado al almacén'}`, 'success');
     }
 
     // ─── INIT ───
@@ -2303,7 +2232,7 @@
     initEvents();
     updateAuthUI();
     registerSW();
-    applyLanguage('en'); // default English
+    applyLanguage('en');
   })();
   </script>
 </body>
