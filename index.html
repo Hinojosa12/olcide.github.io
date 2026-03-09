@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Clarance · Control Profesional</title>
+  <title>Clarance · Professional Control</title>
 
   <!-- PWA Meta Tags -->
   <meta name="theme-color" content="#0b253a">
@@ -11,7 +11,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Clarance">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="Clarance · Sistema de gestión profesional de inventario">
+  <meta name="description" content="Clarance · Professional inventory management system">
 
   <!-- Favicon SVG inline -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230b253a'/><text y='.9em' font-size='72' x='12'>👔</text></svg>">
@@ -20,7 +20,7 @@
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='100' fill='%230b253a'/><text y='.85em' font-size='380' x='66'>👔</text></svg>">
 
   <!-- PWA Manifest (inline via data URI) -->
-  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Clarance%20%C2%B7%20Gesti%C3%B3n%20Profesional%22%2C%22short_name%22%3A%22Clarance%22%2C%22description%22%3A%22Sistema%20profesional%20de%20gesti%C3%B3n%20de%20inventario%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22orientation%22%3A%22portrait%22%2C%22background_color%22%3A%22%230b253a%22%2C%22theme_color%22%3A%22%230b253a%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%253D%2527http%253A%252F%252Fwww.w3.org%252F2000%252Fsvg%2527%2520viewBox%253D%25270%25200%2520512%2520512%2527%253E%253Crect%2520width%253D%2527512%2527%2520height%253D%2527512%2527%2520rx%253D%2527100%2527%2520fill%253D%2527%25230b253a%2527%252F%253E%253Ctext%2520y%253D%2527.85em%2527%2520font-size%253D%2527380%2527%2520x%253D%252766%2527%253E%25F0%259F%2591%2594%253C%252Ftext%253E%253C%252Fsvg%253E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Clarance%20%C2%B7%20Professional%20Management%22%2C%22short_name%22%3A%22Clarance%22%2C%22description%22%3A%22Professional%20inventory%20management%20system%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22orientation%22%3A%22portrait%22%2C%22background_color%22%3A%22%230b253a%22%2C%22theme_color%22%3A%22%230b253a%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%253D%2527http%253A%252F%252Fwww.w3.org%252F2000%252Fsvg%2527%2520viewBox%253D%25270%25200%2520512%2520512%2527%253E%253Crect%2520width%253D%2527512%2527%2520height%253D%2527512%2527%2520rx%253D%2527100%2527%2520fill%253D%2527%25230b253a%2527%252F%253E%253Ctext%2520y%253D%2527.85em%2527%2520font-size%253D%2527380%2527%2520x%253D%252766%2527%253E%25F0%259F%2591%2594%253C%252Ftext%253E%253C%252Fsvg%253E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
 
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -131,6 +131,10 @@
     }
     .btn-header.logout-btn {
       background: rgba(239,68,68,0.25);
+    }
+    #langToggle {
+      font-size: 1.1rem;
+      padding: 0.5rem 0.7rem;
     }
 
     /* ───── NOTIFICATION BAR ───── */
@@ -573,17 +577,28 @@
       padding: 0.5rem 0;
     }
     .log-entry {
-      padding: 0.55rem 1.2rem;
+      padding: 0.4rem 1rem;
       display: flex;
-      gap: 1rem;
+      gap: 0.8rem;
       border-bottom: 1px solid rgba(255,255,255,0.04);
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       align-items: flex-start;
     }
     .log-entry:last-child { border-bottom: none; }
-    .log-time { color: #475569; min-width: 140px; font-family: monospace; font-size: 0.72rem; }
-    .log-action { color: var(--accent); font-weight: 600; white-space: nowrap; }
-    .log-details { color: #94a3b8; flex: 1; }
+    .log-time { color: #475569; min-width: 115px; font-family: monospace; font-size: 0.68rem; white-space: nowrap; }
+    .log-action { color: var(--accent); font-weight: 600; white-space: nowrap; min-width: 70px; }
+    .log-details { color: #94a3b8; flex: 1; word-break: break-word; }
+
+    /* Mobile compact */
+    @media (max-width: 480px) {
+      .log-entry {
+        padding: 0.4rem 0.6rem;
+        gap: 0.4rem;
+        font-size: 0.7rem;
+      }
+      .log-time { min-width: 85px; font-size: 0.65rem; }
+      .log-action { min-width: 60px; }
+    }
 
     /* ───── BOTTOM NAVIGATION ───── */
     .bottom-nav {
@@ -875,6 +890,8 @@
       border-top: 1px solid var(--border);
       display: flex;
       justify-content: flex-end;
+      gap: 0.5rem;
+      flex-wrap: wrap;
     }
 
     /* ───── TOAST ───── */
@@ -962,13 +979,14 @@
         <div class="logo-icon">👔</div>
         <div class="logo-text">
           <h1>CLARANCE</h1>
-          <span>Gestión Integral</span>
+          <span data-i18n="headerSub">Integrated Management</span>
         </div>
       </div>
       <div class="header-actions">
-        <button class="btn-header" id="statsBtn">📊 <span>Stats</span></button>
-        <button class="btn-header" id="adminBtn">👤 <span>Admin</span></button>
-        <button class="btn-header logout-btn" id="logoutBtn" style="display:none">🔓 <span>Salir</span></button>
+        <button class="btn-header" id="statsBtn">📊 <span data-i18n="stats">Stats</span></button>
+        <button class="btn-header" id="adminBtn">👤 <span data-i18n="admin">Admin</span></button>
+        <button class="btn-header logout-btn" id="logoutBtn" style="display:none">🔓 <span data-i18n="logout">Logout</span></button>
+        <button class="btn-header" id="langToggle" title="Switch language">🇬🇧/🇪🇸</button>
       </div>
     </div>
   </header>
@@ -977,10 +995,10 @@
   <div class="install-banner" id="installBanner">
     <div style="font-size:1.6rem">📲</div>
     <div class="install-banner-text">
-      <strong>Instalar Clarance</strong>
-      Añade la app a tu pantalla de inicio
+      <strong data-i18n="installTitle">Install Clarance</strong>
+      <span data-i18n="installSub">Add the app to your home screen</span>
     </div>
-    <button class="install-btn" id="installBtn">Instalar</button>
+    <button class="install-btn" id="installBtn" data-i18n="install">Install</button>
     <button class="install-close" id="installClose">✕</button>
   </div>
 
@@ -989,7 +1007,7 @@
     <div class="notify-header" id="notifyToggle">
       <div class="notify-header-left">
         <span class="notify-dot" id="notifyDot"></span>
-        🔔 Alertas de stock
+        <span data-i18n="stockAlerts">🔔 Stock alerts</span>
       </div>
       <span class="notify-chevron">▼</span>
     </div>
@@ -999,70 +1017,70 @@
   <!-- ═══════════ STATS STRIP ═══════════ -->
   <div class="stats-strip">
     <div class="stat-chip">
-      <span class="stat-chip-label">Almacén</span>
+      <span class="stat-chip-label" data-i18n="warehouse">Warehouse</span>
       <span class="stat-chip-value" id="statWarehouse">0</span>
-      <span class="stat-chip-sub">artículos</span>
+      <span class="stat-chip-sub" data-i18n="items">items</span>
     </div>
     <div class="stat-chip">
-      <span class="stat-chip-label">Inventario</span>
+      <span class="stat-chip-label" data-i18n="inventory">Inventory</span>
       <span class="stat-chip-value" id="statInventory">0</span>
-      <span class="stat-chip-sub">disponibles</span>
+      <span class="stat-chip-sub" data-i18n="available">available</span>
     </div>
     <div class="stat-chip">
-      <span class="stat-chip-label">Vendidos</span>
+      <span class="stat-chip-label" data-i18n="sold">Sold</span>
       <span class="stat-chip-value" id="statSold">0</span>
-      <span class="stat-chip-sub">artículos</span>
+      <span class="stat-chip-sub" data-i18n="items">items</span>
     </div>
     <div class="stat-chip revenue">
-      <span class="stat-chip-label">Ingresos</span>
+      <span class="stat-chip-label" data-i18n="revenue">Revenue</span>
       <span class="stat-chip-value" id="statRevenue">0 €</span>
-      <span class="stat-chip-sub">total ventas</span>
+      <span class="stat-chip-sub" data-i18n="totalSales">total sales</span>
     </div>
   </div>
 
   <!-- ═══════════ TABS (mobile) ═══════════ -->
   <div class="panel-tabs">
-    <button class="tab-btn active" data-tab="warehouse">📦 Almacén <span class="tab-count" id="tabCountW">0</span></button>
-    <button class="tab-btn" data-tab="inventory">🏷️ Inventario <span class="tab-count" id="tabCountI">0</span></button>
-    <button class="tab-btn" data-tab="sold">📋 Vendidos <span class="tab-count" id="tabCountS">0</span></button>
-    <button class="tab-btn" data-tab="history">📜 Historial</button>
+    <button class="tab-btn active" data-tab="warehouse">📦 <span data-i18n="warehouse">Warehouse</span> <span class="tab-count" id="tabCountW">0</span></button>
+    <button class="tab-btn" data-tab="inventory">🏷️ <span data-i18n="inventory">Inventory</span> <span class="tab-count" id="tabCountI">0</span></button>
+    <button class="tab-btn" data-tab="sold">📋 <span data-i18n="sold">Sold</span> <span class="tab-count" id="tabCountS">0</span></button>
+    <button class="tab-btn" data-tab="history">📜 <span data-i18n="history">History</span></button>
   </div>
 
   <!-- ═══════════ PANEL CONTAINER ═══════════ -->
   <div class="panel-container">
 
-    <!-- ALMACÉN -->
+    <!-- WAREHOUSE -->
     <div class="panel-section active" id="tab-warehouse">
       <div class="panel-card" id="warehouseCard">
         <div class="panel-card-header">
-          <span class="panel-card-title">📦 Almacén</span>
+          <span class="panel-card-title">📦 <span data-i18n="warehouse">Warehouse</span></span>
           <div class="panel-card-actions">
-            <button class="btn btn-primary btn-sm" id="showAddBtn" disabled>➕ Nuevo</button>
-            <button class="btn btn-ghost btn-sm btn-icon-only" id="toggleWhSearch" title="Buscar">🔍</button>
+            <button class="btn btn-primary btn-sm" id="showAddBtn" disabled>➕ <span data-i18n="new">New</span></button>
+            <button class="btn btn-ghost btn-sm btn-icon-only" id="toggleWhSearch" title="Search">🔍</button>
           </div>
         </div>
         <!-- Add form -->
         <div class="add-form-area" id="addFormArea">
           <div class="form-grid">
-            <input class="form-input" id="addName" placeholder="Nombre *">
-            <input class="form-input" id="addBrand" placeholder="Marca *">
-            <input class="form-input" id="addColor" placeholder="Color *">
-            <input class="form-input" id="addProductId" placeholder="ID producto *">
-            <input class="form-input" id="addSize" placeholder="Talla">
-            <input class="form-input" type="number" id="addPrice" placeholder="Precio € *" step="0.01">
+            <input class="form-input" id="addName" data-i18n-placeholder="name" placeholder="Name *">
+            <input class="form-input" id="addBrand" data-i18n-placeholder="brand" placeholder="Brand *">
+            <input class="form-input" id="addColor" data-i18n-placeholder="color" placeholder="Color *">
+            <input class="form-input" id="addProductId" data-i18n-placeholder="productId" placeholder="Product ID *">
+            <input class="form-input" id="addSize" data-i18n-placeholder="size" placeholder="Size">
+            <input class="form-input" type="number" id="addPrice" data-i18n-placeholder="price" placeholder="Price € *" step="0.01">
             <select class="form-select" id="addCategory">
-              <option value="">— Categoría —</option>
+              <option value="" data-i18n="selectCategory">— Category —</option>
             </select>
           </div>
-          <button class="btn btn-primary btn-full" id="addProductBtn">✔ Agregar producto</button>
+          <button class="btn btn-primary btn-full" id="addProductBtn">✔ <span data-i18n="addProduct">Add product</span></button>
         </div>
         <!-- Search -->
         <div class="search-area" id="whSearchArea">
           <div class="search-row">
-            <select class="search-select" id="whCatFilter"><option value="">Categoría</option></select>
-            <input class="search-input" id="whBrandFilter" placeholder="Marca">
-            <input class="search-input" id="whNameFilter" placeholder="Nombre">
-            <input class="search-input" id="whSizeFilter" placeholder="Talla">
+            <select class="search-select" id="whCatFilter"><option value="" data-i18n="category">Category</option></select>
+            <input class="search-input" id="whBrandFilter" data-i18n-placeholder="brand" placeholder="Brand">
+            <input class="search-input" id="whNameFilter" data-i18n-placeholder="name" placeholder="Name">
+            <input class="search-input" id="whSizeFilter" data-i18n-placeholder="size" placeholder="Size">
           </div>
         </div>
         <!-- Table -->
@@ -1070,100 +1088,103 @@
           <table class="items-table">
             <thead>
               <tr>
-                <th>ID</th><th>Nombre</th><th>Marca</th><th>Color</th><th>Talla</th><th>Precio</th><th>Categoría</th><th>Acciones</th>
+                <th data-i18n="id">ID</th><th data-i18n="name">Name</th><th data-i18n="brand">Brand</th><th data-i18n="color">Color</th><th data-i18n="size">Size</th><th data-i18n="price">Price</th><th data-i18n="category">Category</th><th data-i18n="actions">Actions</th>
               </tr>
             </thead>
             <tbody id="warehouseBody"></tbody>
           </table>
           <div id="warehouseEmpty" class="empty-state" style="display:none">
             <div class="empty-icon">📦</div>
-            <div class="empty-title">Almacén vacío</div>
-            <div class="empty-sub">Agrega productos con el botón ➕ Nuevo</div>
+            <div class="empty-title" data-i18n="emptyWarehouseTitle">Warehouse empty</div>
+            <div class="empty-sub" data-i18n="emptyWarehouseSub">Add products with the ➕ New button</div>
           </div>
         </div>
         <div class="export-row">
-          <button class="btn btn-ghost btn-sm" id="exportWarehouseBtn">📤 Exportar CSV</button>
+          <button class="btn btn-ghost btn-sm" id="exportWarehouseBtn">📤 <span data-i18n="exportCSV">Export CSV</span></button>
         </div>
       </div>
     </div>
 
-    <!-- INVENTARIO -->
+    <!-- INVENTORY -->
     <div class="panel-section" id="tab-inventory">
       <div class="panel-card">
         <div class="panel-card-header">
-          <span class="panel-card-title">🏷️ Inventario</span>
+          <span class="panel-card-title">🏷️ <span data-i18n="inventory">Inventory</span></span>
           <div class="panel-card-actions">
-            <button class="btn btn-ghost btn-sm btn-icon-only" id="toggleInvSearch" title="Buscar">🔍</button>
+            <button class="btn btn-ghost btn-sm btn-icon-only" id="toggleInvSearch" title="Search">🔍</button>
           </div>
         </div>
         <!-- Search -->
         <div class="search-area" id="invSearchArea">
           <div class="search-row">
-            <select class="search-select" id="invCatFilter"><option value="">Categoría</option></select>
-            <input class="search-input" id="invBrandFilter" placeholder="Marca">
-            <input class="search-input" id="invNameFilter" placeholder="Nombre">
-            <input class="search-input" id="invSizeFilter" placeholder="Talla">
+            <select class="search-select" id="invCatFilter"><option value="" data-i18n="category">Category</option></select>
+            <input class="search-input" id="invBrandFilter" data-i18n-placeholder="brand" placeholder="Brand">
+            <input class="search-input" id="invNameFilter" data-i18n-placeholder="name" placeholder="Name">
+            <input class="search-input" id="invSizeFilter" data-i18n-placeholder="size" placeholder="Size">
           </div>
         </div>
         <!-- Sell bar -->
         <div class="sell-bar">
-          <span class="sell-bar-info"><strong id="selectedCount">0</strong> seleccionados</span>
-          <button class="btn btn-primary btn-sm" id="sellSelectedBtn" disabled>💰 Vender sel.</button>
-          <button class="btn btn-ghost btn-sm" id="selectAllInvBtn">☑ Todos</button>
+          <span class="sell-bar-info"><strong id="selectedCount">0</strong> <span data-i18n="selected">selected</span></span>
+          <button class="btn btn-primary btn-sm" id="sellSelectedBtn" disabled>💰 <span data-i18n="sellSelected">Sell sel.</span></button>
+          <button class="btn btn-ghost btn-sm" id="selectAllInvBtn">☑ <span data-i18n="all">All</span></button>
         </div>
         <!-- Table -->
         <div class="items-table-wrap">
           <table class="items-table">
             <thead>
               <tr>
-                <th>✓</th><th>ID</th><th>Nombre</th><th>Marca</th><th>Color</th><th>Talla</th><th>Precio</th><th>Categoría</th><th>Acciones</th>
+                <th>✓</th><th data-i18n="id">ID</th><th data-i18n="name">Name</th><th data-i18n="brand">Brand</th><th data-i18n="color">Color</th><th data-i18n="size">Size</th><th data-i18n="price">Price</th><th data-i18n="category">Category</th><th data-i18n="actions">Actions</th>
               </tr>
             </thead>
             <tbody id="inventoryBody"></tbody>
           </table>
           <div id="inventoryEmpty" class="empty-state" style="display:none">
             <div class="empty-icon">🏷️</div>
-            <div class="empty-title">Inventario vacío</div>
-            <div class="empty-sub">Envía artículos desde el almacén</div>
+            <div class="empty-title" data-i18n="emptyInventoryTitle">Inventory empty</div>
+            <div class="empty-sub" data-i18n="emptyInventorySub">Move items from warehouse</div>
           </div>
         </div>
         <div class="export-row">
-          <button class="btn btn-ghost btn-sm" id="exportInventoryBtn">📤 Exportar CSV</button>
+          <button class="btn btn-ghost btn-sm" id="exportInventoryBtn">📤 <span data-i18n="exportCSV">Export CSV</span></button>
         </div>
       </div>
     </div>
 
-    <!-- VENDIDOS -->
+    <!-- SOLD -->
     <div class="panel-section" id="tab-sold">
       <div class="panel-card">
         <div class="panel-card-header">
-          <span class="panel-card-title">📋 Vendidos</span>
+          <span class="panel-card-title">📋 <span data-i18n="sold">Sold</span></span>
+          <div class="panel-card-actions">
+            <button class="btn btn-danger btn-sm" id="deleteAllSoldBtn" style="display:none">🗑 <span data-i18n="deleteAll">Delete All</span></button>
+          </div>
         </div>
         <!-- Table -->
         <div class="items-table-wrap">
           <table class="items-table">
             <thead>
               <tr>
-                <th>ID</th><th>Nombre</th><th>Marca</th><th>Color</th><th>Talla</th><th>Precio</th><th>Categoría</th><th>Método</th><th>Fecha</th>
+                <th data-i18n="id">ID</th><th data-i18n="name">Name</th><th data-i18n="brand">Brand</th><th data-i18n="color">Color</th><th data-i18n="size">Size</th><th data-i18n="price">Price</th><th data-i18n="category">Category</th><th data-i18n="method">Method</th><th data-i18n="date">Date</th>
               </tr>
             </thead>
             <tbody id="soldBody"></tbody>
           </table>
           <div id="soldEmpty" class="empty-state" style="display:none">
             <div class="empty-icon">📋</div>
-            <div class="empty-title">Sin ventas aún</div>
-            <div class="empty-sub">Las ventas aparecerán aquí</div>
+            <div class="empty-title" data-i18n="emptySoldTitle">No sales yet</div>
+            <div class="empty-sub" data-i18n="emptySoldSub">Sales will appear here</div>
           </div>
         </div>
         <div class="export-row">
-          <button class="btn btn-ghost btn-sm" id="exportSoldBtn">📤 Exportar CSV</button>
+          <button class="btn btn-ghost btn-sm" id="exportSoldBtn">📤 <span data-i18n="exportCSV">Export CSV</span></button>
         </div>
       </div>
     </div>
 
-    <!-- HISTORIAL -->
+    <!-- HISTORY -->
     <div class="panel-section" id="tab-history">
-      <!-- Log panel inside tab on mobile, separate on desktop -->
+      <!-- Log panel will be moved here on mobile -->
     </div>
 
   </div><!-- /panel-container -->
@@ -1171,8 +1192,8 @@
   <!-- LOG PANEL (desktop always visible, mobile inside tab) -->
   <div class="log-panel" id="logPanel">
     <div class="log-header">
-      <h3>📜 Historial de movimientos</h3>
-      <button class="btn btn-ghost btn-sm" id="clearLogsBtn" style="color:#94a3b8; background:rgba(255,255,255,0.08)">🗑 Limpiar</button>
+      <h3>📜 <span data-i18n="historyTitle">Movement history</span></h3>
+      <button class="btn btn-ghost btn-sm" id="clearLogsBtn" style="color:#94a3b8; background:rgba(255,255,255,0.08)">🗑 <span data-i18n="clear">Clear</span></button>
     </div>
     <div class="log-body" id="logContainer"></div>
   </div>
@@ -1182,23 +1203,23 @@
     <button class="nav-item active" data-nav="warehouse">
       <div class="nav-indicator"></div>
       <span class="nav-icon">📦</span>
-      <span>Almacén</span>
+      <span data-i18n="warehouse">Warehouse</span>
     </button>
     <button class="nav-item" data-nav="inventory">
       <div class="nav-indicator"></div>
       <span class="nav-icon">🏷️</span>
-      <span>Inventario</span>
+      <span data-i18n="inventory">Inventory</span>
       <span class="nav-badge" id="navBadgeInv" style="display:none">0</span>
     </button>
     <button class="nav-item" data-nav="sold">
       <div class="nav-indicator"></div>
       <span class="nav-icon">📋</span>
-      <span>Vendidos</span>
+      <span data-i18n="sold">Sold</span>
     </button>
     <button class="nav-item" data-nav="history">
       <div class="nav-indicator"></div>
       <span class="nav-icon">📜</span>
-      <span>Historial</span>
+      <span data-i18n="history">History</span>
     </button>
   </nav>
 
@@ -1208,18 +1229,18 @@
   <!-- ═══════════ MODAL: LOGIN ═══════════ -->
   <div class="modal-overlay center-modal" id="loginModal">
     <div class="modal-sheet" style="max-width:380px; border-radius: 28px;">
-      <div class="modal-title">🔐 Acceso Administrador</div>
+      <div class="modal-title">🔐 <span data-i18n="adminAccess">Admin Access</span></div>
       <div class="modal-form-group">
-        <label>Usuario</label>
-        <input class="form-input" id="loginUser" placeholder="Usuario" autocomplete="username">
+        <label data-i18n="username">Username</label>
+        <input class="form-input" id="loginUser" data-i18n-placeholder="username" placeholder="Username" autocomplete="username">
       </div>
       <div class="modal-form-group">
-        <label>Contraseña</label>
-        <input class="form-input" type="password" id="loginPass" placeholder="Contraseña" autocomplete="current-password">
+        <label data-i18n="password">Password</label>
+        <input class="form-input" type="password" id="loginPass" data-i18n-placeholder="password" placeholder="Password" autocomplete="current-password">
       </div>
       <div style="color:var(--danger); font-size:0.82rem; margin-bottom:0.8rem; min-height:1.2em" id="loginError"></div>
-      <button class="btn btn-primary btn-full" id="loginSubmit">Ingresar</button>
-      <button class="btn btn-ghost btn-full" style="margin-top:0.5rem" id="loginCancel">Cancelar</button>
+      <button class="btn btn-primary btn-full" id="loginSubmit"><span data-i18n="login">Login</span></button>
+      <button class="btn btn-ghost btn-full" style="margin-top:0.5rem" id="loginCancel"><span data-i18n="cancel">Cancel</span></button>
     </div>
   </div>
 
@@ -1227,19 +1248,19 @@
   <div class="modal-overlay" id="paymentModal">
     <div class="modal-sheet">
       <div class="modal-handle"></div>
-      <div class="modal-title">💳 Método de pago</div>
+      <div class="modal-title">💳 <span data-i18n="paymentMethod">Payment method</span></div>
       <div style="color:var(--text-muted); font-size:0.85rem; margin-bottom:0.5rem" id="paymentSummary"></div>
       <div class="payment-options">
         <button class="pay-btn" id="payCash">
           <span class="pay-icon">💵</span>
-          EFECTIVO
+          <span data-i18n="cash">CASH</span>
         </button>
         <button class="pay-btn" id="payCard">
           <span class="pay-icon">💳</span>
-          TARJETA
+          <span data-i18n="card">CARD</span>
         </button>
       </div>
-      <button class="btn btn-ghost btn-full" id="cancelPayment">Cancelar</button>
+      <button class="btn btn-ghost btn-full" id="cancelPayment"><span data-i18n="cancel">Cancel</span></button>
     </div>
   </div>
 
@@ -1247,21 +1268,23 @@
   <div class="modal-overlay" id="editModal">
     <div class="modal-sheet">
       <div class="modal-handle"></div>
-      <div class="modal-title">✏️ Editar producto</div>
+      <div class="modal-title">✏️ <span data-i18n="editProduct">Edit product</span></div>
       <form id="editForm">
         <input type="hidden" id="editInternalId">
         <input type="hidden" id="editType">
         <div class="form-grid">
-          <input class="form-input" id="editName" placeholder="Nombre *" required>
-          <input class="form-input" id="editBrand" placeholder="Marca *" required>
-          <input class="form-input" id="editColor" placeholder="Color *" required>
-          <input class="form-input" id="editProductId" placeholder="ID producto *" required>
-          <input class="form-input" id="editSize" placeholder="Talla">
-          <input class="form-input" type="number" id="editPrice" placeholder="Precio € *" step="0.01" required>
-          <select class="form-select" id="editCategory" required></select>
+          <input class="form-input" id="editName" data-i18n-placeholder="name" placeholder="Name *" required>
+          <input class="form-input" id="editBrand" data-i18n-placeholder="brand" placeholder="Brand *" required>
+          <input class="form-input" id="editColor" data-i18n-placeholder="color" placeholder="Color *" required>
+          <input class="form-input" id="editProductId" data-i18n-placeholder="productId" placeholder="Product ID *" required>
+          <input class="form-input" id="editSize" data-i18n-placeholder="size" placeholder="Size">
+          <input class="form-input" type="number" id="editPrice" data-i18n-placeholder="price" placeholder="Price € *" step="0.01" required>
+          <select class="form-select" id="editCategory" required>
+            <option value="" data-i18n="selectCategory">— Category —</option>
+          </select>
         </div>
-        <button type="submit" class="btn btn-primary btn-full" style="margin-top:0.5rem">💾 Guardar cambios</button>
-        <button type="button" class="btn btn-ghost btn-full" style="margin-top:0.5rem" id="cancelEdit">Cancelar</button>
+        <button type="submit" class="btn btn-primary btn-full" style="margin-top:0.5rem">💾 <span data-i18n="saveChanges">Save changes</span></button>
+        <button type="button" class="btn btn-ghost btn-full" style="margin-top:0.5rem" id="cancelEdit"><span data-i18n="cancel">Cancel</span></button>
       </form>
     </div>
   </div>
@@ -1269,11 +1292,11 @@
   <!-- ═══════════ MODAL: CONFIRM ═══════════ -->
   <div class="modal-overlay center-modal confirm-dialog" id="confirmModal">
     <div class="modal-sheet" style="max-width:360px; border-radius:28px;">
-      <div class="modal-title" id="confirmTitle">¿Confirmar acción?</div>
+      <div class="modal-title" id="confirmTitle"><span data-i18n="confirmAction">Confirm action?</span></div>
       <p class="confirm-text" id="confirmText"></p>
       <div class="confirm-actions">
-        <button class="btn btn-ghost" style="flex:1" id="confirmCancel">Cancelar</button>
-        <button class="btn btn-danger" style="flex:1" id="confirmOk">Confirmar</button>
+        <button class="btn btn-ghost" style="flex:1" id="confirmCancel"><span data-i18n="cancel">Cancel</span></button>
+        <button class="btn btn-danger" style="flex:1" id="confirmOk"><span data-i18n="confirm">Confirm</span></button>
       </div>
     </div>
   </div>
@@ -1282,33 +1305,33 @@
   <div class="modal-overlay stats-overlay" id="statsModal">
     <div class="modal-sheet">
       <div class="modal-handle"></div>
-      <div class="modal-title">📊 Estadísticas de ventas</div>
+      <div class="modal-title">📊 <span data-i18n="salesStats">Sales statistics</span></div>
       <div class="stats-period-tabs">
-        <button class="period-btn active" data-period="day">Hoy</button>
-        <button class="period-btn" data-period="week">Semana</button>
-        <button class="period-btn" data-period="month">Mes</button>
-        <button class="period-btn" data-period="year">Año</button>
-        <button class="period-btn" data-period="all">Todo</button>
+        <button class="period-btn active" data-period="day"><span data-i18n="today">Today</span></button>
+        <button class="period-btn" data-period="week"><span data-i18n="week">Week</span></button>
+        <button class="period-btn" data-period="month"><span data-i18n="month">Month</span></button>
+        <button class="period-btn" data-period="year"><span data-i18n="year">Year</span></button>
+        <button class="period-btn" data-period="all"><span data-i18n="all">All</span></button>
       </div>
       <div class="stats-summary-grid">
         <div class="stats-kpi">
           <div class="stats-kpi-val" id="kpiUnits">0</div>
-          <div class="stats-kpi-label">Unidades</div>
+          <div class="stats-kpi-label" data-i18n="units">Units</div>
         </div>
         <div class="stats-kpi">
           <div class="stats-kpi-val green" id="kpiRevenue">0 €</div>
-          <div class="stats-kpi-label">Ingresos</div>
+          <div class="stats-kpi-label" data-i18n="revenue">Revenue</div>
         </div>
         <div class="stats-kpi">
           <div class="stats-kpi-val" id="kpiAvg">0 €</div>
-          <div class="stats-kpi-label">Ticket medio</div>
+          <div class="stats-kpi-label" data-i18n="avgTicket">Avg. ticket</div>
         </div>
       </div>
       <div class="chart-container">
         <canvas id="statsChart"></canvas>
       </div>
       <div id="statsInsights"></div>
-      <button class="btn btn-ghost btn-full" id="closeStats">Cerrar</button>
+      <button class="btn btn-ghost btn-full" id="closeStats"><span data-i18n="close">Close</span></button>
     </div>
   </div>
 
@@ -1320,8 +1343,9 @@
     // ─── CONSTANTES ───
     const AUTH_USER = 'Clarence';
     const AUTH_PASS = 'Clarense';
-    const menCats = ["T-shirts (Men)","Jeans (Men)","Shorts (Men)","Shirts (Men)","Suits (Men)","Blazers (Men)","Taes (Men)","Pants (Men)","Shoes (Men)","Snickers (Men)","Boxers (Men)","Socks (Men)","Belts (Men)","Watches (Men)","Wallets (Men)","Sandals (Men)","Back Pack (Men)"];
-    const womenCats = ["Fancy Dress (Women)","Casual Dress (Women)","Skirt (Women)","T-shirts (Women)","Jeans (Women)","Shorts (Women)","Shirts (Women)","Suits (Women)","Blazers (Women)","Taes (Women)","Pants (Women)","Shoes (Women)","Snickers (Women)","Sandals (Women)","Bras (Women)","Panties (Women)","Jewels (Women)","Purses (Women)","Back pack (Women)","Sunglasses (Women)","Hat (Women)","Makeups (Women)","Skincares (Women)"];
+    // Fixed categories: "Backpack" instead of "Back Pack"
+    const menCats = ["T-shirts (Men)","Jeans (Men)","Shorts (Men)","Shirts (Men)","Suits (Men)","Blazers (Men)","Taes (Men)","Pants (Men)","Shoes (Men)","Snickers (Men)","Boxers (Men)","Socks (Men)","Belts (Men)","Watches (Men)","Wallets (Men)","Sandals (Men)","Backpack (Men)"];
+    const womenCats = ["Fancy Dress (Women)","Casual Dress (Women)","Skirt (Women)","T-shirts (Women)","Jeans (Women)","Shorts (Women)","Shirts (Women)","Suits (Women)","Blazers (Women)","Taes (Women)","Pants (Women)","Shoes (Women)","Snickers (Women)","Sandals (Women)","Bras (Women)","Panties (Women)","Jewels (Women)","Purses (Women)","Backpack (Women)","Sunglasses (Women)","Hat (Women)","Makeups (Women)","Skincares (Women)"];
     const ALL_CATEGORIES = [...menCats, ...womenCats];
     const STORAGE = { w:'clarance_warehouse', i:'clarance_inventory', s:'clarance_sold', l:'clarance_logs' };
 
@@ -1335,6 +1359,149 @@
     let statsChartInst = null;
     let deferredInstallPrompt = null;
     let confirmResolve = null;
+    let currentLang = 'en'; // 'en' or 'es'
+
+    // ─── TRADUCCIONES ───
+    const i18n = {
+      en: {
+        headerSub: 'Integrated Management',
+        stats: 'Stats',
+        admin: 'Admin',
+        logout: 'Logout',
+        installTitle: 'Install Clarance',
+        installSub: 'Add the app to your home screen',
+        install: 'Install',
+        stockAlerts: '🔔 Stock alerts',
+        warehouse: 'Warehouse',
+        inventory: 'Inventory',
+        sold: 'Sold',
+        revenue: 'Revenue',
+        items: 'items',
+        available: 'available',
+        totalSales: 'total sales',
+        history: 'History',
+        new: 'New',
+        name: 'Name',
+        brand: 'Brand',
+        color: 'Color',
+        productId: 'Product ID',
+        size: 'Size',
+        price: 'Price',
+        category: 'Category',
+        selectCategory: '— Category —',
+        addProduct: 'Add product',
+        id: 'ID',
+        actions: 'Actions',
+        emptyWarehouseTitle: 'Warehouse empty',
+        emptyWarehouseSub: 'Add products with the ➕ New button',
+        emptyInventoryTitle: 'Inventory empty',
+        emptyInventorySub: 'Move items from warehouse',
+        emptySoldTitle: 'No sales yet',
+        emptySoldSub: 'Sales will appear here',
+        exportCSV: 'Export CSV',
+        selected: 'selected',
+        sellSelected: 'Sell sel.',
+        all: 'All',
+        method: 'Method',
+        date: 'Date',
+        deleteAll: 'Delete All',
+        historyTitle: 'Movement history',
+        clear: 'Clear',
+        adminAccess: 'Admin Access',
+        username: 'Username',
+        password: 'Password',
+        login: 'Login',
+        cancel: 'Cancel',
+        paymentMethod: 'Payment method',
+        cash: 'CASH',
+        card: 'CARD',
+        editProduct: 'Edit product',
+        saveChanges: 'Save changes',
+        confirmAction: 'Confirm action?',
+        confirm: 'Confirm',
+        salesStats: 'Sales statistics',
+        today: 'Today',
+        week: 'Week',
+        month: 'Month',
+        year: 'Year',
+        all: 'All',
+        units: 'Units',
+        avgTicket: 'Avg. ticket',
+        close: 'Close',
+        search: 'Search',
+        // for toasts (some are dynamic, but we'll keep simple)
+        toastSold: '✅ Sale completed',
+        toastError: '❌ Error',
+        toastWarning: '⚠️ Warning',
+      },
+      es: {
+        headerSub: 'Gestión Integral',
+        stats: 'Stats',
+        admin: 'Admin',
+        logout: 'Salir',
+        installTitle: 'Instalar Clarance',
+        installSub: 'Añade la app a tu pantalla de inicio',
+        install: 'Instalar',
+        stockAlerts: '🔔 Alertas de stock',
+        warehouse: 'Almacén',
+        inventory: 'Inventario',
+        sold: 'Vendidos',
+        revenue: 'Ingresos',
+        items: 'artículos',
+        available: 'disponibles',
+        totalSales: 'total ventas',
+        history: 'Historial',
+        new: 'Nuevo',
+        name: 'Nombre',
+        brand: 'Marca',
+        color: 'Color',
+        productId: 'ID producto',
+        size: 'Talla',
+        price: 'Precio',
+        category: 'Categoría',
+        selectCategory: '— Categoría —',
+        addProduct: 'Agregar producto',
+        id: 'ID',
+        actions: 'Acciones',
+        emptyWarehouseTitle: 'Almacén vacío',
+        emptyWarehouseSub: 'Agrega productos con el botón ➕ Nuevo',
+        emptyInventoryTitle: 'Inventario vacío',
+        emptyInventorySub: 'Envía artículos desde el almacén',
+        emptySoldTitle: 'Sin ventas aún',
+        emptySoldSub: 'Las ventas aparecerán aquí',
+        exportCSV: 'Exportar CSV',
+        selected: 'seleccionados',
+        sellSelected: 'Vender sel.',
+        all: 'Todos',
+        method: 'Método',
+        date: 'Fecha',
+        deleteAll: 'Borrar todas',
+        historyTitle: 'Historial de movimientos',
+        clear: 'Limpiar',
+        adminAccess: 'Acceso Administrador',
+        username: 'Usuario',
+        password: 'Contraseña',
+        login: 'Ingresar',
+        cancel: 'Cancelar',
+        paymentMethod: 'Método de pago',
+        cash: 'EFECTIVO',
+        card: 'TARJETA',
+        editProduct: 'Editar producto',
+        saveChanges: 'Guardar cambios',
+        confirmAction: '¿Confirmar acción?',
+        confirm: 'Confirmar',
+        salesStats: 'Estadísticas de ventas',
+        today: 'Hoy',
+        week: 'Semana',
+        month: 'Mes',
+        year: 'Año',
+        all: 'Todo',
+        units: 'Unidades',
+        avgTicket: 'Ticket medio',
+        close: 'Cerrar',
+        search: 'Buscar',
+      }
+    };
 
     // ─── UTILIDADES ───
     const $ = id => document.getElementById(id);
@@ -1345,23 +1512,24 @@
     const uid = () => Date.now() + '-' + Math.random().toString(36).substr(2, 6);
     const fmt = n => typeof n === 'number' ? n.toFixed(2).replace('.', ',') : '—';
 
-    // ─── TOAST ───
+    // ─── TOAST (with simple translation support) ───
     function toast(msg, type = 'default', duration = 2800) {
       const el = document.createElement('div');
       el.className = `toast${type !== 'default' ? ' ' + type : ''}`;
       const icons = { success: '✅', error: '❌', warning: '⚠️' };
+      // For common messages, we could translate, but keep simple
       el.textContent = (icons[type] || '') + (icons[type] ? ' ' : '') + msg;
       $('toastContainer').appendChild(el);
       setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity 0.3s'; setTimeout(() => el.remove(), 300); }, duration);
     }
 
     // ─── CONFIRM MODAL ───
-    function showConfirm(title, text, okLabel = 'Confirmar', danger = true) {
+    function showConfirm(title, text, okLabel = 'Confirm', danger = true) {
       return new Promise(resolve => {
         confirmResolve = resolve;
-        $('confirmTitle').textContent = title;
+        $('confirmTitle').innerHTML = title; // title already translated if needed
         $('confirmText').textContent = text;
-        $('confirmOk').textContent = okLabel;
+        $('confirmOk').innerHTML = okLabel;
         $('confirmOk').className = `btn ${danger ? 'btn-danger' : 'btn-primary'}`;
         $('confirmOk').style.flex = '1';
         openModal('confirmModal');
@@ -1390,7 +1558,7 @@
       localStorage.setItem(STORAGE.l, JSON.stringify(logs));
     }
 
-    // ─── LOGS ───
+    // ─── LOGS (incluye marca) ───
     function addLog(action, details) {
       const ts = new Date().toLocaleString('es-ES', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit' });
       logs.unshift({ ts, action, details });
@@ -1412,13 +1580,13 @@
           alertCount++;
           const chip = document.createElement('span');
           chip.className = `notify-chip ${n === 0 ? 'danger' : 'warning'}`;
-          chip.textContent = `${cat}: ${n === 0 ? '⚠️ AGOTADO' : n + ' restantes'}`;
+          chip.textContent = `${cat}: ${n === 0 ? '⚠️ OUT' : n + ' left'}`;
           body.appendChild(chip);
         }
       });
       const dot = $('notifyDot');
       if (alertCount === 0) {
-        body.innerHTML = '<span class="notify-chip ok">✅ Todo el stock en niveles normales</span>';
+        body.innerHTML = '<span class="notify-chip ok">✅ All stock normal</span>';
         dot.className = 'notify-dot ok';
       } else {
         dot.className = 'notify-dot';
@@ -1483,7 +1651,7 @@
             <div class="action-btns">
               <button class="btn btn-ghost btn-sm action-btn" data-action="edit" data-type="inventory" data-id="${item.internalId}" ${!isAuth?'disabled':''}>✏️</button>
               <button class="btn btn-success btn-sm action-btn" data-action="sell" data-type="inventory" data-id="${item.internalId}" ${!isAuth?'disabled':''}>💰</button>
-              <button class="btn btn-warning btn-sm action-btn" data-action="back" data-type="inventory" data-id="${item.internalId}" ${!isAuth?'disabled':''} title="Devolver al almacén">↩️</button>
+              <button class="btn btn-warning btn-sm action-btn" data-action="back" data-type="inventory" data-id="${item.internalId}" ${!isAuth?'disabled':''} title="Return to warehouse">↩️</button>
               <button class="btn btn-danger btn-sm action-btn" data-action="delete" data-type="inventory" data-id="${item.internalId}" ${!isAuth?'disabled':''}>🗑</button>
             </div>
           </td>`;
@@ -1518,12 +1686,14 @@
       $('tabCountS').textContent = sold.length;
       const totalRev = sold.reduce((a,i) => a + (i.price||0), 0);
       $('statRevenue').textContent = fmt(totalRev) + ' €';
+      // Show/hide delete all button based on auth
+      $('deleteAllSoldBtn').style.display = isAuth ? 'inline-flex' : 'none';
     }
 
     function renderLogs() {
       const c = $('logContainer');
       if (!logs.length) {
-        c.innerHTML = '<div style="padding:1.5rem;text-align:center;color:#475569;font-size:0.82rem">Sin movimientos aún</div>';
+        c.innerHTML = '<div style="padding:1.5rem;text-align:center;color:#475569;font-size:0.82rem">' + (currentLang === 'en' ? 'No movements yet' : 'Sin movimientos aún') + '</div>';
         return;
       }
       c.innerHTML = logs.map(l => `<div class="log-entry"><span class="log-time">${esc(l.ts)}</span><span class="log-action">${esc(l.action)}</span><span class="log-details">${esc(l.details)}</span></div>`).join('');
@@ -1593,14 +1763,19 @@
       const arr = type === 'warehouse' ? warehouse : inventory;
       const item = arr.find(i => i.internalId === id);
       if (!item) return;
-      const ok = await showConfirm('¿Eliminar producto?', `Se eliminará "${item.name}" (${item.productId}) permanentemente.`, 'Eliminar', true);
+      const ok = await showConfirm(
+        currentLang === 'en' ? 'Delete product?' : '¿Eliminar producto?',
+        `${currentLang === 'en' ? 'Product' : 'Producto'} "${item.name}" (${item.productId}) ${currentLang === 'en' ? 'will be permanently deleted.' : 'será eliminado permanentemente.'}`,
+        currentLang === 'en' ? 'Delete' : 'Eliminar',
+        true
+      );
       if (!ok) return;
       const idx = arr.findIndex(i => i.internalId === id);
       arr.splice(idx, 1);
       save();
-      addLog('ELIMINADO', `${item.name} (${item.productId}) de ${type}`);
+      addLog('DELETED', `${item.name} (${item.productId}) - ${item.brand} from ${type}`);
       renderAll();
-      toast('Producto eliminado', 'warning');
+      toast(currentLang === 'en' ? 'Product deleted' : 'Producto eliminado', 'warning');
     }
 
     function moveToInventory(id) {
@@ -1610,9 +1785,9 @@
       const [item] = warehouse.splice(idx, 1);
       inventory.push(item);
       save();
-      addLog('ENVIADO A INVENTARIO', `${item.name} (${item.productId})`);
+      addLog('MOVED TO INVENTORY', `${item.name} (${item.productId}) - ${item.brand}`);
       renderAll();
-      toast(`📤 "${item.name}" enviado al inventario`, 'success');
+      toast(`📤 "${item.name}" ${currentLang === 'en' ? 'sent to inventory' : 'enviado al inventario'}`, 'success');
     }
 
     function moveBackToWarehouse(id) {
@@ -1622,9 +1797,9 @@
       const [item] = inventory.splice(idx, 1);
       warehouse.push(item);
       save();
-      addLog('DEVUELTO AL ALMACÉN', `${item.name} (${item.productId})`);
+      addLog('RETURNED TO WAREHOUSE', `${item.name} (${item.productId}) - ${item.brand}`);
       renderAll();
-      toast(`↩️ "${item.name}" devuelto al almacén`, 'default');
+      toast(`↩️ "${item.name}" ${currentLang === 'en' ? 'returned to warehouse' : 'devuelto al almacén'}`, 'default');
     }
 
     // ─── VENTAS ───
@@ -1633,7 +1808,7 @@
       pendingSaleIds = ids;
       const items = ids.map(id => inventory.find(i => i.internalId === id)).filter(Boolean);
       const total = items.reduce((a,i) => a + i.price, 0);
-      $('paymentSummary').textContent = `${items.length} artículo(s) · Total: ${fmt(total)} €`;
+      $('paymentSummary').textContent = `${items.length} ${currentLang === 'en' ? 'item(s)' : 'artículo(s)'} · Total: ${fmt(total)} €`;
       openModal('paymentModal');
     }
 
@@ -1649,22 +1824,23 @@
       toSell.forEach(item => { item.soldAt = now.toISOString(); item.payMethod = method; });
       sold.push(...toSell);
       save();
-      const detail = toSell.map(i => `${i.name} (${i.productId})`).join(', ');
-      addLog('VENTA', `${toSell.length} art. · ${method} · ${detail}`);
+      const detail = toSell.map(i => `${i.name} (${i.productId}) - ${i.brand}`).join(', ');
+      addLog('SALE', `${toSell.length} art. · ${method} · ${detail}`);
       renderAll();
       generarFactura(toSell, method);
-      toast(`✅ Venta completada · ${fmt(toSell.reduce((a,i)=>a+i.price,0))} €`, 'success');
+      toast(`✅ ${currentLang === 'en' ? 'Sale completed' : 'Venta completada'} · ${fmt(toSell.reduce((a,i)=>a+i.price,0))} €`, 'success');
       pendingSaleIds = [];
       closeModal('paymentModal');
     }
 
     function generarFactura(items, method) {
       const win = window.open('', '_blank');
-      if (!win) { toast('Activa ventanas emergentes para ver la factura', 'warning'); return; }
+      if (!win) { toast(currentLang === 'en' ? 'Enable pop-ups to see invoice' : 'Activa ventanas emergentes para ver la factura', 'warning'); return; }
       const total = items.reduce((a,i) => a+i.price, 0).toFixed(2);
       const fecha = new Date().toLocaleString('es-ES');
       const invoiceId = 'INV-' + Date.now();
-      win.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Factura · ${invoiceId}</title>
+      const backButtonText = currentLang === 'en' ? '← Back to Clarance' : '← Volver a Clarance';
+      win.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Invoice · ${invoiceId}</title>
       <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;padding:2rem;background:#f8fafc;color:#0f172a}
       .invoice-wrap{max-width:600px;margin:0 auto;background:white;border-radius:24px;padding:2.5rem;box-shadow:0 8px 32px rgba(0,0,0,0.1)}
       .inv-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:2px solid #e2e8f0}
@@ -1677,18 +1853,20 @@
       .total-row .total-label{font-size:0.9rem;opacity:0.8}
       .total-row .total-val{font-size:1.6rem;font-weight:800}
       .btn-print{display:block;width:100%;margin-top:1.5rem;padding:1rem;background:#0b253a;color:white;border:none;border-radius:40px;font-size:1rem;font-weight:700;cursor:pointer}
+      .btn-back{display:block;width:100%;margin-top:0.8rem;padding:0.8rem;background:#e2e8f0;color:#0f172a;border:none;border-radius:40px;font-size:0.9rem;font-weight:600;cursor:pointer;text-align:center;text-decoration:none}
       .footer{text-align:center;color:#94a3b8;font-size:0.78rem;margin-top:1.5rem}
-      @media print{.btn-print{display:none}body{background:white}}</style></head>
+      @media print{.btn-print,.btn-back{display:none}body{background:white}}</style></head>
       <body><div class="invoice-wrap">
-      <div class="inv-header"><div><h1>CLAR<span>ANCE</span></h1><p style="font-size:0.75rem;color:#64748b;margin-top:0.2rem">Gestión Integral · Factura de venta</p></div>
+      <div class="inv-header"><div><h1>CLAR<span>ANCE</span></h1><p style="font-size:0.75rem;color:#64748b;margin-top:0.2rem">Professional Management · Sales Invoice</p></div>
       <div class="inv-meta"><p><strong>${invoiceId}</strong></p><p>${fecha}</p></div></div>
-      <div class="method-badge">${method === 'EFECTIVO' ? '💵' : '💳'} Pagado con: ${method}</div>
-      <table><thead><tr><th>ID</th><th>Artículo</th><th>Marca</th><th>Color</th><th>Talla</th><th style="text-align:right">Precio</th></tr></thead><tbody>
+      <div class="method-badge">${method === 'EFECTIVO' ? '💵' : '💳'} Paid with: ${method}</div>
+      <table><thead><tr><th>ID</th><th>Item</th><th>Brand</th><th>Color</th><th>Size</th><th style="text-align:right">Price</th></tr></thead><tbody>
       ${items.map(i=>`<tr><td style="font-family:monospace;font-size:0.75rem;color:#64748b">${i.productId}</td><td style="font-weight:600">${i.name}</td><td>${i.brand}</td><td>${i.color}</td><td>${i.size||'—'}</td><td style="text-align:right;font-weight:700">${parseFloat(i.price).toFixed(2)} €</td></tr>`).join('')}
       </tbody></table>
-      <div class="total-row"><span class="total-label">TOTAL A PAGAR</span><span class="total-val">${total} €</span></div>
-      <button class="btn-print" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
-      <div class="footer">Gracias por su compra · Clarance © ${new Date().getFullYear()}</div>
+      <div class="total-row"><span class="total-label">TOTAL</span><span class="total-val">${total} €</span></div>
+      <button class="btn-print" onclick="window.print()">🖨️ Print / Save PDF</button>
+      <button class="btn-back" onclick="window.close()">${backButtonText}</button>
+      <div class="footer">Thank you for your purchase · Clarance © ${new Date().getFullYear()}</div>
       </div></body></html>`);
       win.document.close();
     }
@@ -1750,7 +1928,7 @@
         data: {
           labels,
           datasets: [{
-            label: 'Unidades vendidas',
+            label: 'Units sold',
             data,
             backgroundColor: colors.slice(0, data.length),
             borderRadius: 8,
@@ -1780,17 +1958,17 @@
       });
       const maxH = hourCount.indexOf(Math.max(...hourCount));
       const maxD = dayCount.indexOf(Math.max(...dayCount));
-      const dayNames = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+      const dayNames = currentLang === 'en' ? ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'] : ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
       const cashCount = filtered.filter(i => i.payMethod === 'EFECTIVO').length;
       const cardCount = filtered.filter(i => i.payMethod === 'TARJETA').length;
       const insightsEl = $('statsInsights');
       insightsEl.innerHTML = '';
       if (units > 0) {
         const insights = [
-          entries.length ? `<strong>${entries[0][0]}</strong> es la categoría más vendida con <strong>${entries[0][1]} uds.</strong>` : null,
-          `Hora pico de ventas: <strong>${maxH}:00 – ${maxH+1}:00h</strong>`,
-          `Día más activo: <strong>${dayNames[maxD]}</strong>`,
-          `Pagos: <strong>${cashCount} efectivo</strong> / <strong>${cardCount} tarjeta</strong>`
+          entries.length ? `<strong>${entries[0][0]}</strong> ${currentLang === 'en' ? 'is the best selling category with' : 'es la categoría más vendida con'} <strong>${entries[0][1]} uds.</strong>` : null,
+          `${currentLang === 'en' ? 'Peak hour:' : 'Hora pico:'} <strong>${maxH}:00 – ${maxH+1}:00h</strong>`,
+          `${currentLang === 'en' ? 'Most active day:' : 'Día más activo:'} <strong>${dayNames[maxD]}</strong>`,
+          `${currentLang === 'en' ? 'Payments:' : 'Pagos:'} <strong>${cashCount} cash</strong> / <strong>${cardCount} card</strong>`
         ].filter(Boolean);
         insights.forEach(text => {
           const div = document.createElement('div');
@@ -1799,13 +1977,13 @@
           insightsEl.appendChild(div);
         });
       } else {
-        insightsEl.innerHTML = '<div class="stats-insight"><span class="insight-icon">📭</span><span class="stats-insight-text">Sin datos de ventas en este período.</span></div>';
+        insightsEl.innerHTML = '<div class="stats-insight"><span class="insight-icon">📭</span><span class="stats-insight-text">' + (currentLang === 'en' ? 'No sales data for this period.' : 'Sin datos de ventas en este período.') + '</span></div>';
       }
     }
 
     // ─── EXPORT CSV ───
     function exportCSV(data, filename, cols) {
-      if (!data.length) { toast('No hay datos para exportar', 'warning'); return; }
+      if (!data.length) { toast(currentLang === 'en' ? 'No data to export' : 'No hay datos para exportar', 'warning'); return; }
       const header = cols.map(c => c.label).join(',');
       const rows = data.map(item => cols.map(c => `"${String(item[c.key]||'').replace(/"/g,'""')}"`).join(','));
       const csv = [header, ...rows].join('\n');
@@ -1815,12 +1993,12 @@
       a.href = url; a.download = filename;
       document.body.appendChild(a); a.click();
       document.body.removeChild(a); URL.revokeObjectURL(url);
-      toast('📤 Archivo CSV exportado', 'success');
+      toast('📤 ' + (currentLang === 'en' ? 'CSV file exported' : 'Archivo CSV exportado'), 'success');
     }
 
     const CSV_COLS = [
-      { label:'ID', key:'productId' }, { label:'Nombre', key:'name' }, { label:'Marca', key:'brand' },
-      { label:'Color', key:'color' }, { label:'Talla', key:'size' }, { label:'Precio', key:'price' }, { label:'Categoría', key:'category' }
+      { label:'ID', key:'productId' }, { label:'Name', key:'name' }, { label:'Brand', key:'brand' },
+      { label:'Color', key:'color' }, { label:'Size', key:'size' }, { label:'Price', key:'price' }, { label:'Category', key:'category' }
     ];
 
     // ─── FILL SELECTS ───
@@ -1829,9 +2007,34 @@
         const sel = $(id);
         if (!sel) return;
         const isFilter = id.includes('Filter');
-        sel.innerHTML = `<option value="">${isFilter ? 'Categoría' : '— Categoría —'}</option>` +
+        sel.innerHTML = `<option value="">${isFilter ? (currentLang==='en'?'Category':'Categoría') : (currentLang==='en'?'— Category —':'— Categoría —')}</option>` +
           ALL_CATEGORIES.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
       });
+    }
+
+    // ─── IDIOMA ───
+    function applyLanguage(lang) {
+      currentLang = lang;
+      document.documentElement.lang = lang;
+      // Update all elements with data-i18n
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (i18n[lang][key]) {
+          el.textContent = i18n[lang][key];
+        }
+      });
+      // Update placeholders
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (i18n[lang][key]) {
+          el.placeholder = i18n[lang][key];
+        }
+      });
+      // Update selects' first option (they are manually set above, but we also have options with data-i18n inside? we already filled selects, so we need to re-fill selects with translated placeholder)
+      fillSelects(); // this uses currentLang to set the placeholder option
+      renderLogs(); // update "No movements" message
+      // Update stats insights if modal open? not needed
+      // Update invoice back button text is dynamic when generating
     }
 
     // ─── PWA / SERVICE WORKER ───
@@ -1866,7 +2069,7 @@
     window.addEventListener('appinstalled', () => {
       $('installBanner').classList.remove('visible');
       deferredInstallPrompt = null;
-      toast('✅ Clarance instalada correctamente', 'success');
+      toast('✅ Clarance installed', 'success');
     });
     $('installBtn').addEventListener('click', () => {
       if (deferredInstallPrompt) {
@@ -1876,8 +2079,31 @@
     });
     $('installClose').addEventListener('click', () => $('installBanner').classList.remove('visible'));
 
+    // ─── DELETE ALL SOLD ───
+    async function deleteAllSold() {
+      if (!isAuth) return;
+      const ok = await showConfirm(
+        currentLang === 'en' ? 'Delete all sales?' : '¿Borrar todas las ventas?',
+        currentLang === 'en' ? 'All sold items will be permanently deleted. This action cannot be undone.' : 'Todos los artículos vendidos se eliminarán permanentemente. Esta acción no se puede deshacer.',
+        currentLang === 'en' ? 'Delete all' : 'Borrar todas',
+        true
+      );
+      if (!ok) return;
+      const count = sold.length;
+      sold = [];
+      save();
+      addLog('DELETE ALL SALES', `${count} records deleted`);
+      renderAll();
+      toast(currentLang === 'en' ? 'All sales deleted' : 'Ventas eliminadas', 'warning');
+    }
+
     // ─── EVENT LISTENERS ───
     function initEvents() {
+
+      // Language toggle
+      $('langToggle').addEventListener('click', () => {
+        applyLanguage(currentLang === 'en' ? 'es' : 'en');
+      });
 
       // Tabs
       document.querySelectorAll('.tab-btn, .nav-item').forEach(btn => {
@@ -1896,7 +2122,7 @@
       // Logout
       $('logoutBtn').addEventListener('click', () => {
         isAuth = false;
-        toast('Sesión cerrada', 'default');
+        toast(currentLang === 'en' ? 'Logged out' : 'Sesión cerrada', 'default');
         updateAuthUI();
       });
 
@@ -1924,7 +2150,7 @@
       // Add form toggle
       $('showAddBtn').addEventListener('click', () => {
         $('addFormArea').classList.toggle('visible');
-        $('showAddBtn').textContent = $('addFormArea').classList.contains('visible') ? '✕ Cerrar' : '➕ Nuevo';
+        $('showAddBtn').innerHTML = $('addFormArea').classList.contains('visible') ? '✕ ' + (currentLang==='en'?'Close':'Cerrar') : '➕ ' + (currentLang==='en'?'New':'Nuevo');
       });
 
       // Add product
@@ -1953,7 +2179,7 @@
 
       // Sell selected
       $('sellSelectedBtn').addEventListener('click', () => {
-        if (!isAuth) return toast('Autenticación requerida', 'error');
+        if (!isAuth) return toast(currentLang === 'en' ? 'Authentication required' : 'Autenticación requerida', 'error');
         const ids = Array.from(document.querySelectorAll('.inv-cb:checked')).map(cb => cb.value);
         if (ids.length) openPaymentModal(ids);
       });
@@ -1962,7 +2188,7 @@
       document.addEventListener('click', async e => {
         const btn = e.target.closest('.action-btn');
         if (!btn) return;
-        if (!isAuth) { toast('Autenticación requerida', 'error'); return; }
+        if (!isAuth) { toast(currentLang === 'en' ? 'Authentication required' : 'Autenticación requerida', 'error'); return; }
         const { action, type, id } = btn.dataset;
         if (action === 'delete') await deleteItem(type, id);
         else if (action === 'send') moveToInventory(id);
@@ -1989,23 +2215,31 @@
         item.price = parseFloat($('editPrice').value);
         item.category = $('editCategory').value;
         save();
-        addLog('EDITADO', `${oldDesc} → ${item.name} (${item.productId})`);
+        addLog('EDITED', `${oldDesc} → ${item.name} (${item.productId}) - ${item.brand}`);
         renderAll();
         closeModal('editModal');
-        toast('✅ Producto actualizado', 'success');
+        toast('✅ ' + (currentLang === 'en' ? 'Product updated' : 'Producto actualizado'), 'success');
       });
       $('cancelEdit').addEventListener('click', () => closeModal('editModal'));
 
       // Export
-      $('exportWarehouseBtn').addEventListener('click', () => exportCSV(warehouse, 'clarance_almacen.csv', CSV_COLS));
-      $('exportInventoryBtn').addEventListener('click', () => exportCSV(inventory, 'clarance_inventario.csv', CSV_COLS));
-      $('exportSoldBtn').addEventListener('click', () => exportCSV(sold, 'clarance_vendidos.csv', [...CSV_COLS, {label:'Método',key:'payMethod'},{label:'Fecha Venta',key:'soldAt'}]));
+      $('exportWarehouseBtn').addEventListener('click', () => exportCSV(warehouse, 'clarance_warehouse.csv', CSV_COLS));
+      $('exportInventoryBtn').addEventListener('click', () => exportCSV(inventory, 'clarance_inventory.csv', CSV_COLS));
+      $('exportSoldBtn').addEventListener('click', () => exportCSV(sold, 'clarance_sold.csv', [...CSV_COLS, {label:'Method',key:'payMethod'},{label:'Sale Date',key:'soldAt'}]));
 
       // Clear logs
       $('clearLogsBtn').addEventListener('click', async () => {
-        const ok = await showConfirm('¿Limpiar historial?', 'Se borrará todo el historial de movimientos. Esta acción no se puede deshacer.', 'Limpiar', true);
-        if (ok) { logs = []; save(); renderLogs(); toast('Historial limpiado', 'warning'); }
+        const ok = await showConfirm(
+          currentLang === 'en' ? 'Clear history?' : '¿Limpiar historial?',
+          currentLang === 'en' ? 'All movement history will be cleared. This cannot be undone.' : 'Se borrará todo el historial de movimientos. Esta acción no se puede deshacer.',
+          currentLang === 'en' ? 'Clear' : 'Limpiar',
+          true
+        );
+        if (ok) { logs = []; save(); renderLogs(); toast(currentLang === 'en' ? 'History cleared' : 'Historial limpiado', 'warning'); }
       });
+
+      // Delete all sold
+      $('deleteAllSoldBtn').addEventListener('click', deleteAllSold);
     }
 
     // ─── LOGIN ───
@@ -2019,16 +2253,16 @@
         $('loginUser').value = '';
         $('loginPass').value = '';
         updateAuthUI();
-        toast('✅ Bienvenido, administrador', 'success');
+        toast('✅ ' + (currentLang === 'en' ? 'Welcome, admin' : 'Bienvenido, administrador'), 'success');
       } else {
-        $('loginError').textContent = '⚠️ Usuario o contraseña incorrectos';
+        $('loginError').textContent = currentLang === 'en' ? '⚠️ Incorrect username or password' : '⚠️ Usuario o contraseña incorrectos';
         $('loginPass').value = '';
       }
     }
 
     // ─── ADD PRODUCT ───
     function addProduct() {
-      if (!isAuth) { toast('Autenticación requerida', 'error'); return; }
+      if (!isAuth) { toast(currentLang === 'en' ? 'Authentication required' : 'Autenticación requerida', 'error'); return; }
       const name = $('addName').value.trim();
       const brand = $('addBrand').value.trim();
       const color = $('addColor').value.trim();
@@ -2050,17 +2284,17 @@
       if (isNaN(price) || price <= 0) valid = false;
       $('addCategory').style.border = category ? '' : '1.5px solid var(--danger)';
       if (!category) valid = false;
-      if (!valid) { toast('Completa todos los campos obligatorios', 'error'); return; }
+      if (!valid) { toast(currentLang === 'en' ? 'Complete all required fields' : 'Completa todos los campos obligatorios', 'error'); return; }
 
       warehouse.push({ internalId: uid(), productId, name, brand, color, size, price, category });
       save();
-      addLog('AGREGADO', `${name} (${productId}) al almacén`);
+      addLog('ADDED', `${name} (${productId}) - ${brand} to warehouse`);
       // Clear
       ['addName','addBrand','addColor','addProductId','addSize','addPrice'].forEach(id => { $(id).value=''; $(id).classList.remove('error'); });
       $('addCategory').value = '';
       $('addCategory').style.border = '';
       renderAll();
-      toast(`✅ "${name}" agregado al almacén`, 'success');
+      toast(`✅ "${name}" ${currentLang === 'en' ? 'added to warehouse' : 'agregado al almacén'}`, 'success');
     }
 
     // ─── INIT ───
@@ -2069,6 +2303,7 @@
     initEvents();
     updateAuthUI();
     registerSW();
+    applyLanguage('en'); // default English
   })();
   </script>
 </body>
