@@ -130,32 +130,53 @@
     .filter-btn:hover{border-color:var(--accent);color:var(--accent)}
     .filter-btn.active{background:var(--accent);color:white;border-color:var(--accent)}
     .messages-count{font-size:.72rem;color:var(--gray);margin-bottom:.6rem}
-    .msg-list{display:flex;flex-direction:column;gap:.5rem;max-height:500px;overflow-y:auto;padding-right:.3rem}
+    .msg-list{display:flex;flex-direction:column;gap:.3rem;max-height:550px;overflow-y:auto;padding:.8rem;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border)}
     .msg-list::-webkit-scrollbar{width:4px}
     .msg-list::-webkit-scrollbar-track{background:var(--bg)}
     .msg-list::-webkit-scrollbar-thumb{background:var(--border-light);border-radius:4px}
-    .msg-item{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:.8rem;animation:slideIn .3s ease;transition:all .25s}
-    .msg-item:hover{border-color:var(--border-light);background:var(--bg-card-hover)}
-    .msg-item-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.4rem;gap:.5rem}
-    .msg-sender{display:flex;align-items:center;gap:.5rem;min-width:0}
-    .msg-sender-avatar{width:28px;height:28px;min-width:28px;border-radius:50%;background:var(--accent-glow);border:1px solid rgba(59,130,246,.3);display:flex;align-items:center;justify-content:center;font-size:.7rem;color:var(--accent)}
-    .msg-sender-info{min-width:0}
-    .msg-sender-id{font-size:.72rem;font-weight:600;color:var(--white-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
-    .msg-brand{display:inline-block;padding:.1rem .45rem;border-radius:var(--radius-pill);font-size:.58rem;font-weight:600;background:var(--accent-glow);color:var(--accent);border:1px solid rgba(59,130,246,.2);white-space:nowrap}
-    .msg-meta{display:flex;align-items:center;gap:.4rem;flex-shrink:0}
-    .msg-platform{padding:.1rem .4rem;border-radius:var(--radius-pill);font-size:.55rem;font-weight:700;text-transform:uppercase;background:rgba(59,130,246,.1);color:var(--accent);border:1px solid rgba(59,130,246,.15)}
-    .msg-time{font-size:.65rem;color:var(--gray);white-space:nowrap}
-    .msg-text{font-size:.85rem;color:var(--white);line-height:1.5;padding:.4rem .6rem;background:var(--bg);border-radius:8px;margin-top:.3rem;word-break:break-word}
+
+    /* Chat bubbles */
+    .msg-bubble{max-width:80%;padding:.5rem .75rem;border-radius:12px;position:relative;animation:fadeIn .3s ease;word-break:break-word}
+    .msg-row{display:flex;align-items:flex-end;gap:.4rem;margin-bottom:.15rem}
+    .msg-row.received{justify-content:flex-start}
+    .msg-row.sent{justify-content:flex-end}
+
+    /* Received = client (left, darker) */
+    .msg-row.received .msg-bubble{background:var(--bg-card);border:1px solid var(--border);border-bottom-left-radius:4px;color:var(--white)}
+    /* Sent = employee (right, green-ish) */
+    .msg-row.sent .msg-bubble{background:rgba(16,185,129,0.15);border:1px solid var(--green-border);border-bottom-right-radius:4px;color:var(--white)}
+
+    .msg-bubble-text{font-size:.85rem;line-height:1.5}
+    .msg-bubble-footer{display:flex;align-items:center;gap:.5rem;margin-top:.25rem;justify-content:flex-end}
+    .msg-bubble-time{font-size:.6rem;color:var(--gray);white-space:nowrap}
+    .msg-bubble-brand{font-size:.55rem;color:var(--accent);font-weight:600;white-space:nowrap}
+
+    .msg-avatar-sm{width:24px;height:24px;min-width:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;flex-shrink:0}
+    .msg-row.received .msg-avatar-sm{background:var(--accent-glow);color:var(--accent);border:1px solid rgba(59,130,246,.3)}
+    .msg-row.sent .msg-avatar-sm{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+
+    .msg-sender-label{font-size:.62rem;font-weight:700;margin-bottom:.15rem;padding-left:.3rem}
+    .msg-row.received .msg-sender-label{color:var(--accent)}
+    .msg-row.sent .msg-sender-label{color:var(--green);text-align:right;padding-right:.3rem;padding-left:0}
+
+    .msg-direction-tag{font-size:.5rem;font-weight:700;text-transform:uppercase;padding:.1rem .35rem;border-radius:4px;letter-spacing:.04em}
+    .msg-row.received .msg-direction-tag{background:var(--accent-glow);color:var(--accent)}
+    .msg-row.sent .msg-direction-tag{background:var(--green-bg);color:var(--green)}
+
+    .msg-date-divider{text-align:center;padding:.5rem 0;font-size:.62rem;color:var(--gray);font-weight:600;position:relative}
+    .msg-date-divider span{background:var(--bg);padding:0 .6rem;position:relative;z-index:1}
+    .msg-date-divider::before{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:var(--border)}
+
     .msg-empty{text-align:center;color:var(--gray);padding:2.5rem 1rem;font-size:.85rem}
     .msg-loading{text-align:center;padding:2rem;color:var(--gray)}
     .msg-loading i{animation:spin 1s linear infinite;margin-right:.4rem}
 
     @media(max-width:480px){
-      .msg-list{max-height:400px}
-      .msg-sender-id{max-width:100px}
-      .msg-item{padding:.65rem}
+      .msg-list{max-height:400px;padding:.5rem}
+      .msg-bubble{max-width:88%}
       .messages-filters{gap:.3rem}
       .filter-btn{padding:.25rem .5rem;font-size:.62rem}
+      .msg-bubble-text{font-size:.8rem}
     }
 
     /* ── ACTIVITY LOG ── */
@@ -553,28 +574,57 @@ function renderMessages() {
     msgList.innerHTML = '<div class="msg-empty"><i class="fas fa-comments" style="font-size:1.5rem;display:block;margin-bottom:.5rem;opacity:.4"></i>No messages' + (currentBrandFilter !== 'all' ? ' for ' + currentBrandFilter : '') + '</div>';
     return;
   }
-  msgList.innerHTML = filtered.map(m => {
-    const date = new Date(m.timestamp);
-    const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'America/Guyana' });
-    const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'America/Guyana' });
-    const senderShort = m.senderId ? m.senderId.slice(-6) : '???';
-    return '<div class="msg-item">' +
-      '<div class="msg-item-header">' +
-        '<div class="msg-sender">' +
-          '<div class="msg-sender-avatar"><i class="fas fa-user"></i></div>' +
-          '<div class="msg-sender-info">' +
-            '<div class="msg-sender-id">User …' + senderShort + '</div>' +
-            '<span class="msg-brand">' + (m.brand || 'Unknown') + '</span>' +
+
+  // Sort oldest first for chat view (conversation order)
+  var sorted = filtered.slice().sort(function(a, b) { return new Date(a.timestamp) - new Date(b.timestamp); });
+
+  var html = '';
+  var lastDate = '';
+
+  sorted.forEach(function(m) {
+    var date = new Date(m.timestamp);
+    var timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'America/Guyana' });
+    var dateStr = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'America/Guyana' });
+    var dir = m.direction === 'sent' ? 'sent' : 'received';
+
+    // Date divider
+    if (dateStr !== lastDate) {
+      html += '<div class="msg-date-divider"><span>' + dateStr + '</span></div>';
+      lastDate = dateStr;
+    }
+
+    var senderShort = m.senderId ? m.senderId.slice(-6) : '???';
+    var displayName = '';
+    var avatarContent = '';
+
+    if (dir === 'sent') {
+      displayName = m.brand || 'Staff';
+      avatarContent = '<i class="fas fa-store"></i>';
+    } else {
+      displayName = m.senderName && m.senderName !== 'Unknown' && m.senderName !== '' ? m.senderName : 'User …' + senderShort;
+      avatarContent = m.senderName && m.senderName !== 'Unknown' && m.senderName !== '' ? m.senderName.split(' ').map(function(w) { return w[0]; }).join('').toUpperCase().slice(0,2) : '<i class="fas fa-user"></i>';
+    }
+
+    html += '<div>' +
+      '<div class="msg-sender-label" style="' + (dir === 'sent' ? 'text-align:right;padding-right:2.2rem' : 'padding-left:2.2rem') + '">' + escapeHtml(displayName) + '</div>' +
+      '<div class="msg-row ' + dir + '">' +
+        (dir === 'received' ? '<div class="msg-avatar-sm">' + avatarContent + '</div>' : '') +
+        '<div class="msg-bubble">' +
+          '<div class="msg-bubble-text">' + escapeHtml(m.messageText || '') + '</div>' +
+          '<div class="msg-bubble-footer">' +
+            '<span class="msg-bubble-brand">' + escapeHtml(m.brand || '') + '</span>' +
+            '<span class="msg-direction-tag">' + (dir === 'sent' ? '<i class="fas fa-reply" style="margin-right:2px"></i> Sent' : '<i class="fas fa-inbox" style="margin-right:2px"></i> Received') + '</span>' +
+            '<span class="msg-bubble-time">' + timeStr + '</span>' +
           '</div>' +
         '</div>' +
-        '<div class="msg-meta">' +
-          '<span class="msg-platform"><i class="fab fa-facebook-messenger" style="margin-right:2px"></i> ' + (m.platform || 'Messenger') + '</span>' +
-          '<span class="msg-time">' + dateStr + ' · ' + timeStr + '</span>' +
-        '</div>' +
+        (dir === 'sent' ? '<div class="msg-avatar-sm">' + avatarContent + '</div>' : '') +
       '</div>' +
-      '<div class="msg-text">' + escapeHtml(m.messageText || '') + '</div>' +
     '</div>';
-  }).join('');
+  });
+
+  msgList.innerHTML = html;
+  // Auto-scroll to bottom (latest messages)
+  msgList.scrollTop = msgList.scrollHeight;
 }
 
 function escapeHtml(text) {
