@@ -121,6 +121,43 @@
     .team-card-grid .lbl{color:var(--gray);font-size:.6rem;text-transform:uppercase;letter-spacing:.05em;font-weight:600}
     .team-card-grid .val{color:var(--white-dim)}
 
+    /* ── MESSAGES SECTION ── */
+    .messages-section{margin-bottom:1.5rem}
+    .messages-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem;flex-wrap:wrap;gap:.5rem}
+    .messages-header .section-label{margin-bottom:0}
+    .messages-filters{display:flex;gap:.4rem;flex-wrap:wrap}
+    .filter-btn{padding:.3rem .7rem;border-radius:var(--radius-pill);border:1px solid var(--border);background:var(--bg-card);color:var(--gray-light);font-family:inherit;font-size:.68rem;font-weight:600;cursor:pointer;transition:all .25s;white-space:nowrap}
+    .filter-btn:hover{border-color:var(--accent);color:var(--accent)}
+    .filter-btn.active{background:var(--accent);color:white;border-color:var(--accent)}
+    .messages-count{font-size:.72rem;color:var(--gray);margin-bottom:.6rem}
+    .msg-list{display:flex;flex-direction:column;gap:.5rem;max-height:500px;overflow-y:auto;padding-right:.3rem}
+    .msg-list::-webkit-scrollbar{width:4px}
+    .msg-list::-webkit-scrollbar-track{background:var(--bg)}
+    .msg-list::-webkit-scrollbar-thumb{background:var(--border-light);border-radius:4px}
+    .msg-item{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:.8rem;animation:slideIn .3s ease;transition:all .25s}
+    .msg-item:hover{border-color:var(--border-light);background:var(--bg-card-hover)}
+    .msg-item-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.4rem;gap:.5rem}
+    .msg-sender{display:flex;align-items:center;gap:.5rem;min-width:0}
+    .msg-sender-avatar{width:28px;height:28px;min-width:28px;border-radius:50%;background:var(--accent-glow);border:1px solid rgba(59,130,246,.3);display:flex;align-items:center;justify-content:center;font-size:.7rem;color:var(--accent)}
+    .msg-sender-info{min-width:0}
+    .msg-sender-id{font-size:.72rem;font-weight:600;color:var(--white-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
+    .msg-brand{display:inline-block;padding:.1rem .45rem;border-radius:var(--radius-pill);font-size:.58rem;font-weight:600;background:var(--accent-glow);color:var(--accent);border:1px solid rgba(59,130,246,.2);white-space:nowrap}
+    .msg-meta{display:flex;align-items:center;gap:.4rem;flex-shrink:0}
+    .msg-platform{padding:.1rem .4rem;border-radius:var(--radius-pill);font-size:.55rem;font-weight:700;text-transform:uppercase;background:rgba(59,130,246,.1);color:var(--accent);border:1px solid rgba(59,130,246,.15)}
+    .msg-time{font-size:.65rem;color:var(--gray);white-space:nowrap}
+    .msg-text{font-size:.85rem;color:var(--white);line-height:1.5;padding:.4rem .6rem;background:var(--bg);border-radius:8px;margin-top:.3rem;word-break:break-word}
+    .msg-empty{text-align:center;color:var(--gray);padding:2.5rem 1rem;font-size:.85rem}
+    .msg-loading{text-align:center;padding:2rem;color:var(--gray)}
+    .msg-loading i{animation:spin 1s linear infinite;margin-right:.4rem}
+
+    @media(max-width:480px){
+      .msg-list{max-height:400px}
+      .msg-sender-id{max-width:100px}
+      .msg-item{padding:.65rem}
+      .messages-filters{gap:.3rem}
+      .filter-btn{padding:.25rem .5rem;font-size:.62rem}
+    }
+
     /* ── ACTIVITY LOG ── */
     .log-section{margin-bottom:2rem}
     .log-list{display:flex;flex-direction:column;gap:.4rem}
@@ -267,6 +304,23 @@
           <div style="text-align:center;color:var(--gray);padding:1.5rem;font-size:.85rem">Click Refresh to load team data</div>
         </div>
       </div>
+
+      <!-- MESSAGES SECTION -->
+      <div class="messages-section">
+        <div class="messages-header">
+          <div class="section-label">Messages <i class="fab fa-facebook-messenger" style="font-size:.8rem"></i></div>
+          <div style="display:flex;align-items:center;gap:.5rem">
+            <button class="btn-refresh" id="btnRefreshMessages" onclick="fetchMessages()"><i class="fas fa-sync-alt"></i> Refresh</button>
+          </div>
+        </div>
+        <div class="messages-filters" id="msgFilters">
+          <button class="filter-btn active" data-brand="all" onclick="filterMessages('all',this)">All Brands</button>
+        </div>
+        <div class="messages-count" id="msgCount"></div>
+        <div class="msg-list" id="msgList">
+          <div class="msg-empty"><i class="fas fa-comments" style="font-size:1.5rem;display:block;margin-bottom:.5rem;opacity:.4"></i>Click Refresh to load messages</div>
+        </div>
+      </div>
     </div>
 
     <div class="log-section">
@@ -282,7 +336,8 @@
 const API = {
   LOGIN: 'https://n8n-n8n.7toway.easypanel.host/webhook/caribzoom-login',
   ATTENDANCE: 'https://n8n-n8n.7toway.easypanel.host/webhook/caribzoom-attendance',
-  TEAM_STATUS: 'https://n8n-n8n.7toway.easypanel.host/webhook/caribzoom-team-status'
+  TEAM_STATUS: 'https://n8n-n8n.7toway.easypanel.host/webhook/caribzoom-team-status',
+  MESSAGES: 'https://n8n-n8n.7toway.easypanel.host/webhook/caribzoom-messages'
 };
 
 let currentUser = null;
@@ -335,7 +390,7 @@ function showDashboard() {
   document.getElementById('dashName').textContent = currentUser.name;
   document.getElementById('dashRole').textContent = currentUser.role.toUpperCase() + ' · ' + currentUser.brand.toUpperCase();
   document.getElementById('dashAvatar').textContent = currentUser.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-  if (currentUser.role === 'admin') { document.getElementById('adminSection').style.display = 'block'; fetchTeamStatus(); }
+  if (currentUser.role === 'admin') { document.getElementById('adminSection').style.display = 'block'; fetchTeamStatus(); fetchMessages(); }
   else { document.getElementById('adminSection').style.display = 'none'; }
   myStatus = 'idle'; activityLog = []; renderLog(); updateButtons(); updateStatusBadge();
 }
@@ -432,6 +487,97 @@ function renderTeamCards(team) {
     const lunch = e.lunchStart ? (e.lunchStart + (e.lunchEnd ? ' - ' + e.lunchEnd : ' (active)')) : '—';
     return '<div class="team-card"><div class="team-card-header"><span class="team-card-name">' + e.name + '</span><span class="emp-status ' + (sc[e.status]||'idle') + '">' + (sl[e.status]||'Unknown') + '</span></div><div style="margin-bottom:.3rem"><span class="brand-tag">' + e.brand + '</span></div><div class="team-card-grid"><div><span class="lbl">Clock In</span><br><span class="val">' + (e.clockIn||'—') + '</span></div><div><span class="lbl">Clock Out</span><br><span class="val">' + (e.clockOut||'—') + '</span></div><div><span class="lbl">Lunch</span><br><span class="val">' + lunch + '</span></div><div><span class="lbl">Total</span><br><span class="val" style="font-weight:700;color:' + (e.totalHours?'var(--green)':'var(--gray)') + '">' + (e.totalHours||'—') + '</span></div></div></div>';
   }).join('');
+}
+
+let allMessages = [];
+let currentBrandFilter = 'all';
+
+async function fetchMessages() {
+  const btn = document.getElementById('btnRefreshMessages');
+  const icon = btn ? btn.querySelector('.fa-sync-alt') : null;
+  const msgList = document.getElementById('msgList');
+  if (btn) btn.disabled = true;
+  if (icon) icon.classList.add('spinning');
+  msgList.innerHTML = '<div class="msg-loading"><i class="fas fa-spinner"></i> Loading messages...</div>';
+  try {
+    const res = await fetch(API.MESSAGES);
+    const data = await res.json();
+    if (data.success) {
+      allMessages = data.messages || [];
+      buildBrandFilters();
+      renderMessages();
+    } else {
+      msgList.innerHTML = '<div class="msg-empty">Error loading messages</div>';
+    }
+  } catch (e) {
+    console.error('Messages error:', e);
+    msgList.innerHTML = '<div class="msg-empty">Connection error. Try again.</div>';
+  }
+  if (btn) btn.disabled = false;
+  if (icon) icon.classList.remove('spinning');
+}
+
+function buildBrandFilters() {
+  const brands = [...new Set(allMessages.map(m => m.brand).filter(Boolean))];
+  const container = document.getElementById('msgFilters');
+  container.innerHTML = '<button class="filter-btn active" data-brand="all" onclick="filterMessages(\'all\',this)">All Brands</button>';
+  brands.sort().forEach(brand => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn';
+    btn.dataset.brand = brand;
+    btn.textContent = brand;
+    btn.onclick = function() { filterMessages(brand, this); };
+    container.appendChild(btn);
+  });
+}
+
+function filterMessages(brand, btnEl) {
+  currentBrandFilter = brand;
+  document.querySelectorAll('#msgFilters .filter-btn').forEach(b => b.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+  renderMessages();
+}
+
+function renderMessages() {
+  const msgList = document.getElementById('msgList');
+  const countEl = document.getElementById('msgCount');
+  let filtered = allMessages;
+  if (currentBrandFilter !== 'all') {
+    filtered = allMessages.filter(m => m.brand === currentBrandFilter);
+  }
+  countEl.textContent = filtered.length + ' message' + (filtered.length !== 1 ? 's' : '') + (currentBrandFilter !== 'all' ? ' · ' + currentBrandFilter : ' · All Brands');
+  if (!filtered.length) {
+    msgList.innerHTML = '<div class="msg-empty"><i class="fas fa-comments" style="font-size:1.5rem;display:block;margin-bottom:.5rem;opacity:.4"></i>No messages' + (currentBrandFilter !== 'all' ? ' for ' + currentBrandFilter : '') + '</div>';
+    return;
+  }
+  msgList.innerHTML = filtered.map(m => {
+    const date = new Date(m.timestamp);
+    const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'America/Guyana' });
+    const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'America/Guyana' });
+    const senderShort = m.senderId ? m.senderId.slice(-6) : '???';
+    return '<div class="msg-item">' +
+      '<div class="msg-item-header">' +
+        '<div class="msg-sender">' +
+          '<div class="msg-sender-avatar"><i class="fas fa-user"></i></div>' +
+          '<div class="msg-sender-info">' +
+            '<div class="msg-sender-id">User …' + senderShort + '</div>' +
+            '<span class="msg-brand">' + (m.brand || 'Unknown') + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="msg-meta">' +
+          '<span class="msg-platform"><i class="fab fa-facebook-messenger" style="margin-right:2px"></i> ' + (m.platform || 'Messenger') + '</span>' +
+          '<span class="msg-time">' + dateStr + ' · ' + timeStr + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="msg-text">' + escapeHtml(m.messageText || '') + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 function checkSession() {
