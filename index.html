@@ -594,14 +594,17 @@ function renderMessages() {
     }
 
     var senderShort = m.senderId ? m.senderId.slice(-6) : '???';
+    var clientName = m.senderName && m.senderName !== 'Unknown' && m.senderName !== '' ? m.senderName : 'User …' + senderShort;
     var displayName = '';
     var avatarContent = '';
+    var replyTo = '';
 
     if (dir === 'sent') {
       displayName = m.brand || 'Staff';
       avatarContent = '<i class="fas fa-store"></i>';
+      replyTo = '<div style="font-size:.62rem;color:var(--green);margin-bottom:.2rem;display:flex;align-items:center;gap:.3rem"><i class="fas fa-reply" style="font-size:.5rem"></i> Reply to <strong>' + escapeHtml(clientName) + '</strong></div>';
     } else {
-      displayName = m.senderName && m.senderName !== 'Unknown' && m.senderName !== '' ? m.senderName : 'User …' + senderShort;
+      displayName = clientName;
       avatarContent = m.senderName && m.senderName !== 'Unknown' && m.senderName !== '' ? m.senderName.split(' ').map(function(w) { return w[0]; }).join('').toUpperCase().slice(0,2) : '<i class="fas fa-user"></i>';
     }
 
@@ -610,6 +613,7 @@ function renderMessages() {
       '<div class="msg-row ' + dir + '">' +
         (dir === 'received' ? '<div class="msg-avatar-sm">' + avatarContent + '</div>' : '') +
         '<div class="msg-bubble">' +
+          replyTo +
           '<div class="msg-bubble-text">' + escapeHtml(m.messageText || '') + '</div>' +
           '<div class="msg-bubble-footer">' +
             '<span class="msg-bubble-brand">' + escapeHtml(m.brand || '') + '</span>' +
