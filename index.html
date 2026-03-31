@@ -560,7 +560,8 @@ async function fetchMessages() {
   document.getElementById('inboxList').innerHTML = '<div class="msg-loading"><i class="fas fa-spinner"></i> Loading...</div>';
   try {
     var res = await fetch(API.MESSAGES);
-    var data = await res.json();
+    var raw = await res.json();
+var data = Array.isArray(raw) ? raw[0] : raw;
     if (data.success) {
       allMessages = data.messages || [];
       buildConversations();
