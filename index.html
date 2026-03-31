@@ -125,58 +125,74 @@
     .messages-section{margin-bottom:1.5rem}
     .messages-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem;flex-wrap:wrap;gap:.5rem}
     .messages-header .section-label{margin-bottom:0}
-    .messages-filters{display:flex;gap:.4rem;flex-wrap:wrap}
+    .messages-filters{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.5rem}
     .filter-btn{padding:.3rem .7rem;border-radius:var(--radius-pill);border:1px solid var(--border);background:var(--bg-card);color:var(--gray-light);font-family:inherit;font-size:.68rem;font-weight:600;cursor:pointer;transition:all .25s;white-space:nowrap}
     .filter-btn:hover{border-color:var(--accent);color:var(--accent)}
     .filter-btn.active{background:var(--accent);color:white;border-color:var(--accent)}
+    .filter-btn .badge{display:inline-flex;align-items:center;justify-content:center;min-width:16px;height:16px;padding:0 4px;border-radius:8px;font-size:.55rem;font-weight:800;margin-left:4px}
+    .filter-btn .badge{background:rgba(255,255,255,.2);color:white}
+    .filter-btn:not(.active) .badge{background:var(--accent-glow);color:var(--accent)}
     .messages-count{font-size:.72rem;color:var(--gray);margin-bottom:.6rem}
-    .msg-list{display:flex;flex-direction:column;gap:.3rem;max-height:550px;overflow-y:auto;padding:.8rem;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border)}
-    .msg-list::-webkit-scrollbar{width:4px}
-    .msg-list::-webkit-scrollbar-track{background:var(--bg)}
-    .msg-list::-webkit-scrollbar-thumb{background:var(--border-light);border-radius:4px}
+
+    /* Inbox layout */
+    .inbox-container{display:grid;grid-template-columns:320px 1fr;height:550px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:var(--bg)}
+    .inbox-list{border-right:1px solid var(--border);overflow-y:auto;background:var(--bg-card)}
+    .inbox-list::-webkit-scrollbar{width:3px}
+    .inbox-list::-webkit-scrollbar-thumb{background:var(--border-light);border-radius:3px}
+    .inbox-item{display:flex;align-items:center;gap:.6rem;padding:.7rem .8rem;border-bottom:1px solid var(--border);cursor:pointer;transition:all .2s}
+    .inbox-item:hover{background:var(--bg-card-hover)}
+    .inbox-item.active{background:var(--accent-glow);border-left:3px solid var(--accent)}
+    .inbox-avatar{width:36px;height:36px;min-width:36px;border-radius:50%;background:var(--accent-glow);border:1px solid rgba(59,130,246,.3);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--accent)}
+    .inbox-info{flex:1;min-width:0}
+    .inbox-name{font-size:.8rem;font-weight:700;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .inbox-preview{font-size:.68rem;color:var(--gray);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:.1rem}
+    .inbox-meta{display:flex;flex-direction:column;align-items:flex-end;gap:.2rem;flex-shrink:0}
+    .inbox-time{font-size:.58rem;color:var(--gray);white-space:nowrap}
+    .inbox-brand-tag{font-size:.5rem;padding:.1rem .35rem;border-radius:4px;font-weight:700;background:var(--accent-glow);color:var(--accent);white-space:nowrap;max-width:80px;overflow:hidden;text-overflow:ellipsis}
+    .inbox-unread{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0}
+    .inbox-msg-count{font-size:.55rem;font-weight:800;color:var(--accent);background:var(--accent-glow);border-radius:8px;padding:0 5px;min-width:18px;text-align:center}
+
+    /* Chat panel */
+    .chat-panel{display:flex;flex-direction:column;background:var(--bg)}
+    .chat-header{padding:.6rem .8rem;border-bottom:1px solid var(--border);background:var(--bg-card);display:flex;align-items:center;gap:.5rem}
+    .chat-header-name{font-size:.85rem;font-weight:700;color:var(--white)}
+    .chat-header-brand{font-size:.6rem;color:var(--accent);font-weight:600}
+    .chat-header-info{flex:1}
+    .chat-body{flex:1;overflow-y:auto;padding:.8rem;display:flex;flex-direction:column;gap:.3rem}
+    .chat-body::-webkit-scrollbar{width:3px}
+    .chat-body::-webkit-scrollbar-thumb{background:var(--border-light);border-radius:3px}
+    .chat-empty{display:flex;align-items:center;justify-content:center;height:100%;color:var(--gray);font-size:.85rem;flex-direction:column;gap:.5rem}
 
     /* Chat bubbles */
-    .msg-bubble{max-width:80%;padding:.5rem .75rem;border-radius:12px;position:relative;animation:fadeIn .3s ease;word-break:break-word}
+    .msg-bubble{max-width:80%;padding:.5rem .75rem;border-radius:12px;position:relative;word-break:break-word}
     .msg-row{display:flex;align-items:flex-end;gap:.4rem;margin-bottom:.15rem}
     .msg-row.received{justify-content:flex-start}
     .msg-row.sent{justify-content:flex-end}
-
-    /* Received = client (left, darker) */
     .msg-row.received .msg-bubble{background:var(--bg-card);border:1px solid var(--border);border-bottom-left-radius:4px;color:var(--white)}
-    /* Sent = employee (right, green-ish) */
     .msg-row.sent .msg-bubble{background:rgba(16,185,129,0.15);border:1px solid var(--green-border);border-bottom-right-radius:4px;color:var(--white)}
-
-    .msg-bubble-text{font-size:.85rem;line-height:1.5}
-    .msg-bubble-footer{display:flex;align-items:center;gap:.5rem;margin-top:.25rem;justify-content:flex-end}
-    .msg-bubble-time{font-size:.6rem;color:var(--gray);white-space:nowrap}
-    .msg-bubble-brand{font-size:.55rem;color:var(--accent);font-weight:600;white-space:nowrap}
-
-    .msg-avatar-sm{width:24px;height:24px;min-width:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;flex-shrink:0}
-    .msg-row.received .msg-avatar-sm{background:var(--accent-glow);color:var(--accent);border:1px solid rgba(59,130,246,.3)}
-    .msg-row.sent .msg-avatar-sm{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
-
-    .msg-sender-label{font-size:.62rem;font-weight:700;margin-bottom:.15rem;padding-left:.3rem}
-    .msg-row.received .msg-sender-label{color:var(--accent)}
-    .msg-row.sent .msg-sender-label{color:var(--green);text-align:right;padding-right:.3rem;padding-left:0}
-
-    .msg-direction-tag{font-size:.5rem;font-weight:700;text-transform:uppercase;padding:.1rem .35rem;border-radius:4px;letter-spacing:.04em}
-    .msg-row.received .msg-direction-tag{background:var(--accent-glow);color:var(--accent)}
-    .msg-row.sent .msg-direction-tag{background:var(--green-bg);color:var(--green)}
-
-    .msg-date-divider{text-align:center;padding:.5rem 0;font-size:.62rem;color:var(--gray);font-weight:600;position:relative}
-    .msg-date-divider span{background:var(--bg);padding:0 .6rem;position:relative;z-index:1}
+    .msg-bubble-text{font-size:.82rem;line-height:1.5}
+    .msg-bubble-footer{display:flex;align-items:center;gap:.4rem;margin-top:.2rem;justify-content:flex-end}
+    .msg-bubble-time{font-size:.55rem;color:var(--gray);white-space:nowrap}
+    .msg-date-divider{text-align:center;padding:.4rem 0;font-size:.58rem;color:var(--gray);font-weight:600;position:relative}
+    .msg-date-divider span{background:var(--bg);padding:0 .5rem;position:relative;z-index:1}
     .msg-date-divider::before{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:var(--border)}
-
     .msg-empty{text-align:center;color:var(--gray);padding:2.5rem 1rem;font-size:.85rem}
     .msg-loading{text-align:center;padding:2rem;color:var(--gray)}
     .msg-loading i{animation:spin 1s linear infinite;margin-right:.4rem}
 
+    @media(max-width:768px){
+      .inbox-container{grid-template-columns:1fr;height:auto}
+      .inbox-list{max-height:300px;border-right:none;border-bottom:1px solid var(--border)}
+      .chat-panel{min-height:350px}
+    }
     @media(max-width:480px){
-      .msg-list{max-height:400px;padding:.5rem}
-      .msg-bubble{max-width:88%}
+      .inbox-container{height:auto}
+      .inbox-list{max-height:250px}
+      .chat-panel{min-height:300px}
+      .msg-bubble{max-width:90%}
+      .msg-bubble-text{font-size:.78rem}
       .messages-filters{gap:.3rem}
       .filter-btn{padding:.25rem .5rem;font-size:.62rem}
-      .msg-bubble-text{font-size:.8rem}
     }
 
     /* ── ACTIVITY LOG ── */
@@ -338,8 +354,22 @@
           <button class="filter-btn active" data-brand="all" onclick="filterMessages('all',this)">All Brands</button>
         </div>
         <div class="messages-count" id="msgCount"></div>
-        <div class="msg-list" id="msgList">
-          <div class="msg-empty"><i class="fas fa-comments" style="font-size:1.5rem;display:block;margin-bottom:.5rem;opacity:.4"></i>Click Refresh to load messages</div>
+        <div class="inbox-container">
+          <div class="inbox-list" id="inboxList">
+            <div class="msg-empty"><i class="fas fa-comments" style="font-size:1.2rem;opacity:.4"></i><br>Click Refresh to load</div>
+          </div>
+          <div class="chat-panel">
+            <div class="chat-header" id="chatHeader" style="display:none">
+              <div class="inbox-avatar" id="chatAvatar"><i class="fas fa-user"></i></div>
+              <div class="chat-header-info">
+                <div class="chat-header-name" id="chatName">Select a conversation</div>
+                <div class="chat-header-brand" id="chatBrand"></div>
+              </div>
+            </div>
+            <div class="chat-body" id="chatBody">
+              <div class="chat-empty"><i class="fas fa-comments" style="font-size:2rem;opacity:.3"></i><span>Select a conversation to view messages</span></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -515,41 +545,87 @@ function renderTeamCards(team) {
 
 let allMessages = [];
 let currentBrandFilter = 'all';
+let conversations = {};
+let activeConvoId = null;
 
 async function fetchMessages() {
-  const btn = document.getElementById('btnRefreshMessages');
-  const icon = btn ? btn.querySelector('.fa-sync-alt') : null;
-  const msgList = document.getElementById('msgList');
+  var btn = document.getElementById('btnRefreshMessages');
+  var icon = btn ? btn.querySelector('.fa-sync-alt') : null;
   if (btn) btn.disabled = true;
   if (icon) icon.classList.add('spinning');
-  msgList.innerHTML = '<div class="msg-loading"><i class="fas fa-spinner"></i> Loading messages...</div>';
+  document.getElementById('inboxList').innerHTML = '<div class="msg-loading"><i class="fas fa-spinner"></i> Loading...</div>';
   try {
-    const res = await fetch(API.MESSAGES);
-    const data = await res.json();
+    var res = await fetch(API.MESSAGES);
+    var data = await res.json();
     if (data.success) {
       allMessages = data.messages || [];
+      buildConversations();
       buildBrandFilters();
-      renderMessages();
-    } else {
-      msgList.innerHTML = '<div class="msg-empty">Error loading messages</div>';
+      renderInbox();
     }
-  } catch (e) {
-    console.error('Messages error:', e);
-    msgList.innerHTML = '<div class="msg-empty">Connection error. Try again.</div>';
-  }
+  } catch (e) { console.error('Messages error:', e); }
   if (btn) btn.disabled = false;
   if (icon) icon.classList.remove('spinning');
 }
 
+function buildConversations() {
+  conversations = {};
+  // Filter out duplicate mass messages (same text sent to many users within 2 min)
+  var seen = {};
+  var filtered = [];
+  allMessages.forEach(function(m) {
+    if (m.direction === 'sent') {
+      var key = m.messageText + '|' + m.brand;
+      if (!seen[key]) seen[key] = { count: 0, first: m.timestamp };
+      seen[key].count++;
+      // If same message sent to 5+ different users, likely mass message - only keep first 2
+      if (seen[key].count > 5) return;
+    }
+    filtered.push(m);
+  });
+
+  filtered.forEach(function(m) {
+    var convoKey = m.senderId + '|' + m.brand;
+    if (!conversations[convoKey]) {
+      conversations[convoKey] = {
+        id: convoKey,
+        senderId: m.senderId,
+        senderName: m.senderName,
+        brand: m.brand,
+        messages: [],
+        lastMessage: null,
+        lastTime: null,
+        unread: 0
+      };
+    }
+    var convo = conversations[convoKey];
+    convo.messages.push(m);
+    if (!convo.lastTime || new Date(m.timestamp) > new Date(convo.lastTime)) {
+      convo.lastTime = m.timestamp;
+      convo.lastMessage = m.messageText;
+    }
+    if (m.senderName && m.senderName !== 'Unknown' && m.senderName !== '') {
+      convo.senderName = m.senderName;
+    }
+    if (m.direction === 'received') convo.unread++;
+  });
+}
+
 function buildBrandFilters() {
-  const brands = [...new Set(allMessages.map(m => m.brand).filter(Boolean))];
-  const container = document.getElementById('msgFilters');
-  container.innerHTML = '<button class="filter-btn active" data-brand="all" onclick="filterMessages(\'all\',this)">All Brands</button>';
-  brands.sort().forEach(brand => {
-    const btn = document.createElement('button');
+  var brandCounts = {};
+  Object.values(conversations).forEach(function(c) {
+    if (!brandCounts[c.brand]) brandCounts[c.brand] = 0;
+    brandCounts[c.brand] += c.messages.length;
+  });
+  var container = document.getElementById('msgFilters');
+  var totalMsgs = allMessages.length;
+  container.innerHTML = '<button class="filter-btn active" data-brand="all" onclick="filterMessages(\'all\',this)">All <span class="badge">' + Object.keys(conversations).length + '</span></button>';
+  Object.keys(brandCounts).sort().forEach(function(brand) {
+    var convoCount = Object.values(conversations).filter(function(c) { return c.brand === brand; }).length;
+    var btn = document.createElement('button');
     btn.className = 'filter-btn';
     btn.dataset.brand = brand;
-    btn.textContent = brand;
+    btn.innerHTML = escapeHtml(brand) + ' <span class="badge">' + convoCount + '</span>';
     btn.onclick = function() { filterMessages(brand, this); };
     container.appendChild(btn);
   });
@@ -557,78 +633,110 @@ function buildBrandFilters() {
 
 function filterMessages(brand, btnEl) {
   currentBrandFilter = brand;
-  document.querySelectorAll('#msgFilters .filter-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#msgFilters .filter-btn').forEach(function(b) { b.classList.remove('active'); });
   if (btnEl) btnEl.classList.add('active');
-  renderMessages();
+  activeConvoId = null;
+  renderInbox();
+  document.getElementById('chatBody').innerHTML = '<div class="chat-empty"><i class="fas fa-comments" style="font-size:2rem;opacity:.3"></i><span>Select a conversation</span></div>';
+  document.getElementById('chatHeader').style.display = 'none';
 }
 
-function renderMessages() {
-  const msgList = document.getElementById('msgList');
-  const countEl = document.getElementById('msgCount');
-  let filtered = allMessages;
+function renderInbox() {
+  var list = document.getElementById('inboxList');
+  var countEl = document.getElementById('msgCount');
+  var convos = Object.values(conversations);
   if (currentBrandFilter !== 'all') {
-    filtered = allMessages.filter(m => m.brand === currentBrandFilter);
+    convos = convos.filter(function(c) { return c.brand === currentBrandFilter; });
   }
-  countEl.textContent = filtered.length + ' message' + (filtered.length !== 1 ? 's' : '') + (currentBrandFilter !== 'all' ? ' · ' + currentBrandFilter : ' · All Brands');
-  if (!filtered.length) {
-    msgList.innerHTML = '<div class="msg-empty"><i class="fas fa-comments" style="font-size:1.5rem;display:block;margin-bottom:.5rem;opacity:.4"></i>No messages' + (currentBrandFilter !== 'all' ? ' for ' + currentBrandFilter : '') + '</div>';
+  // Sort by last message time (newest first)
+  convos.sort(function(a, b) { return new Date(b.lastTime) - new Date(a.lastTime); });
+
+  var totalConvos = convos.length;
+  var totalMsgs = convos.reduce(function(sum, c) { return sum + c.messages.length; }, 0);
+  countEl.textContent = totalConvos + ' conversation' + (totalConvos !== 1 ? 's' : '') + ' · ' + totalMsgs + ' messages' + (currentBrandFilter !== 'all' ? ' · ' + currentBrandFilter : '');
+
+  if (!convos.length) {
+    list.innerHTML = '<div class="msg-empty" style="padding:2rem"><i class="fas fa-comments" style="font-size:1.2rem;opacity:.4;display:block;margin-bottom:.5rem"></i>No conversations</div>';
     return;
   }
 
-  // Sort oldest first for chat view (conversation order)
-  var sorted = filtered.slice().sort(function(a, b) { return new Date(a.timestamp) - new Date(b.timestamp); });
+  list.innerHTML = convos.map(function(c) {
+    var senderShort = c.senderId ? c.senderId.slice(-6) : '???';
+    var name = c.senderName && c.senderName !== 'Unknown' && c.senderName !== '' ? c.senderName : 'User …' + senderShort;
+    var initials = c.senderName && c.senderName !== 'Unknown' && c.senderName !== '' ? c.senderName.split(' ').map(function(w){return w[0];}).join('').toUpperCase().slice(0,2) : '<i class="fas fa-user"></i>';
+    var date = new Date(c.lastTime);
+    var timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'America/Guyana' });
+    var preview = c.lastMessage || '';
+    if (preview.length > 45) preview = preview.substring(0, 45) + '…';
+    var isActive = activeConvoId === c.id ? ' active' : '';
+    return '<div class="inbox-item' + isActive + '" onclick="openConversation(\'' + c.id.replace(/'/g, "\\'") + '\')">' +
+      '<div class="inbox-avatar">' + initials + '</div>' +
+      '<div class="inbox-info">' +
+        '<div class="inbox-name">' + escapeHtml(name) + '</div>' +
+        '<div class="inbox-preview">' + escapeHtml(preview) + '</div>' +
+      '</div>' +
+      '<div class="inbox-meta">' +
+        '<span class="inbox-time">' + timeStr + '</span>' +
+        '<span class="inbox-brand-tag">' + escapeHtml(c.brand) + '</span>' +
+        '<span class="inbox-msg-count">' + c.messages.length + '</span>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
 
+function openConversation(convoId) {
+  activeConvoId = convoId;
+  var convo = conversations[convoId];
+  if (!convo) return;
+
+  // Update active state in inbox
+  document.querySelectorAll('.inbox-item').forEach(function(el) { el.classList.remove('active'); });
+  var items = document.querySelectorAll('.inbox-item');
+  var convos = Object.values(conversations);
+  if (currentBrandFilter !== 'all') convos = convos.filter(function(c) { return c.brand === currentBrandFilter; });
+  convos.sort(function(a, b) { return new Date(b.lastTime) - new Date(a.lastTime); });
+  var idx = convos.findIndex(function(c) { return c.id === convoId; });
+  if (idx >= 0 && items[idx]) items[idx].classList.add('active');
+
+  // Update chat header
+  var header = document.getElementById('chatHeader');
+  header.style.display = 'flex';
+  var senderShort = convo.senderId ? convo.senderId.slice(-6) : '???';
+  var name = convo.senderName && convo.senderName !== 'Unknown' && convo.senderName !== '' ? convo.senderName : 'User …' + senderShort;
+  var initials = convo.senderName && convo.senderName !== 'Unknown' && convo.senderName !== '' ? convo.senderName.split(' ').map(function(w){return w[0];}).join('').toUpperCase().slice(0,2) : '<i class="fas fa-user"></i>';
+  document.getElementById('chatAvatar').innerHTML = initials;
+  document.getElementById('chatName').textContent = name;
+  document.getElementById('chatBrand').textContent = convo.brand + ' · ' + convo.messages.length + ' messages';
+
+  // Render chat
+  var chatBody = document.getElementById('chatBody');
+  var msgs = convo.messages.slice().sort(function(a, b) { return new Date(a.timestamp) - new Date(b.timestamp); });
   var html = '';
   var lastDate = '';
 
-  sorted.forEach(function(m) {
+  msgs.forEach(function(m) {
     var date = new Date(m.timestamp);
     var timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'America/Guyana' });
     var dateStr = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'America/Guyana' });
     var dir = m.direction === 'sent' ? 'sent' : 'received';
 
-    // Date divider
     if (dateStr !== lastDate) {
       html += '<div class="msg-date-divider"><span>' + dateStr + '</span></div>';
       lastDate = dateStr;
     }
 
-    var senderShort = m.senderId ? m.senderId.slice(-6) : '???';
-    var clientName = m.senderName && m.senderName !== 'Unknown' && m.senderName !== '' ? m.senderName : 'User …' + senderShort;
-    var displayName = '';
-    var avatarContent = '';
-    var replyTo = '';
-
-    if (dir === 'sent') {
-      displayName = m.brand || 'Staff';
-      avatarContent = '<i class="fas fa-store"></i>';
-      replyTo = '<div style="font-size:.62rem;color:var(--green);margin-bottom:.2rem;display:flex;align-items:center;gap:.3rem"><i class="fas fa-reply" style="font-size:.5rem"></i> Reply to <strong>' + escapeHtml(clientName) + '</strong></div>';
-    } else {
-      displayName = clientName;
-      avatarContent = m.senderName && m.senderName !== 'Unknown' && m.senderName !== '' ? m.senderName.split(' ').map(function(w) { return w[0]; }).join('').toUpperCase().slice(0,2) : '<i class="fas fa-user"></i>';
-    }
-
-    html += '<div>' +
-      '<div class="msg-sender-label" style="' + (dir === 'sent' ? 'text-align:right;padding-right:2.2rem' : 'padding-left:2.2rem') + '">' + escapeHtml(displayName) + '</div>' +
-      '<div class="msg-row ' + dir + '">' +
-        (dir === 'received' ? '<div class="msg-avatar-sm">' + avatarContent + '</div>' : '') +
-        '<div class="msg-bubble">' +
-          replyTo +
-          '<div class="msg-bubble-text">' + escapeHtml(m.messageText || '') + '</div>' +
-          '<div class="msg-bubble-footer">' +
-            '<span class="msg-bubble-brand">' + escapeHtml(m.brand || '') + '</span>' +
-            '<span class="msg-direction-tag">' + (dir === 'sent' ? '<i class="fas fa-reply" style="margin-right:2px"></i> Sent' : '<i class="fas fa-inbox" style="margin-right:2px"></i> Received') + '</span>' +
-            '<span class="msg-bubble-time">' + timeStr + '</span>' +
-          '</div>' +
+    html += '<div class="msg-row ' + dir + '">' +
+      '<div class="msg-bubble">' +
+        '<div class="msg-bubble-text">' + escapeHtml(m.messageText || '') + '</div>' +
+        '<div class="msg-bubble-footer">' +
+          '<span class="msg-bubble-time">' + (dir === 'sent' ? '<i class="fas fa-reply" style="font-size:.45rem;margin-right:2px"></i> ' : '') + timeStr + '</span>' +
         '</div>' +
-        (dir === 'sent' ? '<div class="msg-avatar-sm">' + avatarContent + '</div>' : '') +
       '</div>' +
     '</div>';
   });
 
-  msgList.innerHTML = html;
-  // Auto-scroll to bottom (latest messages)
-  msgList.scrollTop = msgList.scrollHeight;
+  chatBody.innerHTML = html;
+  chatBody.scrollTop = chatBody.scrollHeight;
 }
 
 function escapeHtml(text) {
