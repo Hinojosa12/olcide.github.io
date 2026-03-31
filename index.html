@@ -772,7 +772,7 @@ async function deleteConversation() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ messageIds: messageIds, senderId: convo.senderId, brand: convo.brand })
     });
-    var data = await res.json();
+    var raw = await res.json();
     if (data.success) {
       // Remove from local data and re-render
       delete conversations[activeConvoId];
@@ -806,3 +806,6 @@ document.addEventListener('DOMContentLoaded', checkSession);
 </script>
 </body>
 </html>
+
+
+var data = Array.isArray(raw) ? raw[0] : raw;
