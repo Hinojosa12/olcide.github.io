@@ -561,7 +561,7 @@ async function fetchMessages() {
   try {
     var res = await fetch(API.MESSAGES);
     var raw = await res.json();
-var data = Array.isArray(raw) ? raw[0] : raw;
+    var data = Array.isArray(raw) ? raw[0] : raw;
     if (data.success) {
       allMessages = data.messages || [];
       buildConversations();
@@ -575,7 +575,6 @@ var data = Array.isArray(raw) ? raw[0] : raw;
 
 function buildConversations() {
   conversations = {};
-  // Filter out duplicate mass messages (same text sent to many users within 2 min)
   var seen = {};
   var filtered = [];
   allMessages.forEach(function(m) {
@@ -583,7 +582,6 @@ function buildConversations() {
       var key = m.messageText + '|' + m.brand;
       if (!seen[key]) seen[key] = { count: 0, first: m.timestamp };
       seen[key].count++;
-      // If same message sent to 5+ different users, likely mass message - only keep first 2
       if (seen[key].count > 5) return;
     }
     filtered.push(m);
@@ -623,7 +621,6 @@ function buildBrandFilters() {
     brandCounts[c.brand] += c.messages.length;
   });
   var container = document.getElementById('msgFilters');
-  var totalMsgs = allMessages.length;
   container.innerHTML = '<button class="filter-btn active" data-brand="all" onclick="filterMessages(\'all\',this)">All <span class="badge">' + Object.keys(conversations).length + '</span></button>';
   Object.keys(brandCounts).sort().forEach(function(brand) {
     var convoCount = Object.values(conversations).filter(function(c) { return c.brand === brand; }).length;
@@ -653,7 +650,6 @@ function renderInbox() {
   if (currentBrandFilter !== 'all') {
     convos = convos.filter(function(c) { return c.brand === currentBrandFilter; });
   }
-  // Sort by last message time (newest first)
   convos.sort(function(a, b) { return new Date(b.lastTime) - new Date(a.lastTime); });
 
   var totalConvos = convos.length;
@@ -694,7 +690,6 @@ function openConversation(convoId) {
   var convo = conversations[convoId];
   if (!convo) return;
 
-  // Update active state in inbox
   document.querySelectorAll('.inbox-item').forEach(function(el) { el.classList.remove('active'); });
   var items = document.querySelectorAll('.inbox-item');
   var convos = Object.values(conversations);
@@ -703,7 +698,6 @@ function openConversation(convoId) {
   var idx = convos.findIndex(function(c) { return c.id === convoId; });
   if (idx >= 0 && items[idx]) items[idx].classList.add('active');
 
-  // Update chat header
   var header = document.getElementById('chatHeader');
   header.style.display = 'flex';
   var senderShort = convo.senderId ? convo.senderId.slice(-6) : '???';
@@ -713,7 +707,6 @@ function openConversation(convoId) {
   document.getElementById('chatName').textContent = name;
   document.getElementById('chatBrand').textContent = convo.brand + ' · ' + convo.messages.length + ' messages';
 
-  // Show delete button only for admin
   var delBtn = document.getElementById('btnDeleteConvo');
   if (currentUser && currentUser.role === 'admin') {
     delBtn.style.display = 'flex';
@@ -721,7 +714,6 @@ function openConversation(convoId) {
     delBtn.style.display = 'none';
   }
 
-  // Render chat
   var chatBody = document.getElementById('chatBody');
   var msgs = convo.messages.slice().sort(function(a, b) { return new Date(a.timestamp) - new Date(b.timestamp); });
   var html = '';
@@ -773,10 +765,11 @@ async function deleteConversation() {
       body: JSON.stringify({ messageIds: messageIds, senderId: convo.senderId, brand: convo.brand })
     });
     var raw = await res.json();
+    var data = Array.isArray(raw) ? raw[0] : raw;
     if (data.success) {
-      // Remove from local data and re-render
       delete conversations[activeConvoId];
       activeConvoId = null;
+      buildBrandFilters();
       renderInbox();
       document.getElementById('chatBody').innerHTML = '<div class="chat-empty"><i class="fas fa-trash-alt" style="font-size:2rem;opacity:.3"></i><span>Conversation deleted</span></div>';
       document.getElementById('chatHeader').style.display = 'none';
@@ -806,5 +799,3 @@ document.addEventListener('DOMContentLoaded', checkSession);
 </script>
 </body>
 </html>
-
-
