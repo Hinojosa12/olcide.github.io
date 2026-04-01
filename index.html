@@ -325,7 +325,7 @@
       </div>
     </div>
 
-    <!-- ADMIN ONLY -->
+    <!-- ADMIN ONLY: Team Overview & Employee Table -->
     <div id="adminSection" style="display:none">
       <div class="status-section">
         <div class="section-label">Team Overview</div>
@@ -351,39 +351,39 @@
           <div style="text-align:center;color:var(--gray);padding:1.5rem;font-size:.85rem">Click Refresh to load team data</div>
         </div>
       </div>
+    </div>
 
-      <!-- MESSAGES SECTION -->
-      <div class="messages-section">
-        <div class="messages-header">
-          <div class="section-label">Messages <i class="fab fa-facebook-messenger" style="font-size:.8rem"></i></div>
-          <div style="display:flex;align-items:center;gap:.5rem">
-            <button class="btn-refresh" id="btnRefreshMessages" onclick="fetchMessages()"><i class="fas fa-sync-alt"></i> Refresh</button>
-          </div>
+    <!-- MESSAGES SECTION — visible for admin AND employees with messageBrands -->
+    <div class="messages-section" id="messagesSection" style="display:none">
+      <div class="messages-header">
+        <div class="section-label">Messages <i class="fab fa-facebook-messenger" style="font-size:.8rem"></i></div>
+        <div style="display:flex;align-items:center;gap:.5rem">
+          <button class="btn-refresh" id="btnRefreshMessages" onclick="fetchMessages()"><i class="fas fa-sync-alt"></i> Refresh</button>
         </div>
-        <div class="messages-filters" id="msgFilters">
-          <button class="filter-btn active" data-brand="all" onclick="filterMessages('all',this)">All Brands</button>
+      </div>
+      <div class="messages-filters" id="msgFilters">
+        <button class="filter-btn active" data-brand="all" onclick="filterMessages('all',this)">All Brands</button>
+      </div>
+      <div class="messages-count" id="msgCount"></div>
+      <div class="inbox-container">
+        <div class="inbox-list" id="inboxList">
+          <div class="msg-empty"><i class="fas fa-comments" style="font-size:1.2rem;opacity:.4"></i><br>Click Refresh to load</div>
         </div>
-        <div class="messages-count" id="msgCount"></div>
-        <div class="inbox-container">
-          <div class="inbox-list" id="inboxList">
-            <div class="msg-empty"><i class="fas fa-comments" style="font-size:1.2rem;opacity:.4"></i><br>Click Refresh to load</div>
+        <div class="chat-panel">
+          <div class="chat-header" id="chatHeader" style="display:none">
+            <div class="inbox-avatar" id="chatAvatar"><i class="fas fa-user"></i></div>
+            <div class="chat-header-info">
+              <div class="chat-header-name" id="chatName">Select a conversation</div>
+              <div class="chat-header-brand" id="chatBrand"></div>
+            </div>
+            <button class="btn-delete-convo" id="btnDeleteConvo" onclick="deleteConversation()" style="display:none" title="Delete conversation"><i class="fas fa-trash-alt"></i></button>
           </div>
-          <div class="chat-panel">
-            <div class="chat-header" id="chatHeader" style="display:none">
-              <div class="inbox-avatar" id="chatAvatar"><i class="fas fa-user"></i></div>
-              <div class="chat-header-info">
-                <div class="chat-header-name" id="chatName">Select a conversation</div>
-                <div class="chat-header-brand" id="chatBrand"></div>
-              </div>
-              <button class="btn-delete-convo" id="btnDeleteConvo" onclick="deleteConversation()" style="display:none" title="Delete conversation"><i class="fas fa-trash-alt"></i></button>
-            </div>
-            <div class="chat-body" id="chatBody">
-              <div class="chat-empty"><i class="fas fa-comments" style="font-size:2rem;opacity:.3"></i><span>Select a conversation to view messages</span></div>
-            </div>
-            <div class="chat-reply" id="chatReply">
-              <input type="text" id="replyInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendReply()">
-              <button class="btn-send" id="btnSend" onclick="sendReply()" title="Send"><i class="fas fa-paper-plane"></i></button>
-            </div>
+          <div class="chat-body" id="chatBody">
+            <div class="chat-empty"><i class="fas fa-comments" style="font-size:2rem;opacity:.3"></i><span>Select a conversation to view messages</span></div>
+          </div>
+          <div class="chat-reply" id="chatReply">
+            <input type="text" id="replyInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendReply()">
+            <button class="btn-send" id="btnSend" onclick="sendReply()" title="Send"><i class="fas fa-paper-plane"></i></button>
           </div>
         </div>
       </div>
@@ -415,6 +415,7 @@ let currentUser = null;
 let myStatus = 'idle';
 let activityLog = [];
 let teamPollInterval = null;
+let userAllowedBrands = []; // brands this user can see in messages
 
 function updateClock() {
   const now = new Date();
@@ -445,14 +446,37 @@ async function doLogin() {
 document.addEventListener('keydown', function(e) { if (e.key === 'Enter' && document.getElementById('loginScreen').style.display !== 'none') doLogin(); });
 
 function doLogout() {
-  currentUser = null; myStatus = 'idle'; activityLog = [];
+  currentUser = null; myStatus = 'idle'; activityLog = []; userAllowedBrands = [];
   if (teamPollInterval) { clearInterval(teamPollInterval); teamPollInterval = null; }
   sessionStorage.removeItem('caribzoom_user');
   document.getElementById('loginScreen').style.display = 'flex';
   document.getElementById('dashboard').style.display = 'none';
   document.getElementById('adminSection').style.display = 'none';
+  document.getElementById('messagesSection').style.display = 'none';
   document.getElementById('loginEmail').value = '';
   document.getElementById('loginPassword').value = '';
+}
+
+function getUserAllowedBrands() {
+  if (!currentUser) return [];
+  // Admin with "All" sees everything
+  if (currentUser.role === 'admin') {
+    var mb = (currentUser.messageBrands || '').trim();
+    if (!mb || mb.toLowerCase() === 'all') return []; // empty = no filter = all brands
+    return mb.split(',').map(function(b) { return b.trim(); }).filter(Boolean);
+  }
+  // Employee: use messageBrands field
+  var mb = (currentUser.messageBrands || '').trim();
+  if (!mb || mb.toLowerCase() === 'all') return []; // empty = no filter = all brands
+  return mb.split(',').map(function(b) { return b.trim(); }).filter(Boolean);
+}
+
+function canSeeMessages() {
+  if (!currentUser) return false;
+  if (currentUser.role === 'admin') return true;
+  // Employee can see messages if they have messageBrands assigned
+  var mb = (currentUser.messageBrands || '').trim();
+  return mb.length > 0;
 }
 
 function showDashboard() {
@@ -461,8 +485,24 @@ function showDashboard() {
   document.getElementById('dashName').textContent = currentUser.name;
   document.getElementById('dashRole').textContent = currentUser.role.toUpperCase() + ' · ' + currentUser.brand.toUpperCase();
   document.getElementById('dashAvatar').textContent = currentUser.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-  if (currentUser.role === 'admin') { document.getElementById('adminSection').style.display = 'block'; fetchTeamStatus(); fetchMessages(); }
-  else { document.getElementById('adminSection').style.display = 'none'; }
+
+  // Admin-only sections (team overview, employee table)
+  if (currentUser.role === 'admin') {
+    document.getElementById('adminSection').style.display = 'block';
+    fetchTeamStatus();
+  } else {
+    document.getElementById('adminSection').style.display = 'none';
+  }
+
+  // Messages section — visible for admin AND employees with messageBrands
+  userAllowedBrands = getUserAllowedBrands();
+  if (canSeeMessages()) {
+    document.getElementById('messagesSection').style.display = 'block';
+    fetchMessages();
+  } else {
+    document.getElementById('messagesSection').style.display = 'none';
+  }
+
   myStatus = 'idle'; activityLog = []; renderLog(); updateButtons(); updateStatusBadge();
 }
 
@@ -577,6 +617,14 @@ async function fetchMessages() {
     var data = Array.isArray(raw) ? raw[0] : raw;
     if (data.success) {
       allMessages = data.messages || [];
+
+      // Filter messages by user's allowed brands
+      if (userAllowedBrands.length > 0) {
+        allMessages = allMessages.filter(function(m) {
+          return userAllowedBrands.indexOf(m.brand) !== -1;
+        });
+      }
+
       buildConversations();
       buildBrandFilters();
       renderInbox();
@@ -721,6 +769,7 @@ function openConversation(convoId) {
   document.getElementById('chatName').textContent = name;
   document.getElementById('chatBrand').textContent = convo.brand + ' · ' + convo.messages.length + ' messages';
 
+  // Delete button: admin only
   var delBtn = document.getElementById('btnDeleteConvo');
   if (currentUser && currentUser.role === 'admin') {
     delBtn.style.display = 'flex';
@@ -841,7 +890,6 @@ async function sendReply() {
     var raw = await res.json();
     var data = Array.isArray(raw) ? raw[0] : raw;
     if (data.success) {
-      // Add message to local conversation
       var now = new Date().toISOString();
       var newMsg = {
         timestamp: now,
@@ -858,7 +906,6 @@ async function sendReply() {
       convo.lastMessage = text;
       convo.lastTime = now;
 
-      // Re-render chat and inbox
       openConversation(activeConvoId);
       renderInbox();
       input.value = '';
