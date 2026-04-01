@@ -164,6 +164,14 @@
     .chat-body::-webkit-scrollbar{width:3px}
     .chat-body::-webkit-scrollbar-thumb{background:var(--border-light);border-radius:3px}
     .chat-empty{display:flex;align-items:center;justify-content:center;height:100%;color:var(--gray);font-size:.85rem;flex-direction:column;gap:.5rem}
+    .chat-reply{display:none;padding:.5rem .6rem;border-top:1px solid var(--border);background:var(--bg-card);gap:.4rem;align-items:center}
+    .chat-reply.active{display:flex}
+    .chat-reply input{flex:1;padding:.55rem .75rem;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius);color:var(--white);font-family:inherit;font-size:.82rem;transition:all .25s;-webkit-appearance:none}
+    .chat-reply input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+    .chat-reply input::placeholder{color:var(--gray)}
+    .btn-send{width:36px;height:36px;min-width:36px;border-radius:50%;background:var(--accent);border:none;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .25s;font-size:.8rem}
+    .btn-send:hover{background:var(--accent-dark);transform:scale(1.05)}
+    .btn-send:disabled{opacity:.4;cursor:not-allowed;transform:none}
 
     /* Chat bubbles */
     .msg-bubble{max-width:80%;padding:.5rem .75rem;border-radius:12px;position:relative;word-break:break-word}
@@ -372,6 +380,10 @@
             <div class="chat-body" id="chatBody">
               <div class="chat-empty"><i class="fas fa-comments" style="font-size:2rem;opacity:.3"></i><span>Select a conversation to view messages</span></div>
             </div>
+            <div class="chat-reply" id="chatReply">
+              <input type="text" id="replyInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendReply()">
+              <button class="btn-send" id="btnSend" onclick="sendReply()" title="Send"><i class="fas fa-paper-plane"></i></button>
+            </div>
           </div>
         </div>
       </div>
@@ -395,7 +407,8 @@ const API = {
   ATTENDANCE: 'https://n8n-n8n.7toway.easypanel.host/webhook/caribzoom-attendance',
   TEAM_STATUS: 'https://n8n-n8n.7toway.easypanel.host/webhook/caribzoom-team-status',
   MESSAGES: 'https://n8n-n8n.7toway.easypanel.host/webhook/caribzoom-messages',
-  DELETE_MESSAGES: 'https://n8n-n8n.7toway.easypanel.host/webhook/caribzoom-delete-messages'
+  DELETE_MESSAGES: 'https://n8n-n8n.7toway.easypanel.host/webhook/caribzoom-delete-messages',
+  SEND_MESSAGE: 'https://n8n-n8n.7toway.easypanel.host/webhook/caribzoom-send-message'
 };
 
 let currentUser = null;
@@ -641,6 +654,7 @@ function filterMessages(brand, btnEl) {
   renderInbox();
   document.getElementById('chatBody').innerHTML = '<div class="chat-empty"><i class="fas fa-comments" style="font-size:2rem;opacity:.3"></i><span>Select a conversation</span></div>';
   document.getElementById('chatHeader').style.display = 'none';
+  document.getElementById('chatReply').classList.remove('active');
 }
 
 function renderInbox() {
@@ -742,6 +756,8 @@ function openConversation(convoId) {
 
   chatBody.innerHTML = html;
   chatBody.scrollTop = chatBody.scrollHeight;
+  document.getElementById('chatReply').classList.add('active');
+  document.getElementById('replyInput').value = '';
 }
 
 async function deleteConversation() {
@@ -773,6 +789,7 @@ async function deleteConversation() {
       renderInbox();
       document.getElementById('chatBody').innerHTML = '<div class="chat-empty"><i class="fas fa-trash-alt" style="font-size:2rem;opacity:.3"></i><span>Conversation deleted</span></div>';
       document.getElementById('chatHeader').style.display = 'none';
+      document.getElementById('chatReply').classList.remove('active');
     } else {
       alert('Error deleting conversation');
     }
@@ -782,6 +799,80 @@ async function deleteConversation() {
   }
   btn.disabled = false;
   btn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+}
+
+const brandToPageId = {
+  'Party Hub': '507711665764249',
+  'Hope Jewellery': '1987162524911591',
+  'Home Essentials': '102054851586430',
+  'The Office Depot': '69163236784929',
+  "D'Jango Gentleman's Apparel": '112987724626231',
+  "Destiny's Clothing Store": '108629230921476',
+  'CaribZoom': '615378785649491',
+  'Pieces Plus Sized - Toys': '154545817735317',
+  'Pieces Plus Sized-Reloaded': '105718055443236'
+};
+
+async function sendReply() {
+  if (!activeConvoId) return;
+  var convo = conversations[activeConvoId];
+  if (!convo) return;
+
+  var input = document.getElementById('replyInput');
+  var text = input.value.trim();
+  if (!text) return;
+
+  var btn = document.getElementById('btnSend');
+  btn.disabled = true;
+  input.disabled = true;
+
+  var pageId = convo.messages[0] ? convo.messages[0].pageId : brandToPageId[convo.brand];
+
+  try {
+    var res = await fetch(API.SEND_MESSAGE, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        pageId: pageId,
+        senderId: convo.senderId,
+        messageText: text
+      })
+    });
+    var raw = await res.json();
+    var data = Array.isArray(raw) ? raw[0] : raw;
+    if (data.success) {
+      // Add message to local conversation
+      var now = new Date().toISOString();
+      var newMsg = {
+        timestamp: now,
+        brand: convo.brand,
+        pageId: pageId,
+        senderId: convo.senderId,
+        messageText: text,
+        messageId: data.messageId || 'sent_' + Date.now(),
+        platform: 'Messenger',
+        direction: 'sent',
+        senderName: convo.senderName
+      };
+      convo.messages.push(newMsg);
+      convo.lastMessage = text;
+      convo.lastTime = now;
+
+      // Re-render chat and inbox
+      openConversation(activeConvoId);
+      renderInbox();
+      input.value = '';
+    } else {
+      alert('Error sending message: ' + (data.error || 'Unknown error'));
+    }
+  } catch (e) {
+    console.error('Send error:', e);
+    alert('Connection error. Try again.');
+  }
+
+  btn.disabled = false;
+  input.disabled = false;
+  input.focus();
 }
 
 function escapeHtml(text) {
