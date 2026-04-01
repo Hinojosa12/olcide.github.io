@@ -799,14 +799,26 @@ function openConversation(convoId) {
     // Build attachment HTML if present
     var attachHtml = '';
     if (m.attachmentUrl) {
-      attachHtml = '<img class="msg-bubble-img" src="' + escapeHtml(m.attachmentUrl) + '" alt="Attachment" onclick="window.open(this.src,\'_blank\')" onerror="this.classList.add(\'error\');this.nextElementSibling.style.display=\'block\'">' +
-        '<div class="msg-img-expired" style="display:none"><i class="fas fa-image" style="margin-right:4px"></i>Image expired or unavailable</div>';
+      var aType = m.attachmentType || 'image';
+      if (aType === 'audio') {
+        attachHtml = '<audio controls style="max-width:240px;margin-bottom:.3rem" preload="none"><source src="' + escapeHtml(m.attachmentUrl) + '">Audio not supported</audio>' +
+          '<div class="msg-img-expired" style="display:none"><i class="fas fa-microphone" style="margin-right:4px"></i>Audio expired or unavailable</div>';
+      } else if (aType === 'video') {
+        attachHtml = '<video controls style="max-width:260px;max-height:200px;border-radius:8px;margin-bottom:.3rem" preload="none"><source src="' + escapeHtml(m.attachmentUrl) + '">Video not supported</video>' +
+          '<div class="msg-img-expired" style="display:none"><i class="fas fa-video" style="margin-right:4px"></i>Video expired or unavailable</div>';
+      } else if (aType === 'file') {
+        attachHtml = '<a href="' + escapeHtml(m.attachmentUrl) + '" target="_blank" style="display:inline-flex;align-items:center;gap:.4rem;padding:.4rem .7rem;background:var(--accent-glow);border:1px solid rgba(59,130,246,.3);border-radius:8px;color:var(--accent);font-size:.78rem;font-weight:600;text-decoration:none;margin-bottom:.3rem"><i class="fas fa-file-download"></i> Download File</a>';
+      } else {
+        attachHtml = '<img class="msg-bubble-img" src="' + escapeHtml(m.attachmentUrl) + '" alt="Photo" onclick="window.open(this.src,\'_blank\')" onerror="this.classList.add(\'error\');this.nextElementSibling.style.display=\'block\'">' +
+          '<div class="msg-img-expired" style="display:none"><i class="fas fa-image" style="margin-right:4px"></i>Image expired or unavailable</div>';
+      }
     }
 
-    // Build text HTML (skip if text is just the placeholder and we have an image)
+    // Build text HTML (skip if text is just a placeholder and we have an attachment)
     var textHtml = '';
     var msgText = m.messageText || '';
-    if (msgText && !(m.attachmentUrl && msgText === '📎 Attachment')) {
+    var placeholders = ['📎 Attachment', '📷 Photo', '🎵 Audio', '🎬 Video', '📄 File'];
+    if (msgText && !(m.attachmentUrl && placeholders.indexOf(msgText) !== -1)) {
       textHtml = '<div class="msg-bubble-text">' + escapeHtml(msgText) + '</div>';
     }
 
