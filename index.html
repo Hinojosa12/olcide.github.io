@@ -181,6 +181,9 @@
     .msg-row.received .msg-bubble{background:var(--bg-card);border:1px solid var(--border);border-bottom-left-radius:4px;color:var(--white)}
     .msg-row.sent .msg-bubble{background:rgba(16,185,129,0.15);border:1px solid var(--green-border);border-bottom-right-radius:4px;color:var(--white)}
     .msg-bubble-text{font-size:.82rem;line-height:1.5}
+    .msg-bubble-img{max-width:240px;max-height:240px;border-radius:8px;margin-bottom:.3rem;cursor:pointer;display:block;object-fit:cover;border:1px solid var(--border)}
+    .msg-bubble-img:hover{opacity:.85}
+    .msg-img-expired{font-size:.72rem;color:var(--gray);font-style:italic;padding:.3rem 0}
     .msg-bubble-footer{display:flex;align-items:center;gap:.4rem;margin-top:.2rem;justify-content:flex-end}
     .msg-bubble-time{font-size:.55rem;color:var(--gray);white-space:nowrap}
     .msg-date-divider{text-align:center;padding:.4rem 0;font-size:.58rem;color:var(--gray);font-weight:600;position:relative}
@@ -793,9 +796,24 @@ function openConversation(convoId) {
       lastDate = dateStr;
     }
 
+    // Build attachment HTML if present
+    var attachHtml = '';
+    if (m.attachmentUrl) {
+      attachHtml = '<img class="msg-bubble-img" src="' + escapeHtml(m.attachmentUrl) + '" alt="Attachment" onclick="window.open(this.src,\'_blank\')" onerror="this.classList.add(\'error\');this.nextElementSibling.style.display=\'block\'">' +
+        '<div class="msg-img-expired" style="display:none"><i class="fas fa-image" style="margin-right:4px"></i>Image expired or unavailable</div>';
+    }
+
+    // Build text HTML (skip if text is just the placeholder and we have an image)
+    var textHtml = '';
+    var msgText = m.messageText || '';
+    if (msgText && !(m.attachmentUrl && msgText === '📎 Attachment')) {
+      textHtml = '<div class="msg-bubble-text">' + escapeHtml(msgText) + '</div>';
+    }
+
     html += '<div class="msg-row ' + dir + '">' +
       '<div class="msg-bubble">' +
-        '<div class="msg-bubble-text">' + escapeHtml(m.messageText || '') + '</div>' +
+        attachHtml +
+        textHtml +
         '<div class="msg-bubble-footer">' +
           '<span class="msg-bubble-time">' + (dir === 'sent' ? '<i class="fas fa-reply" style="font-size:.45rem;margin-right:2px"></i> ' : '') + timeStr + '</span>' +
         '</div>' +
