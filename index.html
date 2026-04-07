@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Carib-Zoom Inc · Staff Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="caribzoom.css">
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <h1>Carib<span>Zoom</span></h1>
+      <p>Staff Dashboard · Sign In</p>
+    </div>
+    <div class="login-field">
+      <label>Email</label>
+      <input type="email" id="loginEmail" placeholder="you@caribzoom.com" autocomplete="email">
+    </div>
+    <div class="login-field">
+      <label>Password</label>
+      <input type="password" id="loginPassword" placeholder="Enter your password" autocomplete="current-password">
+    </div>
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign In</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- ══ DASHBOARD ══ -->
+<div class="dashboard" id="dashboard">
+  <header class="dash-header">
+    <div class="dash-brand">
+      <h2>Carib<span>Zoom</span></h2>
+    </div>
+    <div class="dash-user">
+      <div class="dash-user-info">
+        <div class="name" id="dashName"></div>
+        <div class="role" id="dashRole"></div>
+      </div>
+      <div class="dash-avatar" id="dashAvatar"></div>
+      <button class="btn-logout" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></button>
+    </div>
+  </header>
+
+  <main class="dash-main">
+
+    <!-- CURRENT STATUS -->
+    <div class="current-status">
+      <div class="current-time" id="liveTime">--:--:--</div>
+      <div class="current-date" id="liveDate"></div>
+      <div style="margin-top:.6rem">
+        <span class="status-badge idle" id="myStatusBadge">
+          <i class="fas fa-circle" style="font-size:.45rem"></i> Not Clocked In
+        </span>
+      </div>
+    </div>
+
+    <!-- CLOCK ACTIONS -->
+    <div class="clock-section">
+      <div class="section-label">Actions</div>
+      <div class="clock-grid">
+        <button class="clock-btn clock-in"    id="btnClockIn"    onclick="doAction('clockIn')"><i class="fas fa-play-circle"></i> Clock In</button>
+        <button class="clock-btn lunch-start" id="btnLunchStart" onclick="doAction('lunchStart')" disabled><i class="fas fa-utensils"></i> Start Lunch</button>
+        <button class="clock-btn lunch-end"   id="btnLunchEnd"   onclick="doAction('lunchEnd')"   disabled><i class="fas fa-coffee"></i> End Lunch</button>
+        <button class="clock-btn clock-out"   id="btnClockOut"   onclick="doAction('clockOut')"   disabled><i class="fas fa-stop-circle"></i> Clock Out</button>
+      </div>
+    </div>
+
+    <!-- ADMIN ONLY -->
+    <div id="adminSection" style="display:none">
+      <div class="status-section">
+        <div class="section-label">Team Overview</div>
+        <div style="display:flex;justify-content:flex-end;margin-top:-0.4rem;margin-bottom:.8rem">
+          <button class="btn-refresh" id="btnRefreshTeam" onclick="refreshTeam()"><i class="fas fa-sync-alt"></i> Refresh</button>
+        </div>
+        <div class="status-grid">
+          <div class="status-card active"><div class="number" id="countActive">0</div><div class="label">Active</div></div>
+          <div class="status-card lunch"><div class="number" id="countLunch">0</div><div class="label">On Lunch</div></div>
+          <div class="status-card idle"><div class="number" id="countIdle">0</div><div class="label">Not Clocked In</div></div>
+          <div class="status-card out"><div class="number" id="countOut">0</div><div class="label">Clocked Out</div></div>
+        </div>
+      </div>
+      <div class="team-section">
+        <div class="section-label">All Employees</div>
+        <div id="teamLastUpdate" style="font-size:.68rem;color:var(--gray);margin-bottom:.6rem">Last updated: never</div>
+        <table class="team-table">
+          <thead><tr><th>Employee</th><th>Brand</th><th>Status</th><th>Clock In</th><th>Lunch</th><th>Clock Out</th><th>Total</th></tr></thead>
+          <tbody id="teamBody"><tr><td colspan="7" style="text-align:center;color:var(--gray);padding:2rem">Click Refresh to load team data</td></tr></tbody>
+        </table>
+        <div class="team-cards" id="teamCards">
+          <div style="text-align:center;color:var(--gray);padding:1.5rem;font-size:.85rem">Click Refresh to load team data</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ COMMS SECTION ══ -->
+    <div id="commsSection" style="display:none">
+
+      <!-- TAB SWITCHER -->
+      <div class="comms-tabs">
+        <button class="comms-tab active" id="tabMessages" onclick="switchCommsTab('messages')">
+          <i class="fab fa-facebook-messenger"></i> Messages
+        </button>
+        <button class="comms-tab" id="tabComments" onclick="switchCommsTab('comments')">
+          <i class="fab fa-facebook"></i> Facebook Comments
+        </button>
+      </div>
+
+      <!-- MESSAGES PANEL -->
+      <div class="comms-panel" id="panelMessages">
+        <div class="messages-header">
+          <div class="section-label" style="margin-bottom:0">Inbox</div>
+          <button class="btn-refresh" id="btnRefreshMessages" onclick="fetchMessages()"><i class="fas fa-sync-alt"></i> Refresh</button>
+        </div>
+        <div class="messages-filters" id="msgFilters">
+          <button class="filter-btn active" data-brand="all" onclick="filterMessages('all',this)">All Brands</button>
+        </div>
+        <div class="messages-count" id="msgCount"></div>
+        <div class="inbox-container">
+          <div class="inbox-list" id="inboxList">
+            <div class="msg-empty"><i class="fas fa-comments" style="font-size:1.2rem;opacity:.4"></i><br>Click Refresh to load</div>
+          </div>
+          <div class="chat-panel">
+            <div class="chat-header" id="chatHeader" style="display:none">
+              <div class="inbox-avatar" id="chatAvatar"><i class="fas fa-user"></i></div>
+              <div class="chat-header-info">
+                <div class="chat-header-name" id="chatName">Select a conversation</div>
+                <div class="chat-header-brand" id="chatBrand"></div>
+              </div>
+              <button class="btn-delete-convo" id="btnDeleteConvo" onclick="deleteConversation()" style="display:none" title="Delete conversation"><i class="fas fa-trash-alt"></i></button>
+            </div>
+            <div class="chat-body" id="chatBody">
+              <div class="chat-empty"><i class="fas fa-comments" style="font-size:2rem;opacity:.3"></i><span>Select a conversation to view messages</span></div>
+            </div>
+            <div class="chat-reply" id="chatReply">
+              <input type="text" id="replyInput" placeholder="Type a message…" onkeydown="if(event.key==='Enter')sendReply()">
+              <button class="btn-send" id="btnSend" onclick="sendReply()" title="Send"><i class="fas fa-paper-plane"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FACEBOOK COMMENTS PANEL -->
+      <div class="comms-panel" id="panelComments" style="display:none">
+        <div class="comments-header">
+          <div class="section-label" style="margin-bottom:0">Comments</div>
+          <button class="btn-refresh" id="btnRefreshComments" onclick="fetchFbComments()"><i class="fas fa-sync-alt"></i> Refresh</button>
+        </div>
+        <div class="comments-filters" id="commentFilters">
+          <button class="filter-btn active" data-brand="all" onclick="filterComments('all',this)">All Pages</button>
+        </div>
+        <div class="comments-count" id="commentCount"></div>
+        <div class="comments-list" id="commentsList">
+          <div class="msg-empty"><i class="fas fa-comment-dots" style="font-size:1.2rem;opacity:.4"></i><br>Click Refresh to load comments</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ACTIVITY LOG -->
+    <div class="log-section">
+      <div class="section-label">Today's Activity</div>
+      <div class="log-list" id="logList">
+        <div class="log-item" style="justify-content:center;color:var(--gray)">No activity recorded yet</div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer style="text-align:center;padding:1.2rem 1rem;border-top:1px solid var(--border);font-size:.72rem;color:var(--gray);margin-top:1rem">
+    &copy; 2026 CaribZoom Inc. &nbsp;·&nbsp;
+    <a href="privacy.html" style="color:var(--gray-light);text-decoration:none">Privacy Policy</a>
+  </footer>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
