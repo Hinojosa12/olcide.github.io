@@ -9,7 +9,6 @@ const API = {
   FB_COMMENTS:     'https://n8n-n8n.7toway.easypanel.host/webhook/caribzoom-fb-comments',
 };
 
-// ── STATE ─────────────────────────────────────────────────────────────────
 let currentUser       = null;
 let myStatus          = 'idle';
 let activityLog       = [];
@@ -17,7 +16,6 @@ let teamPollInterval  = null;
 let userAllowedBrands = [];
 let commentsLoaded    = false;
 
-// ── CLOCK ─────────────────────────────────────────────────────────────────
 function updateClock() {
   const now = new Date();
   const el  = document.getElementById('liveTime');
@@ -28,7 +26,6 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// ── AUTH ──────────────────────────────────────────────────────────────────
 async function doLogin() {
   const email    = document.getElementById('loginEmail').value.trim();
   const password = document.getElementById('loginPassword').value.trim();
@@ -61,7 +58,6 @@ function doLogout() {
   document.getElementById('loginPassword').value = '';
 }
 
-// ── BRAND / PERMISSION HELPERS ────────────────────────────────────────────
 function getUserAllowedBrands() {
   if (!currentUser) return [];
   const mb = (currentUser.messageBrands || '').trim();
@@ -75,7 +71,6 @@ function canSeeMessages() {
   return (currentUser.messageBrands || '').trim().length > 0;
 }
 
-// ── DASHBOARD INIT ────────────────────────────────────────────────────────
 function showDashboard() {
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('dashboard').style.display   = 'block';
@@ -103,7 +98,6 @@ function showDashboard() {
   renderLog(); updateButtons(); updateStatusBadge();
 }
 
-// ── COMMS TAB SWITCHER ────────────────────────────────────────────────────
 function switchCommsTab(tab) {
   const tabMessages = document.getElementById('tabMessages');
   const tabComments = document.getElementById('tabComments');
@@ -127,7 +121,6 @@ function switchCommsTab(tab) {
   }
 }
 
-// ── CLOCK ACTIONS ─────────────────────────────────────────────────────────
 async function doAction(action) {
   document.querySelectorAll('.clock-btn').forEach(b => b.disabled = true);
   try {
@@ -164,7 +157,6 @@ function updateStatusBadge() {
   badge.innerHTML = '<i class="fas fa-circle" style="font-size:.45rem"></i> ' + labels[myStatus];
 }
 
-// ── ACTIVITY LOG ──────────────────────────────────────────────────────────
 function addLogEntry(time, action, name) { activityLog.unshift({ time, action, name }); renderLog(); }
 
 function renderLog() {
@@ -178,7 +170,6 @@ function renderLog() {
   ).join('');
 }
 
-// ── TEAM STATUS ───────────────────────────────────────────────────────────
 async function fetchTeamStatus() {
   if (!currentUser || currentUser.role !== 'admin') return;
   const btn  = document.getElementById('btnRefreshTeam');
@@ -284,28 +275,48 @@ async function fetchMessages() {
     const raw  = await res.json();
     const data = Array.isArray(raw) ? raw[0] : raw;
     if (data.success) {
-      // Support pre-grouped conversations from n8n
       if (data.conversations) {
         conversations = {};
         const convoList = Array.isArray(data.conversations) ? data.conversations : Object.values(data.conversations);
         convoList.forEach(c => {
           if (userAllowedBrands.length > 0 && !userAllowedBrands.includes(c.brand)) return;
-          conversations[c.id] = c;
+          const expanded = c.msgs.map(m => ({
+            messageText: m[0],
+            direction: m[1],
+            timestamp: m[2],
+            messageId: m[3],
+            attachmentUrl: m[4],
+            attachmentType: m[5],
+            senderId: c.senderId,
+            senderName: c.senderName,
+            brand: c.brand,
+            pageId: c.pageId,
+            platform: c.platform
+          }));
+          conversations[c.id] = {
+            id: c.id,
+            senderId: c.senderId,
+            senderName: c.senderName,
+            brand: c.brand,
+            messages: expanded,
+            lastMessage: c.lm,
+            lastTime: c.lt,
+            unread: expanded.filter(m => m.direction === 'received').length
+          };
         });
         allMessages = [];
-        Object.values(conversations).forEach(c => {
-          allMessages = allMessages.concat(c.messages);
-        });
+        Object.values(conversations).forEach(c => { allMessages = allMessages.concat(c.messages); });
         buildBrandFilters();
         renderInbox();
-      } else {
-        // Fallback: flat messages array
-        allMessages = data.messages || [];
-        if (userAllowedBrands.length > 0) allMessages = allMessages.filter(m => userAllowedBrands.includes(m.brand));
-        buildConversations();
-        buildBrandFilters();
-        renderInbox();
+        if (btn) btn.disabled = false;
+        if (icon) icon.classList.remove('spinning');
+        return;
       }
+      allMessages = data.messages || [];
+      if (userAllowedBrands.length > 0) allMessages = allMessages.filter(m => userAllowedBrands.includes(m.brand));
+      buildConversations();
+      buildBrandFilters();
+      renderInbox();
     }
   } catch (e) { console.error('Messages error:', e); }
   if (btn)  btn.disabled = false;
@@ -471,7 +482,6 @@ async function sendReply() {
   btn.disabled = false; input.disabled = false; input.focus();
 }
 
-// ── FACEBOOK COMMENTS ─────────────────────────────────────────────────────
 let allFbComments = [];
 let currentCommentFilter = 'all';
 
@@ -548,10 +558,8 @@ function renderComments() {
   }).join('');
 }
 
-// ── HELPERS ───────────────────────────────────────────────────────────────
 function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
 
-// ── SESSION CHECK ─────────────────────────────────────────────────────────
 function checkSession() {
   const saved = sessionStorage.getItem('caribzoom_user');
   if (saved) { try { currentUser = JSON.parse(saved); showDashboard(); } catch (e) { sessionStorage.removeItem('caribzoom_user'); } }
