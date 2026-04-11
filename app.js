@@ -540,7 +540,3 @@ function checkSession() {
   if (saved) { try { currentUser = JSON.parse(saved); showDashboard(); } catch (e) { sessionStorage.removeItem('caribzoom_user'); } }
 }
 document.addEventListener('DOMContentLoaded', checkSession);
-
-
-
-Plus
