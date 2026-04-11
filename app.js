@@ -284,11 +284,28 @@ async function fetchMessages() {
     const raw  = await res.json();
     const data = Array.isArray(raw) ? raw[0] : raw;
     if (data.success) {
-      allMessages = data.messages || [];
-      if (userAllowedBrands.length > 0) allMessages = allMessages.filter(m => userAllowedBrands.includes(m.brand));
-      buildConversations();
-      buildBrandFilters();
-      renderInbox();
+      // Support pre-grouped conversations from n8n
+      if (data.conversations) {
+        conversations = {};
+        const convoList = Array.isArray(data.conversations) ? data.conversations : Object.values(data.conversations);
+        convoList.forEach(c => {
+          if (userAllowedBrands.length > 0 && !userAllowedBrands.includes(c.brand)) return;
+          conversations[c.id] = c;
+        });
+        allMessages = [];
+        Object.values(conversations).forEach(c => {
+          allMessages = allMessages.concat(c.messages);
+        });
+        buildBrandFilters();
+        renderInbox();
+      } else {
+        // Fallback: flat messages array
+        allMessages = data.messages || [];
+        if (userAllowedBrands.length > 0) allMessages = allMessages.filter(m => userAllowedBrands.includes(m.brand));
+        buildConversations();
+        buildBrandFilters();
+        renderInbox();
+      }
     }
   } catch (e) { console.error('Messages error:', e); }
   if (btn)  btn.disabled = false;
