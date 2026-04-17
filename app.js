@@ -612,16 +612,17 @@ function renderAgentMessages() {
 }
 
 async function sendAgentMessage() {
-  const input = document.getElementById('agentInput');
-  const btn   = document.getElementById('agentSendBtn');
-  const text  = input.value.trim();
+  const input        = document.getElementById('agentInput');
+  const btn          = document.getElementById('agentSendBtn');
+  const periodSelect = document.getElementById('agentPeriod');
+  const text         = input.value.trim();
+  const period       = periodSelect ? periodSelect.value : 'today';
   if (!text) return;
 
   addAgentMessage('user', text);
   input.value = '';
   btn.disabled = true;
 
-  // Typing indicator
   const body = document.getElementById('agentBody');
   const typingId = 'agent-typing-' + Date.now();
   body.innerHTML += `<div class="agent-msg bot" id="${typingId}">
@@ -631,16 +632,13 @@ async function sendAgentMessage() {
   body.scrollTop = body.scrollHeight;
 
   try {
-    const res  = await fetch(API.AI_AGENT, {
+    const res = await fetch(API.AI_AGENT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      const periodSelect = document.getElementById('agentPeriod');
-const period = periodSelect ? periodSelect.value : 'today';
-body: JSON.stringify({
-  question: text,
-  userBrands: userAllowedBrands,
-  period: period
-})
+      body: JSON.stringify({
+        question: text,
+        userBrands: userAllowedBrands,
+        period: period
       })
     });
     const data = await res.json();
