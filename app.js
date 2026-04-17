@@ -7,6 +7,7 @@ const API = {
   DELETE_MESSAGES: 'https://n8n-n8n.7toway.easypanel.host/webhook/caribzoom-delete-messages',
   SEND_MESSAGE:    'https://n8n-n8n.7toway.easypanel.host/webhook/caribzoom-send-message',
   FB_COMMENTS:     'https://n8n-n8n.7toway.easypanel.host/webhook/caribzoom-fb-comments',
+  AI_AGENT:        'https://n8n-n8n.7toway.easypanel.host/webhook/caribzoom-agent',
 };
 
 let currentUser       = null;
@@ -56,6 +57,7 @@ function doLogout() {
   document.getElementById('commsSection').style.display = 'none';
   document.getElementById('loginEmail').value    = '';
   document.getElementById('loginPassword').value = '';
+  closeAgentChat();
 }
 
 function getUserAllowedBrands() {
@@ -96,6 +98,9 @@ function showDashboard() {
 
   myStatus = 'idle'; activityLog = []; commentsLoaded = false;
   renderLog(); updateButtons(); updateStatusBadge();
+
+  // Show AI agent button
+  document.getElementById('agentFab').style.display = 'flex';
 }
 
 function switchCommsTab(tab) {
@@ -558,6 +563,102 @@ function renderComments() {
   }).join('');
 }
 
+// ── AI AGENT ──────────────────────────────────────────────────────────────
+let agentMessages = [];
+let agentOpen     = false;
+
+function toggleAgentChat() {
+  agentOpen = !agentOpen;
+  const panel = document.getElementById('agentPanel');
+  const fab   = document.getElementById('agentFab');
+  if (agentOpen) {
+    panel.style.display = 'flex';
+    setTimeout(() => panel.classList.add('open'), 10);
+    fab.innerHTML = '<i class="fas fa-times"></i>';
+    if (agentMessages.length === 0) addAgentMessage('bot', '👋 Hi! I\'m ZoomAI. Ask me anything about today\'s messages, unanswered clients, or page activity.\n\n💡 Try: *"Who hasn\'t been answered today?"*');
+    setTimeout(() => document.getElementById('agentInput').focus(), 300);
+  } else {
+    closeAgentChat();
+  }
+}
+
+function closeAgentChat() {
+  agentOpen = false;
+  const panel = document.getElementById('agentPanel');
+  const fab   = document.getElementById('agentFab');
+  if (panel) { panel.classList.remove('open'); setTimeout(() => { panel.style.display = 'none'; }, 300); }
+  if (fab)   fab.innerHTML = '<i class="fas fa-robot"></i>';
+}
+
+function addAgentMessage(role, text) {
+  agentMessages.push({ role, text });
+  renderAgentMessages();
+}
+
+function renderAgentMessages() {
+  const body = document.getElementById('agentBody');
+  if (!body) return;
+  body.innerHTML = agentMessages.map(m => {
+    const isBot = m.role === 'bot';
+    const formattedText = m.text
+      .replace(/\*([^*]+)\*/g, '<strong>$1</strong>')
+      .replace(/\n/g, '<br>');
+    return `<div class="agent-msg ${isBot ? 'bot' : 'user'}">
+      ${isBot ? '<div class="agent-msg-avatar"><i class="fas fa-robot"></i></div>' : ''}
+      <div class="agent-msg-bubble">${formattedText}</div>
+    </div>`;
+  }).join('');
+  body.scrollTop = body.scrollHeight;
+}
+
+async function sendAgentMessage() {
+  const input = document.getElementById('agentInput');
+  const btn   = document.getElementById('agentSendBtn');
+  const text  = input.value.trim();
+  if (!text) return;
+
+  addAgentMessage('user', text);
+  input.value = '';
+  btn.disabled = true;
+
+  // Typing indicator
+  const body = document.getElementById('agentBody');
+  const typingId = 'agent-typing-' + Date.now();
+  body.innerHTML += `<div class="agent-msg bot" id="${typingId}">
+    <div class="agent-msg-avatar"><i class="fas fa-robot"></i></div>
+    <div class="agent-msg-bubble agent-typing"><span></span><span></span><span></span></div>
+  </div>`;
+  body.scrollTop = body.scrollHeight;
+
+  try {
+    const res  = await fetch(API.AI_AGENT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        question: text,
+        userBrands: userAllowedBrands
+      })
+    });
+    const data = await res.json();
+    const el = document.getElementById(typingId);
+    if (el) el.remove();
+    const answer = data.answer || 'Sorry, I could not get a response.';
+    addAgentMessage('bot', answer);
+  } catch (e) {
+    const el = document.getElementById(typingId);
+    if (el) el.remove();
+    addAgentMessage('bot', 'Connection error. Please try again.');
+  }
+
+  btn.disabled = false;
+  input.focus();
+}
+
+function handleAgentKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAgentMessage(); }
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────
 function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
 
 function checkSession() {
