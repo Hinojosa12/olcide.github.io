@@ -634,9 +634,13 @@ async function sendAgentMessage() {
     const res  = await fetch(API.AI_AGENT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        question: text,
-        userBrands: userAllowedBrands
+      const periodSelect = document.getElementById('agentPeriod');
+const period = periodSelect ? periodSelect.value : 'today';
+body: JSON.stringify({
+  question: text,
+  userBrands: userAllowedBrands,
+  period: period
+})
       })
     });
     const data = await res.json();
