@@ -264,10 +264,6 @@ const brandToPageId = {
   "Destiny's Clothing Store":     '108629230921476',
   'CaribZoom':                    '615378785649491',
   'Pieces Plus Sized - Reloaded': '105718055443236',
-  'Medjay Inc':                   '207414482464381',
-  'Region 3 Chamber of Commerce': '619624991551869',
-  'Choose Health':                '102237415030792',
-  "Zippy's Courier Services":    '103431468060033',
 };
 
 async function fetchMessages() {
@@ -615,14 +611,10 @@ function renderAgentMessages() {
   if (!body) return;
   body.innerHTML = agentMessages.map(m => {
     const isBot = m.role === 'bot';
-    const escaped = m.text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
-    const formattedText = escaped
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.+?)\*/g, '<strong>$1</strong>')
-      .replace(/\n/g, '<br>');
+    const formattedText = m.text
+  .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+  .replace(/\*(.+?)\*/g, '<strong>$1</strong>')
+  .replace(/\n/g, '<br>');
     return `<div class="agent-msg ${isBot ? 'bot' : 'user'}">
       ${isBot ? '<div class="agent-msg-avatar"><i class="fas fa-robot"></i></div>' : ''}
       <div class="agent-msg-bubble">${formattedText}</div>
