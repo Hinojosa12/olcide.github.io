@@ -601,7 +601,8 @@ function renderAgentMessages() {
   body.innerHTML = agentMessages.map(m => {
     const isBot = m.role === 'bot';
     const formattedText = m.text
-      .replace(/\*([^*]+)\*/g, '<strong>$1</strong>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<strong>$1</strong>')
       .replace(/\n/g, '<br>');
     return `<div class="agent-msg ${isBot ? 'bot' : 'user'}">
       ${isBot ? '<div class="agent-msg-avatar"><i class="fas fa-robot"></i></div>' : ''}
