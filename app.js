@@ -669,3 +669,13 @@ function checkSession() {
   if (saved) { try { currentUser = JSON.parse(saved); showDashboard(); } catch (e) { sessionStorage.removeItem('caribzoom_user'); } }
 }
 document.addEventListener('DOMContentLoaded', checkSession);
+
+document.addEventListener('DOMContentLoaded', () => {
+  const search = document.getElementById('msgSearch');
+  const clearBtn = document.getElementById('btnClearSearch');
+  if (search && clearBtn) {
+    search.addEventListener('input', () => {
+      clearBtn.style.display = search.value ? 'block' : 'none';
+    });
+  }
+});
