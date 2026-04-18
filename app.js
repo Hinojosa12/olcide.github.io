@@ -253,6 +253,7 @@ let allMessages        = [];
 let currentBrandFilter = 'all';
 let conversations      = {};
 let activeConvoId      = null;
+let currentSearchQuery = '';
 
 const brandToPageId = {
   'Party Hub':                    '507711665764249',
@@ -376,10 +377,24 @@ function filterMessages(brand, btnEl) {
   document.getElementById('chatReply').classList.remove('active');
 }
 
+function searchConversations(query) {
+  currentSearchQuery = query.trim();
+  renderInbox();
+}
+
 function renderInbox() {
   const list = document.getElementById('inboxList'), countEl = document.getElementById('msgCount');
   let convos = Object.values(conversations);
   if (currentBrandFilter !== 'all') convos = convos.filter(c => c.brand === currentBrandFilter);
+  if (currentSearchQuery) {
+    const q = currentSearchQuery.toLowerCase();
+    convos = convos.filter(c => {
+      const name = (c.senderName || '').toLowerCase();
+      const preview = (c.lastMessage || '').toLowerCase();
+      const brand = (c.brand || '').toLowerCase();
+      return name.includes(q) || preview.includes(q) || brand.includes(q);
+    });
+  }
   convos.sort((a, b) => new Date(b.lastTime) - new Date(a.lastTime));
   const totalConvos = convos.length, totalMsgs = convos.reduce((s, c) => s + c.messages.length, 0);
   countEl.textContent = `${totalConvos} conversation${totalConvos !== 1 ? 's' : ''} · ${totalMsgs} messages${currentBrandFilter !== 'all' ? ' · ' + currentBrandFilter : ''}`;
@@ -664,12 +679,6 @@ function handleAgentKey(e) {
 // ── HELPERS ───────────────────────────────────────────────────────────────
 function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
 
-function checkSession() {
-  const saved = sessionStorage.getItem('caribzoom_user');
-  if (saved) { try { currentUser = JSON.parse(saved); showDashboard(); } catch (e) { sessionStorage.removeItem('caribzoom_user'); } }
-}
-document.addEventListener('DOMContentLoaded', checkSession);
-
 document.addEventListener('DOMContentLoaded', () => {
   const search = document.getElementById('msgSearch');
   const clearBtn = document.getElementById('btnClearSearch');
@@ -679,3 +688,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+function checkSession() {
+  const saved = sessionStorage.getItem('caribzoom_user');
+  if (saved) { try { currentUser = JSON.parse(saved); showDashboard(); } catch (e) { sessionStorage.removeItem('caribzoom_user'); } }
+}
+document.addEventListener('DOMContentLoaded', checkSession);
