@@ -266,3 +266,38 @@ body { font-family:var(--font-body); background:var(--bg); color:var(--white); m
   .clock-btn { padding:.7rem .4rem; font-size:.68rem; gap:.3rem; }
   .clock-btn i { font-size:1rem; }
 }
+
+.messages-search {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  background: rgba(255,255,255,.05);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: .45rem .85rem;
+  margin-bottom: .6rem;
+}
+.messages-search i.fa-search {
+  color: var(--gray);
+  font-size: .8rem;
+  flex-shrink: 0;
+}
+.messages-search input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--white);
+  font-size: .83rem;
+}
+.messages-search input::placeholder { color: var(--gray); }
+#btnClearSearch {
+  background: none;
+  border: none;
+  color: var(--gray);
+  cursor: pointer;
+  font-size: .75rem;
+  padding: 0;
+  line-height: 1;
+}
+#btnClearSearch:hover { color: var(--white); }
