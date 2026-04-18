@@ -113,9 +113,14 @@
       <!-- MESSAGES PANEL -->
       <div class="comms-panel" id="panelMessages">
         <div class="messages-header">
-          <div class="section-label" style="margin-bottom:0">Inbox</div>
-          <button class="btn-refresh" id="btnRefreshMessages" onclick="fetchMessages()"><i class="fas fa-sync-alt"></i> Refresh</button>
-        </div>
+  <div class="section-label" style="margin-bottom:0">Inbox</div>
+  <button class="btn-refresh" id="btnRefreshMessages" onclick="fetchMessages()"><i class="fas fa-sync-alt"></i> Refresh</button>
+</div>
+<div class="messages-search">
+  <i class="fas fa-search"></i>
+  <input type="text" id="msgSearch" placeholder="Search clients, messages, brands…" oninput="searchConversations(this.value)">
+  <button id="btnClearSearch" onclick="document.getElementById('msgSearch').value=''; searchConversations('');" style="display:none"><i class="fas fa-times"></i></button>
+</div>
         <div class="messages-filters" id="msgFilters">
           <button class="filter-btn active" data-brand="all" onclick="filterMessages('all',this)">All Brands</button>
         </div>
@@ -412,4 +417,6 @@
 <script src="app.js"></script>
 </body>
 </html>
+
+<div class="messages-header">
 
