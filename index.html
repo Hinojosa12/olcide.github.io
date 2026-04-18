@@ -10,6 +10,9 @@
 </head>
 <body>
 
+<!-- ══ TOAST CONTAINER ══ -->
+<div id="toastContainer" class="toast-container" role="alert" aria-live="polite"></div>
+
 <!-- ══ LOGIN ══ -->
 <div class="login-screen" id="loginScreen">
   <div class="login-card">
@@ -18,15 +21,15 @@
       <p>Staff Dashboard · Sign In</p>
     </div>
     <div class="login-field">
-      <label>Email</label>
-      <input type="email" id="loginEmail" placeholder="you@caribzoom.com" autocomplete="email">
+      <label for="loginEmail">Email</label>
+      <input type="email" id="loginEmail" placeholder="you@caribzoom.com" autocomplete="email" required>
     </div>
     <div class="login-field">
-      <label>Password</label>
-      <input type="password" id="loginPassword" placeholder="Enter your password" autocomplete="current-password">
+      <label for="loginPassword">Password</label>
+      <input type="password" id="loginPassword" placeholder="Enter your password" autocomplete="current-password" required>
     </div>
-    <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign In</button>
-    <div class="login-error" id="loginError"></div>
+    <button class="login-btn" id="loginBtn" aria-label="Sign in to dashboard">Sign In</button>
+    <div class="login-error" id="loginError" role="alert"></div>
   </div>
 </div>
 
@@ -41,8 +44,8 @@
         <div class="name" id="dashName"></div>
         <div class="role" id="dashRole"></div>
       </div>
-      <div class="dash-avatar" id="dashAvatar"></div>
-      <button class="btn-logout" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></button>
+      <div class="dash-avatar" id="dashAvatar" aria-hidden="true"></div>
+      <button class="btn-logout" id="btnLogout" aria-label="Sign out of dashboard"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></button>
     </div>
   </header>
 
@@ -50,11 +53,11 @@
 
     <!-- CURRENT STATUS -->
     <div class="current-status">
-      <div class="current-time" id="liveTime">--:--:--</div>
-      <div class="current-date" id="liveDate"></div>
+      <div class="current-time" id="liveTime" aria-label="Current time">--:--:--</div>
+      <div class="current-date" id="liveDate" aria-label="Current date"></div>
       <div style="margin-top:.6rem">
-        <span class="status-badge idle" id="myStatusBadge">
-          <i class="fas fa-circle" style="font-size:.45rem"></i> Not Clocked In
+        <span class="status-badge idle" id="myStatusBadge" role="status">
+          <i class="fas fa-circle" style="font-size:.45rem" aria-hidden="true"></i> Not Clocked In
         </span>
       </div>
     </div>
@@ -63,10 +66,10 @@
     <div class="clock-section">
       <div class="section-label">Actions</div>
       <div class="clock-grid">
-        <button class="clock-btn clock-in"    id="btnClockIn"    onclick="doAction('clockIn')"><i class="fas fa-play-circle"></i> Clock In</button>
-        <button class="clock-btn lunch-start" id="btnLunchStart" onclick="doAction('lunchStart')" disabled><i class="fas fa-utensils"></i> Start Lunch</button>
-        <button class="clock-btn lunch-end"   id="btnLunchEnd"   onclick="doAction('lunchEnd')"   disabled><i class="fas fa-coffee"></i> End Lunch</button>
-        <button class="clock-btn clock-out"   id="btnClockOut"   onclick="doAction('clockOut')"   disabled><i class="fas fa-stop-circle"></i> Clock Out</button>
+        <button class="clock-btn clock-in" id="btnClockIn" data-action="clockIn" aria-label="Clock In - Start your work shift"><i class="fas fa-play-circle" aria-hidden="true"></i> Clock In</button>
+        <button class="clock-btn lunch-start" id="btnLunchStart" data-action="lunchStart" disabled aria-label="Start Lunch Break"><i class="fas fa-utensils" aria-hidden="true"></i> Start Lunch</button>
+        <button class="clock-btn lunch-end" id="btnLunchEnd" data-action="lunchEnd" disabled aria-label="End Lunch Break"><i class="fas fa-coffee" aria-hidden="true"></i> End Lunch</button>
+        <button class="clock-btn clock-out" id="btnClockOut" data-action="clockOut" disabled aria-label="Clock Out - End your work shift"><i class="fas fa-stop-circle" aria-hidden="true"></i> Clock Out</button>
       </div>
     </div>
 
@@ -75,7 +78,7 @@
       <div class="status-section">
         <div class="section-label">Team Overview</div>
         <div style="display:flex;justify-content:flex-end;margin-top:-0.4rem;margin-bottom:.8rem">
-          <button class="btn-refresh" id="btnRefreshTeam" onclick="refreshTeam()"><i class="fas fa-sync-alt"></i> Refresh</button>
+          <button class="btn-refresh" id="btnRefreshTeam" aria-label="Refresh team status"><i class="fas fa-sync-alt" aria-hidden="true"></i> Refresh</button>
         </div>
         <div class="status-grid">
           <div class="status-card active"><div class="number" id="countActive">0</div><div class="label">Active</div></div>
@@ -87,7 +90,7 @@
       <div class="team-section">
         <div class="section-label">All Employees</div>
         <div id="teamLastUpdate" style="font-size:.68rem;color:var(--gray);margin-bottom:.6rem">Last updated: never</div>
-        <table class="team-table">
+        <table class="team-table" role="table">
           <thead><tr><th>Employee</th><th>Brand</th><th>Status</th><th>Clock In</th><th>Lunch</th><th>Clock Out</th><th>Total</th></tr></thead>
           <tbody id="teamBody"><tr><td colspan="7" style="text-align:center;color:var(--gray);padding:2rem">Click Refresh to load team data</td></tr></tbody>
         </table>
@@ -101,66 +104,66 @@
     <div id="commsSection" style="display:none">
 
       <!-- TAB SWITCHER -->
-      <div class="comms-tabs">
-        <button class="comms-tab active" id="tabMessages" onclick="switchCommsTab('messages')">
-          <i class="fab fa-facebook-messenger"></i> Messages
+      <div class="comms-tabs" role="tablist">
+        <button class="comms-tab active" id="tabMessages" data-tab="messages" role="tab" aria-selected="true">
+          <i class="fab fa-facebook-messenger" aria-hidden="true"></i> Messages
         </button>
-        <button class="comms-tab" id="tabComments" onclick="switchCommsTab('comments')">
-          <i class="fab fa-facebook"></i> Facebook Comments
+        <button class="comms-tab" id="tabComments" data-tab="comments" role="tab" aria-selected="false">
+          <i class="fab fa-facebook" aria-hidden="true"></i> Facebook Comments
         </button>
       </div>
 
       <!-- MESSAGES PANEL -->
-      <div class="comms-panel" id="panelMessages">
+      <div class="comms-panel" id="panelMessages" role="tabpanel">
         <div class="messages-header">
-  <div class="section-label" style="margin-bottom:0">Inbox</div>
-  <button class="btn-refresh" id="btnRefreshMessages" onclick="fetchMessages()"><i class="fas fa-sync-alt"></i> Refresh</button>
-</div>
-<div class="messages-search">
-  <i class="fas fa-search"></i>
-  <input type="text" id="msgSearch" placeholder="Search clients, messages, brands…" oninput="searchConversations(this.value)">
-  <button id="btnClearSearch" onclick="document.getElementById('msgSearch').value=''; searchConversations('');" style="display:none"><i class="fas fa-times"></i></button>
-</div>
-        <div class="messages-filters" id="msgFilters">
-          <button class="filter-btn active" data-brand="all" onclick="filterMessages('all',this)">All Brands</button>
+          <div class="section-label" style="margin-bottom:0">Inbox</div>
+          <button class="btn-refresh" id="btnRefreshMessages" aria-label="Refresh messages"><i class="fas fa-sync-alt" aria-hidden="true"></i> Refresh</button>
         </div>
-        <div class="messages-count" id="msgCount"></div>
+        <div class="messages-search">
+          <i class="fas fa-search" aria-hidden="true"></i>
+          <input type="text" id="msgSearch" placeholder="Search clients, messages, brands…" aria-label="Search conversations">
+          <button id="btnClearSearch" style="display:none" aria-label="Clear search"><i class="fas fa-times" aria-hidden="true"></i></button>
+        </div>
+        <div class="messages-filters" id="msgFilters" role="group" aria-label="Filter by brand">
+          <button class="filter-btn active" data-brand="all">All Brands</button>
+        </div>
+        <div class="messages-count" id="msgCount" aria-live="polite"></div>
         <div class="inbox-container">
-          <div class="inbox-list" id="inboxList">
-            <div class="msg-empty"><i class="fas fa-comments" style="font-size:1.2rem;opacity:.4"></i><br>Click Refresh to load</div>
+          <div class="inbox-list" id="inboxList" role="list" aria-label="Conversation list">
+            <div class="msg-empty"><i class="fas fa-comments" style="font-size:1.2rem;opacity:.4" aria-hidden="true"></i><br>Click Refresh to load</div>
           </div>
           <div class="chat-panel">
             <div class="chat-header" id="chatHeader" style="display:none">
-              <div class="inbox-avatar" id="chatAvatar"><i class="fas fa-user"></i></div>
+              <div class="inbox-avatar" id="chatAvatar" aria-hidden="true"><i class="fas fa-user"></i></div>
               <div class="chat-header-info">
                 <div class="chat-header-name" id="chatName">Select a conversation</div>
                 <div class="chat-header-brand" id="chatBrand"></div>
               </div>
-              <button class="btn-delete-convo" id="btnDeleteConvo" onclick="deleteConversation()" style="display:none" title="Delete conversation"><i class="fas fa-trash-alt"></i></button>
+              <button class="btn-delete-convo" id="btnDeleteConvo" style="display:none" title="Delete conversation" aria-label="Delete this conversation"><i class="fas fa-trash-alt" aria-hidden="true"></i></button>
             </div>
-            <div class="chat-body" id="chatBody">
-              <div class="chat-empty"><i class="fas fa-comments" style="font-size:2rem;opacity:.3"></i><span>Select a conversation to view messages</span></div>
+            <div class="chat-body" id="chatBody" role="log" aria-label="Chat messages">
+              <div class="chat-empty"><i class="fas fa-comments" style="font-size:2rem;opacity:.3" aria-hidden="true"></i><span>Select a conversation to view messages</span></div>
             </div>
             <div class="chat-reply" id="chatReply">
-              <input type="text" id="replyInput" placeholder="Type a message…" onkeydown="if(event.key==='Enter')sendReply()">
-              <button class="btn-send" id="btnSend" onclick="sendReply()" title="Send"><i class="fas fa-paper-plane"></i></button>
+              <input type="text" id="replyInput" placeholder="Type a message…" aria-label="Type a reply message">
+              <button class="btn-send" id="btnSend" title="Send" aria-label="Send message"><i class="fas fa-paper-plane" aria-hidden="true"></i></button>
             </div>
           </div>
         </div>
       </div>
 
       <!-- FACEBOOK COMMENTS PANEL -->
-      <div class="comms-panel" id="panelComments" style="display:none">
+      <div class="comms-panel" id="panelComments" style="display:none" role="tabpanel">
         <div class="comments-header">
           <div class="section-label" style="margin-bottom:0">Comments</div>
-          <button class="btn-refresh" id="btnRefreshComments" onclick="fetchFbComments()"><i class="fas fa-sync-alt"></i> Refresh</button>
+          <button class="btn-refresh" id="btnRefreshComments" aria-label="Refresh comments"><i class="fas fa-sync-alt" aria-hidden="true"></i> Refresh</button>
         </div>
-        <div class="comments-filters" id="commentFilters">
-          <button class="filter-btn active" data-brand="all" onclick="filterComments('all',this)">All Pages</button>
+        <div class="comments-filters" id="commentFilters" role="group" aria-label="Filter comments by brand">
+          <button class="filter-btn active" data-brand="all">All Pages</button>
         </div>
-        <div class="comments-count" id="commentCount"></div>
-        <div class="comments-list" id="commentsList">
-          <div class="msg-empty"><i class="fas fa-comment-dots" style="font-size:1.2rem;opacity:.4"></i><br>Click Refresh to load comments</div>
+        <div class="comments-count" id="commentCount" aria-live="polite"></div>
+        <div class="comments-list" id="commentsList" role="list" aria-label="Facebook comments list">
+          <div class="msg-empty"><i class="fas fa-comment-dots" style="font-size:1.2rem;opacity:.4" aria-hidden="true"></i><br>Click Refresh to load comments</div>
         </div>
       </div>
 
@@ -169,7 +172,7 @@
     <!-- ACTIVITY LOG -->
     <div class="log-section">
       <div class="section-label">Today's Activity</div>
-      <div class="log-list" id="logList">
+      <div class="log-list" id="logList" role="log" aria-label="Activity log">
         <div class="log-item" style="justify-content:center;color:var(--gray)">No activity recorded yet</div>
       </div>
     </div>
@@ -177,246 +180,46 @@
   </main>
 
   <footer style="text-align:center;padding:1.2rem 1rem;border-top:1px solid var(--border);font-size:.72rem;color:var(--gray);margin-top:1rem">
-    &copy; 2026 CaribZoom Inc. &nbsp;·&nbsp;
+    <span id="copyrightYear"></span> CaribZoom Inc. &nbsp;·&nbsp;
     <a href="privacy.html" style="color:var(--gray-light);text-decoration:none">Privacy Policy</a>
   </footer>
 </div>
-<!-- ══ AI AGENT FAB + PANEL ══ -->
-<!-- Pega esto justo antes de <script src="app.js"></script> -->
 
-<button class="agent-fab" id="agentFab" onclick="toggleAgentChat()" style="display:none" title="ZoomAI Assistant">
-  <i class="fas fa-robot"></i>
+<!-- ══ AI AGENT FAB + PANEL ══ -->
+<button class="agent-fab" id="agentFab" style="display:none" title="ZoomAI Assistant" aria-label="Open ZoomAI Assistant">
+  <i class="fas fa-robot" aria-hidden="true"></i>
 </button>
 
-<div class="agent-panel" id="agentPanel" style="display:none">
+<div class="agent-panel" id="agentPanel" style="display:none" role="dialog" aria-label="ZoomAI Assistant Chat">
   <div class="agent-header">
     <div class="agent-header-info">
-      <div class="agent-avatar"><i class="fas fa-robot"></i></div>
+      <div class="agent-avatar" aria-hidden="true"><i class="fas fa-robot"></i></div>
       <div>
         <div class="agent-title">ZoomAI</div>
         <div class="agent-subtitle">CaribZoom Assistant</div>
       </div>
     </div>
-    <button class="agent-close" onclick="closeAgentChat()"><i class="fas fa-times"></i></button>
+    <button class="agent-close" id="agentClose" aria-label="Close ZoomAI Assistant"><i class="fas fa-times" aria-hidden="true"></i></button>
   </div>
-  <div class="agent-body" id="agentBody"></div>
+  <div class="agent-body" id="agentBody" role="log" aria-label="AI conversation"></div>
   <div class="agent-period-bar">
-  <select id="agentPeriod" class="agent-period-select">
-    <option value="today">📅 Today</option>
-    <option value="week">📅 This Week</option>
-    <option value="month">📅 This Month</option>
-    <option value="lastmonth">📅 Last Month</option>
-    <option value="3months">📅 Last 3 Months</option>
-    <option value="all">📅 All Time</option>
-  </select>
+    <select id="agentPeriod" class="agent-period-select" aria-label="Select time period">
+      <option value="today">📅 Today</option>
+      <option value="week">📅 This Week</option>
+      <option value="month">📅 This Month</option>
+      <option value="lastmonth">📅 Last Month</option>
+      <option value="3months">📅 Last 3 Months</option>
+      <option value="all">📅 All Time</option>
+    </select>
+  </div>
+  <div class="agent-footer">
+    <input type="text" id="agentInput" class="agent-input" placeholder="Ask me anything…" aria-label="Ask ZoomAI a question">
+    <button class="agent-send" id="agentSendBtn" aria-label="Send message to ZoomAI">
+      <i class="fas fa-paper-plane" aria-hidden="true"></i>
+    </button>
+  </div>
 </div>
-<div class="agent-footer">
-  <input type="text" id="agentInput" class="agent-input" placeholder="Ask me anything…" onkeydown="handleAgentKey(event)">
-  <button class="agent-send" id="agentSendBtn" onclick="sendAgentMessage()">
-    <i class="fas fa-paper-plane"></i>
-  </button>
-</div>
-</div>
 
-
-<!-- ══ CSS DEL AGENTE ══ -->
-<!-- Pega esto dentro de tu <style> en caribzoom.css o en index.html -->
-<style>
-/* FAB Button */
-.agent-fab {
-  position: fixed;
-  bottom: 1.5rem;
-  right: 1.5rem;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #3b82f6, #6366f1);
-  color: white;
-  border: none;
-  cursor: pointer;
-  font-size: 1.3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 20px rgba(99,102,241,.5);
-  z-index: 9999;
-  transition: transform .2s, box-shadow .2s;
-}
-.agent-fab:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 28px rgba(99,102,241,.7);
-}
-
-/* Panel */
-.agent-panel {
-  position: fixed;
-  bottom: 5rem;
-  right: 1.5rem;
-  width: 360px;
-  max-height: 520px;
-  background: #0f1117;
-  border: 1px solid rgba(255,255,255,.1);
-  border-radius: 16px;
-  display: flex;
-  flex-direction: column;
-  z-index: 9998;
-  box-shadow: 0 20px 60px rgba(0,0,0,.6);
-  transform: translateY(20px);
-  opacity: 0;
-  transition: transform .3s ease, opacity .3s ease;
-  overflow: hidden;
-}
-.agent-panel.open {
-  transform: translateY(0);
-  opacity: 1;
-}
-
-/* Header */
-.agent-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: .9rem 1rem;
-  background: linear-gradient(135deg, rgba(59,130,246,.15), rgba(99,102,241,.15));
-  border-bottom: 1px solid rgba(255,255,255,.08);
-}
-.agent-header-info { display: flex; align-items: center; gap: .7rem; }
-.agent-avatar {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: linear-gradient(135deg, #3b82f6, #6366f1);
-  display: flex; align-items: center; justify-content: center;
-  color: white; font-size: .9rem;
-}
-.agent-title { font-weight: 700; color: white; font-size: .9rem; }
-.agent-subtitle { font-size: .7rem; color: rgba(255,255,255,.4); }
-.agent-close {
-  background: none; border: none; color: rgba(255,255,255,.4);
-  cursor: pointer; font-size: .9rem; padding: .3rem;
-  border-radius: 6px; transition: color .2s, background .2s;
-}
-.agent-close:hover { color: white; background: rgba(255,255,255,.1); }
-
-/* Body */
-.agent-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: .8rem;
-  min-height: 300px;
-  max-height: 360px;
-}
-.agent-body::-webkit-scrollbar { width: 4px; }
-.agent-body::-webkit-scrollbar-track { background: transparent; }
-.agent-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 4px; }
-
-/* Messages */
-.agent-msg { display: flex; gap: .5rem; align-items: flex-start; }
-.agent-msg.user { flex-direction: row-reverse; }
-.agent-msg-avatar {
-  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
-  background: linear-gradient(135deg, #3b82f6, #6366f1);
-  display: flex; align-items: center; justify-content: center;
-  color: white; font-size: .65rem;
-}
-.agent-msg-bubble {
-  max-width: 80%;
-  padding: .6rem .85rem;
-  border-radius: 12px;
-  font-size: .82rem;
-  line-height: 1.5;
-  color: rgba(255,255,255,.9);
-}
-.agent-msg.bot .agent-msg-bubble {
-  background: rgba(255,255,255,.07);
-  border: 1px solid rgba(255,255,255,.08);
-  border-top-left-radius: 4px;
-}
-.agent-msg.user .agent-msg-bubble {
-  background: linear-gradient(135deg, #3b82f6, #6366f1);
-  color: white;
-  border-top-right-radius: 4px;
-}
-
-/* Typing indicator */
-.agent-typing {
-  display: flex; gap: 4px; align-items: center; padding: .7rem .85rem;
-}
-.agent-typing span {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: rgba(255,255,255,.4);
-  animation: agentBounce 1.2s infinite;
-}
-.agent-typing span:nth-child(2) { animation-delay: .2s; }
-.agent-typing span:nth-child(3) { animation-delay: .4s; }
-@keyframes agentBounce {
-  0%, 60%, 100% { transform: translateY(0); }
-  30% { transform: translateY(-6px); }
-}
-
-/* Footer */
-.agent-footer {
-  display: flex;
-  gap: .5rem;
-  padding: .75rem 1rem;
-  border-top: 1px solid rgba(255,255,255,.08);
-  background: rgba(0,0,0,.2);
-}
-.agent-input {
-  flex: 1;
-  background: rgba(255,255,255,.07);
-  border: 1px solid rgba(255,255,255,.1);
-  border-radius: 10px;
-  padding: .55rem .85rem;
-  color: white;
-  font-size: .82rem;
-  outline: none;
-  transition: border-color .2s;
-}
-.agent-input::placeholder { color: rgba(255,255,255,.3); }
-.agent-input:focus { border-color: rgba(99,102,241,.6); }
-.agent-send {
-  width: 36px; height: 36px; border-radius: 10px;
-  background: linear-gradient(135deg, #3b82f6, #6366f1);
-  border: none; color: white; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: .8rem; transition: opacity .2s;
-  flex-shrink: 0;
-}
-.agent-send:hover { opacity: .85; }
-.agent-send:disabled { opacity: .4; cursor: not-allowed; }
-
-/* Mobile */
-@media (max-width: 480px) {
-  .agent-panel { width: calc(100vw - 2rem); right: 1rem; bottom: 5rem; }
-  .agent-fab { bottom: 1rem; right: 1rem; }
-}
-
-  .agent-period-bar {
-  padding: .5rem 1rem .3rem;
-  border-top: 1px solid rgba(255,255,255,.08);
-  background: rgba(0,0,0,.2);
-}
-.agent-period-select {
-  width: 100%;
-  background: rgba(255,255,255,.07);
-  border: 1px solid rgba(255,255,255,.1);
-  border-radius: 8px;
-  padding: .4rem .7rem;
-  color: white;
-  font-size: .78rem;
-  outline: none;
-  cursor: pointer;
-}
-.agent-period-select option {
-  background: #1a1d2e;
-  color: white;
-}
-</style>
 <script src="app.js"></script>
 </body>
 </html>
-
-<div class="messages-header">
-
