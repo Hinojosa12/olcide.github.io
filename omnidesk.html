@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CaribZoom</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d1117;color:#e6edf3;font-family:'DM Sans',system-ui,sans-serif;overflow:hidden}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#30363d;border-radius:3px}
+input,textarea,select{font-family:'DM Sans',system-ui,sans-serif}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fade{animation:fadeIn .3s ease}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+// ── COLORES ──────────────────────────────────────────────────
+const C = {
+  bg:"#0d1117", surf:"#161b22", card:"#21262d", card2:"#2d333b",
+  accent:"#f97316", accentDim:"rgba(249,115,22,0.15)", accentGlow:"rgba(249,115,22,0.25)",
+  green:"#3fb950", greenDim:"rgba(63,185,80,0.15)",
+  red:"#f85149", redDim:"rgba(248,81,73,0.15)",
+  blue:"#58a6ff", text:"#e6edf3", muted:"#8b949e",
+  border:"rgba(240,246,252,0.1)", border2:"rgba(240,246,252,0.15)",
+};
+const sty = {
+  card:{background:C.card,border:`1px solid ${C.border}`,borderRadius:12},
+  input:{background:C.card2,border:`1px solid ${C.border2}`,color:C.text,borderRadius:8,padding:"10px 14px",fontSize:14,width:"100%",outline:"none",fontFamily:"inherit"},
+  btnP:{background:C.accent,color:"#fff",border:"none",borderRadius:8,padding:"10px 20px",fontWeight:600,fontSize:14,cursor:"pointer",fontFamily:"inherit",boxShadow:`0 4px 12px ${C.accentGlow}`},
+  btnG:{background:"transparent",color:C.muted,border:"none",borderRadius:8,padding:"8px 12px",fontSize:14,cursor:"pointer",fontFamily:"inherit"},
+};
+
+// ── SUPABASE CLIENT ──────────────────────────────────────────
+function makeSB(url, key) {
+  const H={apikey:key,Authorization:`Bearer ${key}`,"Content-Type":"application/json"};
+  const req = async (path, opts={}) => {
+    const sep = path.includes("?") ? "&" : "?";
+    const mergedHeaders = Object.assign({}, H, opts.headers || {});
+    const fetchOpts = { method: opts.method || "GET", headers: mergedHeaders };
+    if (opts.body) fetchOpts.body = opts.body;
+    const res = await fetch(url+path+sep+"apikey="+encodeURIComponent(key), fetchOpts);
+    if(res.status===204) return null;
+    const d = await res.json();
+    if(!res.ok) throw new Error(d.message||d.error_description||JSON.stringify(d));
+    return d;
+  };
+  return {
+    from: t => ({
+      select: (cols="*",qs="") => req(`/rest/v1/${t}?select=${cols}${qs?"&"+qs:""}`),
+      insert: body => req(`/rest/v1/${t}`,{method:"POST",body:JSON.stringify(body),headers:{Prefer:"return=representation"}}),
+      update: (body,qs) => req(`/rest/v1/${t}?${qs}`,{method:"PATCH",body:JSON.stringify(body),headers:{Prefer:"return=representation"}}),
+      del: qs => req(`/rest/v1/${t}?${qs}`,{method:"DELETE"}),
+      del: qs => req(`/rest/v1/${t}?${qs}`,{method:"DELETE"}),
+    }),
+    storage: {
+      upload: async (bucket, path, file) => {
+        const res = await fetch(url+"/storage/v1/object/"+bucket+"/"+path+"?apikey="+encodeURIComponent(key), {
+          method: "POST",
+          headers: { apikey: key, Authorization: "Bearer "+key, "Content-Type": file.type },
+          body: file
+        });
+        if (!res.ok) { const d = await res.json(); throw new Error(d.message || "Upload failed"); }
+        return url+"/storage/v1/object/public/"+bucket+"/"+path;
+      }
+    }
+  };
+}
+
+// ── HELPERS ──────────────────────────────────────────────────
+const ago = ts => {
+  const m=Math.floor((Date.now()-new Date(ts))/60000);
+  if(m<1) return"ahora"; if(m<60) return`${m}m`; if(m<1440) return`${Math.floor(m/60)}h`; return`${Math.floor(m/1440)}d`;
+};
+const ini = n => (n||"?")[0].toUpperCase();
+const stColor = {open:C.green, pending:C.accent, closed:C.muted};
+const stLabel = {open:"Abierta", pending:"Pendiente", closed:"Cerrada"};
+
+function Badge({status}) {
+  const bg={open:C.greenDim, pending:C.accentDim, closed:"rgba(255,255,255,0.07)"};
+  return <span style={{background:bg[status]||bg.closed,color:stColor[status]||C.muted,borderRadius:999,padding:"2px 8px",fontSize:11,fontWeight:600}}>{stLabel[status]||status}</span>;
+}
+function Err({msg}) {
+  return msg ? <div style={{background:C.redDim,border:`1px solid ${C.red}`,borderRadius:8,padding:"10px 14px",marginBottom:18,fontSize:13,color:C.red,display:"flex",gap:8}}><span style={{marginTop:1,flexShrink:0}}>⚠</span>{msg}</div> : null;
+}
+function Spin() { return <span style={{display:"inline-block",animation:"spin 1s linear infinite",fontSize:16}}>↻</span>; }
+
+// ── SETUP ────────────────────────────────────────────────────
+function Setup({onSetup}) {
+  const [f,setF]=useState({supabaseUrl:"",supabaseKey:"",n8nUrl:""});
+  const [show,setShow]=useState(false);
+  const [loading,setLoading]=useState(false);
+  const [err,setErr]=useState("");
+  const set = k => e => setF({...f,[k]:e.target.value});
+
+  const connect = () => {
+    if(!f.supabaseUrl||!f.supabaseKey){setErr("URL y API Key son requeridas");return;}
+    const url = f.supabaseUrl.trim().replace(/\/+$/,"");
+    onSetup({...f, supabaseUrl: url});
+  };
+
+  return (
+    <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:24,background:C.bg}} className="fade">
+      <div style={{width:"100%",maxWidth:460}}>
+        <div style={{textAlign:"center",marginBottom:36}}>
+          <div style={{display:"inline-flex",alignItems:"center",gap:10,marginBottom:10}}>
+            <div style={{width:44,height:44,background:C.accent,borderRadius:12,display:"flex",alignItems:"center",justifyContent:"center",boxShadow:`0 4px 20px ${C.accentGlow}`,fontSize:22}}>⚡</div>
+            <span style={{fontFamily:"'Syne',sans-serif",fontSize:28,fontWeight:800,letterSpacing:"-0.02em"}}>CaribZoom</span>
+          </div>
+          <p style={{color:C.muted,fontSize:15}}>Conecta tu base de datos para comenzar</p>
+        </div>
+        <div style={{...sty.card,padding:32}}>
+          <h3 style={{fontFamily:"'Syne',sans-serif",fontWeight:700,marginBottom:22,fontSize:16}}>Configuración inicial</h3>
+          <Err msg={err}/>
+          <div style={{display:"flex",flexDirection:"column",gap:14}}>
+            <div>
+              <label style={{fontSize:11,color:C.muted,fontWeight:600,display:"block",marginBottom:6,letterSpacing:"0.05em"}}>SUPABASE URL</label>
+              <input value={f.supabaseUrl} onChange={set("supabaseUrl")} placeholder="https://xxxx.supabase.co" style={sty.input}/>
+            </div>
+            <div>
+              <label style={{fontSize:11,color:C.muted,fontWeight:600,display:"block",marginBottom:6,letterSpacing:"0.05em"}}>SUPABASE ANON KEY</label>
+              <div style={{position:"relative"}}>
+                <input value={f.supabaseKey} onChange={set("supabaseKey")} type={show?"text":"password"} placeholder="sb_publishable_..." style={{...sty.input,paddingRight:40}}/>
+                <button onClick={()=>setShow(!show)} style={{...sty.btnG,position:"absolute",right:6,top:"50%",transform:"translateY(-50%)",padding:6}}>{show?"🙈":"👁"}</button>
+              </div>
+            </div>
+            <div>
+              <label style={{fontSize:11,color:C.muted,fontWeight:600,display:"block",marginBottom:6,letterSpacing:"0.05em"}}>N8N URL (opcional)</label>
+              <input value={f.n8nUrl} onChange={set("n8nUrl")} placeholder="https://tu-n8n.easypanel.host" style={sty.input}/>
+            </div>
+          </div>
+          <button onClick={connect} disabled={loading} style={{...sty.btnP,width:"100%",marginTop:24,padding:12,fontSize:15,display:"flex",alignItems:"center",justifyContent:"center",gap:8,opacity:loading?.7:1}}>
+            {loading?<><Spin/> Conectando...</>:"⚡ Conectar y continuar"}
+          </button>
+          <p style={{textAlign:"center",fontSize:12,color:C.muted,marginTop:16}}>
+            ¿Sin Supabase? <a href="https://supabase.com" target="_blank" style={{color:C.accent,textDecoration:"none"}}>Crea cuenta gratis →</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── LOGIN ────────────────────────────────────────────────────
+function Login({onLogin,loading,err,onBack}) {
+  const [email,setEmail]=useState("");
+  const [pass,setPass]=useState("");
+  const [show,setShow]=useState(false);
+  return (
+    <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:24,background:C.bg}} className="fade">
+      <div style={{width:"100%",maxWidth:400}}>
+        <div style={{textAlign:"center",marginBottom:36}}>
+          <div style={{display:"inline-flex",alignItems:"center",gap:10,marginBottom:10}}>
+            <div style={{width:44,height:44,background:C.accent,borderRadius:12,display:"flex",alignItems:"center",justifyContent:"center",boxShadow:`0 4px 20px ${C.accentGlow}`,fontSize:22}}>⚡</div>
+            <span style={{fontFamily:"'Syne',sans-serif",fontSize:28,fontWeight:800,letterSpacing:"-0.02em"}}>CaribZoom</span>
+          </div>
+          <p style={{color:C.muted,fontSize:15}}>Panel de agentes</p>
+        </div>
+        <div style={{...sty.card,padding:32}}>
+          <Err msg={err}/>
+          <div style={{display:"flex",flexDirection:"column",gap:14}}>
+            <div>
+              <label style={{fontSize:11,color:C.muted,fontWeight:600,display:"block",marginBottom:6,letterSpacing:"0.05em"}}>EMAIL</label>
+              <input value={email} onChange={e=>setEmail(e.target.value)} type="email" placeholder="agente@empresa.com" style={sty.input} onKeyDown={e=>e.key==="Enter"&&onLogin(email,pass)}/>
+            </div>
+            <div>
+              <label style={{fontSize:11,color:C.muted,fontWeight:600,display:"block",marginBottom:6,letterSpacing:"0.05em"}}>CONTRASEÑA</label>
+              <div style={{position:"relative"}}>
+                <input value={pass} onChange={e=>setPass(e.target.value)} type={show?"text":"password"} placeholder="••••••••" style={{...sty.input,paddingRight:40}} onKeyDown={e=>e.key==="Enter"&&onLogin(email,pass)}/>
+                <button onClick={()=>setShow(!show)} style={{...sty.btnG,position:"absolute",right:6,top:"50%",transform:"translateY(-50%)",padding:6}}>{show?"🙈":"👁"}</button>
+              </div>
+            </div>
+          </div>
+          <button onClick={()=>onLogin(email,pass)} disabled={loading||!email||!pass}
+            style={{...sty.btnP,width:"100%",marginTop:22,padding:12,fontSize:15,display:"flex",alignItems:"center",justifyContent:"center",gap:8,opacity:(!email||!pass||loading)?.6:1}}>
+            {loading?<><Spin/> Iniciando...</>:"Iniciar sesión"}
+          </button>
+        </div>
+        <button onClick={onBack} style={{...sty.btnG,margin:"16px auto 0",display:"flex",alignItems:"center",gap:6,fontSize:13}}>← Cambiar configuración</button>
+      </div>
+    </div>
+  );
+}
+
+// ── CHAT PANE ────────────────────────────────────────────────
+function MediaMsg({m, isAgent}) {
+  const url = m.media_url;
+  const t = m.media_type || "";
+  if (url) {
+    const imgExt = url.split(".").pop().split("?")[0].toLowerCase();
+    const isImg = t.startsWith("image/") || ["jpg","jpeg","png","gif","webp","svg"].includes(imgExt);
+    const isVid = t.startsWith("video/") || ["mp4","webm","mov"].includes(imgExt);
+    const isAud = t.startsWith("audio/") || ["mp3","ogg","wav","m4a"].includes(imgExt);
+    const imgStyle = {maxWidth:"100%", borderRadius:8, display:"block", marginBottom:m.content?8:0, cursor:"pointer"};
+    if (isImg) return (
+      <div>
+        <img src={url} style={imgStyle} alt="producto" onClick={()=>window.open(url,"_blank")}/>
+        {m.content&&<div style={{fontSize:13,lineHeight:1.5}}>{m.content}</div>}
+      </div>
+    );
+    if (isVid) return <div><video src={url} controls style={{maxWidth:"100%",borderRadius:8,display:"block",marginBottom:m.content?8:0}}/>{m.content&&<div>{m.content}</div>}</div>;
+    if (isAud) return <div><audio src={url} controls style={{width:"100%",marginBottom:m.content?8:0}}/>{m.content&&<div>{m.content}</div>}</div>;
+    return <div><a href={url} target="_blank" style={{color:isAgent?"#fff":C.blue,textDecoration:"underline"}}>📎 Archivo</a>{m.content&&<div>{m.content}</div>}</div>;
+  }
+  return <div>{m.content}</div>;
+}
+
+function ChatPane({conv,messages,msg,setMsg,onSend,onClose,client,onDeleteMsg}) {
+  const endRef=useRef(null);
+  const fileRef=useRef(null);
+  const [uploading,setUploading]=useState(false);
+  const prevMsgCount = useRef(0);
+  useEffect(()=>{
+    if(messages.length > prevMsgCount.current) {
+      endRef.current?.scrollIntoView({behavior:"smooth"});
+    }
+    prevMsgCount.current = messages.length;
+  },[messages]);
+
+  const handleFile = async (e) => {
+    const file = e.target.files[0];
+    if (!file || !conv) return;
+    setUploading(true);
+    try {
+      const path = `${conv.id}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g,"_")}`;
+      const mediaUrl = await client.storage.upload("chat-media", path, file);
+      const sb2 = makeSB(SB_URL, SB_KEY);
+      await sb2.from("messages").insert({conversation_id:conv.id, sender_type:"agent", sender_name:"Agente", content:"", media_url:mediaUrl, media_type:file.type});
+      await sb2.from("conversations").update({last_message:"📎 Archivo adjunto", last_message_at:new Date().toISOString()}, `id=eq.${conv.id}`);
+    } catch(ex) { alert("Error: "+ex.message); }
+    finally { setUploading(false); e.target.value=""; }
+  };
+
+  return (
+    <div style={{display:"flex",flexDirection:"column",height:"100%"}}>
+      <div style={{padding:"14px 18px",borderBottom:`1px solid ${C.border}`,display:"flex",alignItems:"center",gap:10,background:C.surf,flexShrink:0}}>
+        {onClose&&<button onClick={onClose} style={{...sty.btnG,padding:6}}>←</button>}
+        <div style={{width:38,height:38,borderRadius:"50%",background:C.accentDim,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,color:C.accent,flexShrink:0}}>{ini(conv?.customer_name)}</div>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontWeight:600,fontSize:15}}>{conv?.customer_name||"Cliente"}</div>
+          <Badge status={conv?.status||"open"} />
+        </div>
+      </div>
+      <div style={{flex:1,overflowY:"auto",padding:"18px 18px 0",display:"flex",flexDirection:"column",gap:10}}>
+        {messages.length===0&&<div style={{textAlign:"center",color:C.muted,fontSize:14,marginTop:40}}>El cliente iniciará la conversación</div>}
+        {messages.map((m)=>{
+          const isAgent=m.sender_type==="agent";
+          return (
+            <div key={m.id} style={{display:"flex",justifyContent:isAgent?"flex-end":"flex-start"}}>
+              <div style={{maxWidth:"72%",padding:"10px 14px",borderRadius:12,fontSize:14,lineHeight:1.5,background:isAgent?C.accent:C.card2,color:isAgent?"#fff":C.text,borderBottomRightRadius:isAgent?4:12,borderBottomLeftRadius:isAgent?12:4}}>
+                <MediaMsg m={m} isAgent={isAgent}/>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:4,gap:8}}>
+                  <div style={{fontSize:10,opacity:.65}}>{new Date(m.created_at).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}</div>
+                  {isAgent&&<button onClick={()=>onDeleteMsg&&onDeleteMsg(m.id)} title="Borrar mensaje" style={{background:"none",border:"none",cursor:"pointer",opacity:.5,fontSize:11,color:"#fff",padding:"0 2px"}} onMouseEnter={e=>e.target.style.opacity=1} onMouseLeave={e=>e.target.style.opacity=.5}>&#10005;</button>}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+        <div ref={endRef} style={{paddingBottom:18}}/>
+      </div>
+      <div style={{padding:"14px 18px",borderTop:`1px solid ${C.border}`,display:"flex",gap:8,background:C.surf,flexShrink:0,alignItems:"center"}}>
+        <input ref={fileRef} type="file" accept="image/*,video/*,audio/*" onChange={handleFile} style={{display:"none"}}/>
+        <button onClick={()=>fileRef.current?.click()} disabled={uploading} title="Adjuntar"
+          style={{width:38,height:38,borderRadius:"50%",border:`1px solid ${C.border2}`,background:C.card2,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:16,opacity:uploading?.5:1}}>
+          {uploading?"⏳":"📎"}
+        </button>
+        <input value={msg} onChange={(e)=>setMsg(e.target.value)} onKeyDown={(e)=>e.key==="Enter"&&!e.shiftKey&&onSend()} placeholder="Escribe una respuesta..." style={{...sty.input,borderRadius:24,flex:1}}/>
+        <button onClick={onSend} disabled={!msg.trim()} style={{width:44,height:44,borderRadius:"50%",border:"none",cursor:msg.trim()?"pointer":"default",background:msg.trim()?C.accent:C.card2,display:"flex",alignItems:"center",justifyContent:"center",boxShadow:msg.trim()?`0 4px 12px ${C.accentGlow}`:"none",flexShrink:0,transition:"all .2s",fontSize:18}}>
+          ➤
+        </button>
+      </div>
+    </div>
+  );
+}
+
+
+function ConvTab({convs,selected,onSelect,messages,msg,setMsg,onSend,businesses,client,onDeleteConv,onDeleteMsg}) {
+  const [search,setSearch]=useState("");
+  const list=convs.filter(c=>!search||c.customer_name?.toLowerCase().includes(search.toLowerCase()));
+  return (
+    <div style={{display:"flex",height:"100%",overflow:"hidden"}}>
+      <div style={{width:300,flexShrink:0,borderRight:`1px solid ${C.border}`,display:"flex",flexDirection:"column",height:"100%"}}>
+        <div style={{padding:"16px 14px 12px",borderBottom:`1px solid ${C.border}`,flexShrink:0}}>
+          <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:16,marginBottom:12}}>Conversaciones</div>
+          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="🔍 Buscar..." style={{...sty.input,fontSize:13}}/>
+        </div>
+        <div style={{flex:1,overflowY:"auto",padding:8}}>
+          {list.length===0&&<div style={{textAlign:"center",padding:40,color:C.muted,fontSize:13}}>Sin conversaciones</div>}
+          {list.map(c=>{
+            const biz=businesses.find(b=>b.id===c.business_id);
+            const sel=selected?.id===c.id;
+            return (
+              <div key={c.id} onClick={()=>onSelect(c)} style={{padding:"12px",borderRadius:9,cursor:"pointer",marginBottom:3,background:sel?C.accentDim:"transparent",border:`1px solid ${sel?C.accentGlow:"transparent"}`,transition:"all .15s"}}>
+                <div style={{display:"flex",gap:10,alignItems:"flex-start"}}>
+                  <div style={{width:34,height:34,borderRadius:"50%",background:C.card2,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,color:C.accent,flexShrink:0,fontSize:14}}>{ini(c.customer_name)}</div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:2}}>
+                      <span style={{fontWeight:600,fontSize:13,color:sel?C.accent:C.text}}>{c.customer_name||"Cliente"}</span>
+                      <span style={{fontSize:11,color:C.muted}}>{ago(c.last_message_at)}</span>
+                    </div>
+                    <div style={{fontSize:12,color:C.muted,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:5}}>{c.last_message||"Sin mensajes"}</div>
+                    <div style={{display:"flex",alignItems:"center",gap:6}}>
+                      {biz&&<span style={{fontSize:10,background:C.card2,color:C.muted,padding:"1px 6px",borderRadius:4}}>{biz.name}</span>}
+                      <span style={{width:5,height:5,borderRadius:"50%",background:stColor[c.status]||C.muted}}/>
+                      {c.unread_count>0&&<span style={{background:C.accent,color:"#fff",borderRadius:"50%",width:18,height:18,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,marginLeft:"auto"}}>{c.unread_count}</span>}
+                      <button onClick={e=>{e.stopPropagation();onDeleteConv&&onDeleteConv(c.id);}} title="Eliminar conversación" style={{marginLeft:"auto",background:C.redDim,border:"none",color:C.red,borderRadius:6,width:22,height:22,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,flexShrink:0}}>🗑</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      <div style={{flex:1,overflow:"hidden"}}>
+        {selected
+          ? <ChatPane conv={selected} messages={messages} msg={msg} setMsg={setMsg} onSend={onSend} client={client} onDeleteMsg={onDeleteMsg}/>
+          : <div style={{height:"100%",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:12,color:C.muted}}>
+              <div style={{fontSize:40,opacity:.25}}>💬</div>
+              <div style={{fontSize:16,fontWeight:500}}>Selecciona una conversación</div>
+            </div>
+        }
+      </div>
+    </div>
+  );
+}
+
+// ── PRODUCT MODAL ────────────────────────────────────────────
+function ImageUpload({value, onChange}) {
+  const fileRef = useRef(null);
+  const [uploading, setUploading] = useState(false);
+  const [preview, setPreview] = useState(value||"");
+
+  useEffect(()=>setPreview(value||""),[value]);
+
+  const handleFile = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const path = "products/"+Date.now()+"_"+file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+      const res = await fetch(SB_URL+"/storage/v1/object/chat-media/"+path+"?apikey="+encodeURIComponent(SB_KEY),{
+        method:"POST", headers:{apikey:SB_KEY,Authorization:"Bearer "+SB_KEY,"Content-Type":file.type}, body:file
+      });
+      if(!res.ok){const d=await res.json();throw new Error(d.message||"Error al subir");}
+      const url = SB_URL+"/storage/v1/object/public/chat-media/"+path;
+      setPreview(url);
+      onChange(url);
+    } catch(ex){alert("Error: "+ex.message);}
+    finally{setUploading(false);e.target.value="";}
+  };
+
+  return (
+    <div>
+      {preview ? (
+        <div style={{position:"relative",marginBottom:10}}>
+          <img src={preview} style={{width:"100%",height:160,objectFit:"cover",borderRadius:10,display:"block"}} onError={e=>e.target.style.display="none"}/>
+          <button onClick={()=>{setPreview("");onChange("");}} style={{position:"absolute",top:6,right:6,background:"rgba(0,0,0,0.6)",border:"none",color:"#fff",borderRadius:"50%",width:28,height:28,cursor:"pointer",fontSize:14}}>✕</button>
+        </div>
+      ) : (
+        <div onClick={()=>fileRef.current?.click()} style={{border:`2px dashed ${C.border2}`,borderRadius:10,padding:"28px 16px",textAlign:"center",cursor:"pointer",marginBottom:8,transition:"border .2s"}} onMouseEnter={e=>e.currentTarget.style.borderColor=C.accent} onMouseLeave={e=>e.currentTarget.style.borderColor=C.border2}>
+          {uploading
+            ? <div style={{color:C.muted,fontSize:14}}>⏳ Subiendo imagen...</div>
+            : <><div style={{fontSize:32,marginBottom:8}}>🖼️</div><div style={{fontSize:14,color:C.muted}}>Click para subir imagen</div><div style={{fontSize:12,color:C.muted,marginTop:4}}>JPG, PNG, WEBP</div></>
+          }
+        </div>
+      )}
+      <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} style={{display:"none"}}/>
+      <input value={preview} onChange={e=>{setPreview(e.target.value);onChange(e.target.value);}} placeholder="O pega una URL de imagen..." style={{...sty.input,fontSize:13}}/>
+    </div>
+  );
+}
+
+function ProdModal({product,businesses,onSave,onClose}) {
+  const [f,setF]=useState(product||{name:"",description:"",price:"",category:"",image_url:"",stock:0,active:true,business_id:""});
+  const set=k=>e=>setF({...f,[k]:e.target.value});
+  return (
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.75)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,padding:20}}>
+      <div style={{...sty.card,width:"100%",maxWidth:500,maxHeight:"88vh",overflowY:"auto",padding:28}} className="fade">
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:22}}>
+          <h3 style={{fontFamily:"'Syne',sans-serif",fontWeight:700}}>{product?"Editar producto":"Nuevo producto"}</h3>
+          <button onClick={onClose} style={{...sty.btnG,padding:6}}>✕</button>
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:14}}>
+          <div>
+            <label style={{fontSize:11,color:C.muted,fontWeight:600,display:"block",marginBottom:6,letterSpacing:"0.05em"}}>NEGOCIO</label>
+            <select value={f.business_id} onChange={set("business_id")} style={{...sty.input,cursor:"pointer"}}>
+              <option value="">Selecciona un negocio</option>
+              {businesses.map(b=><option key={b.id} value={b.id}>{b.name}</option>)}
+            </select>
+          </div>
+          <div>
+            <label style={{fontSize:11,color:C.muted,fontWeight:600,display:"block",marginBottom:6,letterSpacing:"0.05em"}}>NOMBRE</label>
+            <input value={f.name} onChange={set("name")} placeholder="Nombre del producto" style={sty.input}/>
+          </div>
+          <div>
+            <label style={{fontSize:11,color:C.muted,fontWeight:600,display:"block",marginBottom:6,letterSpacing:"0.05em"}}>DESCRIPCIÓN</label>
+            <textarea value={f.description} onChange={set("description")} placeholder="Describe el producto..." style={{...sty.input,height:72,resize:"vertical"}}/>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+            <div>
+              <label style={{fontSize:11,color:C.muted,fontWeight:600,display:"block",marginBottom:6,letterSpacing:"0.05em"}}>PRECIO</label>
+              <input value={f.price} onChange={set("price")} type="number" placeholder="0.00" style={sty.input}/>
+            </div>
+            <div>
+              <label style={{fontSize:11,color:C.muted,fontWeight:600,display:"block",marginBottom:6,letterSpacing:"0.05em"}}>STOCK</label>
+              <input value={f.stock} onChange={set("stock")} type="number" style={sty.input}/>
+            </div>
+          </div>
+          <div>
+            <label style={{fontSize:11,color:C.muted,fontWeight:600,display:"block",marginBottom:6,letterSpacing:"0.05em"}}>CATEGORÍA</label>
+            <input value={f.category} onChange={set("category")} placeholder="Ropa, Electrónica..." style={sty.input}/>
+          </div>
+          <div>
+            <label style={{fontSize:11,color:C.muted,fontWeight:600,display:"block",marginBottom:6,letterSpacing:"0.05em"}}>IMAGEN DEL PRODUCTO</label>
+            <ImageUpload value={f.image_url} onChange={url=>setF({...f,image_url:url})}/>
+          </div>
+          <div style={{display:"flex",alignItems:"center",gap:10}}>
+            <button onClick={()=>setF({...f,active:!f.active})} style={{width:40,height:22,borderRadius:11,background:f.active?C.accent:C.card2,border:"none",cursor:"pointer",position:"relative",transition:"background .2s"}}>
+              <span style={{position:"absolute",width:16,height:16,borderRadius:"50%",background:"#fff",top:3,left:f.active?21:3,transition:"left .2s"}}/>
+            </button>
+            <span style={{fontSize:14,color:f.active?C.text:C.muted}}>{f.active?"Producto activo":"Inactivo"}</span>
+          </div>
+        </div>
+        <div style={{display:"flex",gap:10,marginTop:24,justifyContent:"flex-end"}}>
+          <button onClick={onClose} style={{...sty.btnG,border:`1px solid ${C.border2}`}}>Cancelar</button>
+          <button onClick={()=>onSave(f)} style={sty.btnP}>{product?"Guardar cambios":"Crear producto"}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── PRODUCTS TAB ─────────────────────────────────────────────
+function ProdTab({client,businesses,selectedBiz}) {
+  const [products,setProducts]=useState([]);
+  const [loading,setLoading]=useState(true);
+  const [modal,setModal]=useState(null);
+  const [search,setSearch]=useState("");
+  const load=useCallback(async()=>{
+    if(!client)return; setLoading(true);
+    try{const qs=selectedBiz?`business_id=eq.${selectedBiz.id}&order=created_at.desc`:"order=created_at.desc"; setProducts((await client.from("products").select("*",qs))||[]);}
+    catch(e){console.error(e);} finally{setLoading(false);}
+  },[client,selectedBiz]);
+  useEffect(()=>{load();},[load]);
+
+  const save=async f=>{
+    if(!f.business_id){alert("Debes seleccionar un negocio");return;}
+    if(!f.name?.trim()){alert("El nombre es requerido");return;}
+    try{
+      const data={
+        business_id:f.business_id, name:f.name, description:f.description||"",
+        price:f.price?Number(f.price):null, stock:Number(f.stock)||0,
+        category:f.category||"", image_url:f.image_url||"",
+        active:f.active===true||f.active==="true"
+      };
+      if(f.id) await client.from("products").update(data,`id=eq.${f.id}`);
+      else await client.from("products").insert(data);
+      setModal(null);load();
+    }
+    catch(e){alert(e.message);}
+  };
+  const del=async id=>{if(!confirm("¿Eliminar?"))return; await client.from("products").del(`id=eq.${id}`);load();};
+  const list=products.filter(p=>!search||p.name?.toLowerCase().includes(search.toLowerCase())||p.category?.toLowerCase().includes(search.toLowerCase()));
+
+  return (
+    <div style={{padding:24,overflowY:"auto",height:"100%"}}>
+      {modal&&<ProdModal product={modal==="new"?null:modal} businesses={businesses} onSave={save} onClose={()=>setModal(null)}/>}
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:22,flexWrap:"wrap",gap:10}}>
+        <div>
+          <h2 style={{fontFamily:"'Syne',sans-serif",fontSize:21,fontWeight:700}}>Productos</h2>
+          <p style={{color:C.muted,fontSize:13,marginTop:2}}>{list.length} producto{list.length!==1?"s":""}</p>
+        </div>
+        <div style={{display:"flex",gap:10}}>
+          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="🔍 Buscar..." style={{...sty.input,width:190,fontSize:13}}/>
+          <button onClick={()=>setModal("new")} style={{...sty.btnP,display:"flex",alignItems:"center",gap:7}}>+ Nuevo</button>
+        </div>
+      </div>
+      {loading?<div style={{textAlign:"center",padding:60,color:C.muted}}><Spin/></div>
+      :list.length===0?<div style={{textAlign:"center",padding:60,color:C.muted}}>
+        <div style={{fontSize:40,opacity:.3,marginBottom:14}}>📦</div>
+        <div style={{fontSize:15,fontWeight:600,marginBottom:6}}>Sin productos</div>
+        <button onClick={()=>setModal("new")} style={{...sty.btnP,marginTop:16,display:"inline-flex",alignItems:"center",gap:7}}>+ Agregar</button>
+      </div>
+      :<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))",gap:16}}>
+        {list.map(p=>{
+          const biz=businesses.find(b=>b.id===p.business_id);
+          return (
+            <div key={p.id} style={{...sty.card,overflow:"hidden",padding:0}}>
+              <div style={{height:150,background:C.card2,display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}}>
+                {p.image_url?<img src={p.image_url} alt={p.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>:<span style={{fontSize:32,opacity:.4}}>📦</span>}
+                <div style={{position:"absolute",top:8,right:8}}>
+                  <span style={{background:p.active?C.greenDim:"rgba(255,255,255,0.07)",color:p.active?C.green:C.muted,borderRadius:999,padding:"2px 8px",fontSize:11,fontWeight:600}}>{p.active?"Activo":"Inactivo"}</span>
+                </div>
+              </div>
+              <div style={{padding:16}}>
+                <div style={{fontSize:11,color:C.accent,fontWeight:600,marginBottom:5}}>{biz?.name||"—"}{p.category?` · ${p.category}`:""}</div>
+                <div style={{fontWeight:600,fontSize:14,marginBottom:5,lineHeight:1.3}}>{p.name}</div>
+                {p.description&&<div style={{fontSize:12,color:C.muted,lineHeight:1.5,marginBottom:10,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}}>{p.description}</div>}
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+                  <div style={{fontSize:17,fontWeight:700,color:C.accent}}>{p.price?`$${Number(p.price).toLocaleString()}`:"Consultar"}</div>
+                  <div style={{fontSize:12,color:C.muted}}>Stock: {p.stock??0}</div>
+                </div>
+                <div style={{display:"flex",gap:6}}>
+                  <button onClick={()=>setModal(p)} style={{...sty.btnG,flex:1,border:`1px solid ${C.border}`,display:"flex",alignItems:"center",justifyContent:"center",gap:5,fontSize:13,padding:8}}>✏ Editar</button>
+                  <button onClick={()=>del(p.id)} style={{padding:"8px 12px",borderRadius:8,background:C.redDim,color:C.red,border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:13}}>🗑</button>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>}
+    </div>
+  );
+}
+
+// ── BUSINESSES TAB ───────────────────────────────────────────
+function LogoUpload({value, onChange}) {
+  const fileRef = useRef(null);
+  const [uploading, setUploading] = useState(false);
+  const [preview, setPreview] = useState(value||"");
+  useEffect(()=>setPreview(value||""),[value]);
+
+  const handleFile = async (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    setUploading(true);
+    try {
+      const path = "logos/"+Date.now()+"_"+file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+      const res = await fetch(SB_URL+"/storage/v1/object/chat-media/"+path+"?apikey="+encodeURIComponent(SB_KEY),{
+        method:"POST", headers:{apikey:SB_KEY,Authorization:"Bearer "+SB_KEY,"Content-Type":file.type}, body:file
+      });
+      if(!res.ok){const d=await res.json();throw new Error(d.message||"Error");}
+      const url = SB_URL+"/storage/v1/object/public/chat-media/"+path;
+      setPreview(url); onChange(url);
+    } catch(ex){alert("Error: "+ex.message);}
+    finally{setUploading(false);e.target.value="";}
+  };
+
+  return (
+    <div>
+      <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} style={{display:"none"}}/>
+      {preview ? (
+        <div style={{display:"flex",alignItems:"center",gap:12,padding:"10px 12px",background:C.card2,borderRadius:10,border:`1px solid ${C.border}`}}>
+          <img src={preview} style={{width:52,height:52,objectFit:"contain",borderRadius:8,background:"#fff",padding:4}} onError={e=>e.target.style.display="none"}/>
+          <div style={{flex:1,fontSize:13,color:C.muted,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>Logo cargado</div>
+          <button onClick={()=>{setPreview("");onChange("");}} style={{...sty.btnG,padding:6,color:C.red}}>✕</button>
+          <button onClick={()=>fileRef.current?.click()} style={{...sty.btnG,padding:"6px 10px",border:`1px solid ${C.border2}`,fontSize:12}}>Cambiar</button>
+        </div>
+      ) : (
+        <div onClick={()=>fileRef.current?.click()} style={{border:`2px dashed ${C.border2}`,borderRadius:10,padding:"20px",textAlign:"center",cursor:"pointer",transition:"border .2s"}}
+          onMouseEnter={e=>e.currentTarget.style.borderColor=C.accent}
+          onMouseLeave={e=>e.currentTarget.style.borderColor=C.border2}>
+          {uploading
+            ? <div style={{color:C.muted,fontSize:14}}>⏳ Subiendo logo...</div>
+            : <><div style={{fontSize:28,marginBottom:6}}>🖼</div><div style={{fontSize:14,color:C.muted}}>Click para subir el logo</div><div style={{fontSize:11,color:C.muted,marginTop:3}}>PNG, JPG, SVG recomendado</div></>
+          }
+        </div>
+      )}
+    </div>
+  );
+}
+
+function BizTab({client,businesses,onRefresh}) {
+  const [modal,setModal]=useState(false);
+  const [f,setF]=useState({name:"",description:"",color:"#f97316"});
+  const set=k=>e=>setF({...f,[k]:e.target.value});
+  const save=async()=>{
+    try{
+      const data={name:f.name,description:f.description||"",color:f.color||"#f97316",logo_url:f.logo_url||""};
+      if(f.id) await client.from("businesses").update(data,`id=eq.${f.id}`);
+      else{const slug=f.name.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,""); await client.from("businesses").insert({...data,slug});}
+      setModal(false);onRefresh();
+    }catch(e){alert(e.message);}
+  };
+  return (
+    <div style={{padding:24,overflowY:"auto",height:"100%"}}>
+      {modal&&(
+        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.75)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,padding:20}}>
+          <div style={{...sty.card,width:"100%",maxWidth:440,padding:28}} className="fade">
+            <div style={{display:"flex",justifyContent:"space-between",marginBottom:20}}>
+              <h3 style={{fontFamily:"'Syne',sans-serif",fontWeight:700}}>{f.id?"Editar negocio":"Nuevo negocio"}</h3>
+              <button onClick={()=>setModal(false)} style={{...sty.btnG,padding:6}}>✕</button>
+            </div>
+            <div style={{display:"flex",flexDirection:"column",gap:14}}>
+              <div><label style={{fontSize:11,color:C.muted,fontWeight:600,display:"block",marginBottom:6,letterSpacing:"0.05em"}}>NOMBRE</label><input value={f.name} onChange={set("name")} placeholder="Nombre" style={sty.input}/></div>
+              <div><label style={{fontSize:11,color:C.muted,fontWeight:600,display:"block",marginBottom:6,letterSpacing:"0.05em"}}>DESCRIPCIÓN</label><input value={f.description} onChange={set("description")} placeholder="¿Qué vende?" style={sty.input}/></div>
+              <div>
+                <label style={{fontSize:11,color:C.muted,fontWeight:600,display:"block",marginBottom:6,letterSpacing:"0.05em"}}>COLOR</label>
+                <div style={{display:"flex",gap:10}}><input type="color" value={f.color} onChange={set("color")} style={{width:44,height:40,padding:2,borderRadius:6,cursor:"pointer",border:`1px solid ${C.border2}`,background:C.card2}}/><input value={f.color} onChange={set("color")} style={{...sty.input,flex:1}}/></div>
+          </div>
+          <div>
+            <label style={{fontSize:11,color:C.muted,fontWeight:600,display:"block",marginBottom:6,letterSpacing:"0.05em"}}>LOGO</label>
+            <LogoUpload value={f.logo_url||""} onChange={url=>setF({...f,logo_url:url})}/>
+              </div>
+            </div>
+            <div style={{display:"flex",gap:10,marginTop:22,justifyContent:"flex-end"}}>
+              <button onClick={()=>setModal(false)} style={{...sty.btnG,border:`1px solid ${C.border2}`}}>Cancelar</button>
+              <button onClick={save} style={sty.btnP}>Guardar</button>
+            </div>
+          </div>
+        </div>
+      )}
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:22}}>
+        <div><h2 style={{fontFamily:"'Syne',sans-serif",fontSize:21,fontWeight:700}}>Negocios</h2><p style={{color:C.muted,fontSize:13,marginTop:2}}>{businesses.length} registrados</p></div>
+        <button onClick={()=>{setF({name:"",description:"",color:"#f97316"});setModal(true);}} style={{...sty.btnP,display:"flex",alignItems:"center",gap:7}}>+ Nuevo negocio</button>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(270px,1fr))",gap:16}}>
+        {businesses.map(b=>(
+          <div key={b.id} style={{...sty.card,borderLeft:`4px solid ${b.color||C.accent}`,padding:20}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12}}>
+              <div style={{width:40,height:40,borderRadius:10,background:`${b.color||C.accent}22`,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
+                {b.logo_url?<img src={b.logo_url} style={{width:"100%",height:"100%",objectFit:"contain",padding:4}} onError={e=>e.target.style.display="none"}/>:<span style={{fontSize:20}}>🏪</span>}
+              </div>
+              <button onClick={()=>{setF(b);setModal(true);}} style={{...sty.btnG,padding:6}}>✏</button>
+            </div>
+            <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:16,marginBottom:6}}>{b.name}</div>
+            {b.description&&<div style={{fontSize:13,color:C.muted,marginBottom:12,lineHeight:1.5}}>{b.description}</div>}
+            <div style={{padding:"7px 10px",background:C.card2,borderRadius:7,fontSize:12,color:C.muted}}>🌐 /{b.slug}</div>
+          </div>
+        ))}
+        {businesses.length===0&&<div style={{gridColumn:"1/-1",textAlign:"center",padding:60,color:C.muted}}><div style={{fontSize:40,opacity:.3,marginBottom:14}}>🏪</div><div style={{fontSize:15,fontWeight:600}}>Sin negocios aún</div></div>}
+      </div>
+    </div>
+  );
+}
+
+// ── OVERVIEW TAB ─────────────────────────────────────────────
+function OvTab({convs,businesses,onNav}) {
+  const open=convs.filter(c=>c.status==="open").length;
+  const pending=convs.filter(c=>c.status==="pending").length;
+  const unread=convs.reduce((a,c)=>a+(c.unread_count||0),0);
+  const stats=[
+    {label:"Conversaciones abiertas",val:open,color:C.green,bg:C.greenDim,ico:"💬"},
+    {label:"Pendientes",val:pending,color:C.accent,bg:C.accentDim,ico:"⏳"},
+    {label:"Sin leer",val:unread,color:C.blue,bg:"rgba(88,166,255,0.15)",ico:"🔔"},
+    {label:"Negocios",val:businesses.length,color:"#a78bfa",bg:"rgba(167,139,250,0.15)",ico:"🏪"},
+  ];
+  return (
+    <div style={{padding:24,overflowY:"auto",height:"100%"}}>
+      <h2 style={{fontFamily:"'Syne',sans-serif",fontSize:21,fontWeight:700,marginBottom:6}}>Resumen</h2>
+      <p style={{color:C.muted,fontSize:13,marginBottom:24}}>Todo en un vistazo</p>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(170px,1fr))",gap:14,marginBottom:28}}>
+        {stats.map(({label,val,color,bg,ico})=>(
+          <div key={label} style={{...sty.card,padding:18,display:"flex",alignItems:"center",gap:14}}>
+            <div style={{width:42,height:42,borderRadius:10,background:bg,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:20}}>{ico}</div>
+            <div>
+              <div style={{fontSize:22,fontWeight:700,fontFamily:"'Syne',sans-serif",lineHeight:1,color}}>{val}</div>
+              <div style={{fontSize:12,color:C.muted,marginTop:3}}>{label}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <h3 style={{fontFamily:"'Syne',sans-serif",fontWeight:700,marginBottom:14,fontSize:15}}>Recientes</h3>
+      <div style={{...sty.card,overflow:"hidden",padding:0}}>
+        {convs.slice(0,6).map((c,i)=>(
+          <div key={c.id} onClick={()=>onNav(c)} style={{padding:"13px 18px",borderBottom:i<5?`1px solid ${C.border}`:"none",cursor:"pointer",display:"flex",gap:12,alignItems:"center",transition:"background .15s"}} onMouseEnter={e=>e.currentTarget.style.background=C.card2} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+            <div style={{width:34,height:34,borderRadius:"50%",background:C.accentDim,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,color:C.accent,fontSize:13,flexShrink:0}}>{ini(c.customer_name)}</div>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontWeight:600,fontSize:13}}>{c.customer_name||"Cliente"}</div>
+              <div style={{fontSize:12,color:C.muted,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.last_message||"—"}</div>
+            </div>
+            <Badge status={c.status}/>
+            <span style={{color:C.muted}}>›</span>
+          </div>
+        ))}
+        {convs.length===0&&<div style={{padding:40,textAlign:"center",color:C.muted,fontSize:14}}>Sin conversaciones todavía</div>}
+      </div>
+    </div>
+  );
+}
+
+// ── DASHBOARD ────────────────────────────────────────────────
+function Dashboard({user,client,onLogout}) {
+  const [tab,setTab]=useState("overview");
+  const [businesses,setBusinesses]=useState([]);
+  const [selBiz,setSelBiz]=useState(null);
+  const [bizDrop,setBizDrop]=useState(false);
+  const [convs,setConvs]=useState([]);
+  const [selConv,setSelConv]=useState(null);
+  const [msgs,setMsgs]=useState([]);
+  const [msg,setMsg]=useState("");
+  const TABS=[
+    {id:"overview",ico:"⚡",label:"Resumen"},
+    {id:"conversations",ico:"💬",label:"Conversaciones",badge:convs.filter(c=>c.unread_count>0).length},
+    {id:"products",ico:"📦",label:"Productos"},
+    {id:"businesses",ico:"🏪",label:"Negocios"},
+  ];
+  const loadBiz=useCallback(async()=>{try{setBusinesses((await client.from("businesses").select("*","order=name.asc"))||[]);}catch(e){console.error(e);}}, [client]);
+  useEffect(()=>{loadBiz();},[loadBiz]);
+  useEffect(()=>{
+    const load=async()=>{try{const qs=selBiz?`business_id=eq.${selBiz.id}&order=last_message_at.desc`:"order=last_message_at.desc"; setConvs((await client.from("conversations").select("*",qs))||[]);}catch(e){console.error(e);}};
+    load();const id=setInterval(load,5000);return()=>clearInterval(id);
+  },[client,selBiz]);
+  useEffect(()=>{
+    if(!selConv)return;
+    const load=async()=>{try{setMsgs((await client.from("messages").select("*",`conversation_id=eq.${selConv.id}&order=created_at.asc`))||[]);}catch(e){console.error(e);}};
+    load();const id=setInterval(load,3000);return()=>clearInterval(id);
+  },[selConv,client]);
+
+  const deleteMsg=async(id)=>{
+    try{ await client.from("messages").del("id=eq."+id); }
+    catch(e){ alert(e.message); }
+  };
+
+  const deleteConv=async(id)=>{
+    if(!confirm("¿Eliminar esta conversación y todos sus mensajes?")) return;
+    try{
+      await client.from("messages").del("conversation_id=eq."+id);
+      await client.from("conversations").del("id=eq."+id);
+      if(selConv&&selConv.id===id) setSelConv(null);
+    }catch(e){alert(e.message);}
+  };
+
+  const sendMsg=async()=>{
+    if(!msg.trim()||!selConv)return;
+    const content=msg.trim();setMsg("");
+    try{await client.from("messages").insert({conversation_id:selConv.id,sender_type:"agent",sender_name:user.name,content}); await client.from("conversations").update({last_message:content,last_message_at:new Date().toISOString()},`id=eq.${selConv.id}`);}
+    catch(e){console.error(e);}
+  };
+
+  return (
+    <div style={{display:"flex",height:"100vh",overflow:"hidden",background:C.bg}}>
+      {/* Sidebar */}
+      <div style={{width:220,flexShrink:0,background:C.surf,borderRight:`1px solid ${C.border}`,display:"flex",flexDirection:"column",height:"100%"}}>
+        <div style={{padding:"18px 16px 14px",borderBottom:`1px solid ${C.border}`,display:"flex",alignItems:"center",gap:10}}>
+          <div style={{width:34,height:34,background:C.accent,borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",boxShadow:`0 4px 12px ${C.accentGlow}`,fontSize:18}}>⚡</div>
+          <span style={{fontFamily:"'Syne',sans-serif",fontSize:19,fontWeight:800}}>CaribZoom</span>
+        </div>
+        {/* Business selector */}
+        <div style={{padding:"10px 12px",borderBottom:`1px solid ${C.border}`,position:"relative"}}>
+          <button onClick={()=>setBizDrop(!bizDrop)} style={{width:"100%",padding:"8px 10px",background:C.card2,border:`1px solid ${C.border2}`,borderRadius:8,cursor:"pointer",display:"flex",alignItems:"center",gap:8,color:C.text,fontFamily:"inherit",fontSize:13}}>
+            <span style={{width:8,height:8,borderRadius:"50%",background:selBiz?.color||C.muted,flexShrink:0}}/>
+            <span style={{flex:1,textAlign:"left",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{selBiz?.name||"Todos los negocios"}</span>
+            <span style={{color:C.muted}}>▾</span>
+          </button>
+          {bizDrop&&(
+            <div style={{position:"absolute",top:"100%",left:12,right:12,background:C.card,border:`1px solid ${C.border2}`,borderRadius:8,zIndex:50,boxShadow:"0 8px 24px rgba(0,0,0,0.4)",overflow:"hidden"}}>
+              {[{id:null,name:"Todos los negocios",color:C.muted},...businesses].map(b=>(
+                <div key={b.id||"all"} onClick={()=>{setSelBiz(b.id?b:null);setBizDrop(false);}} style={{padding:"9px 12px",cursor:"pointer",fontSize:13,display:"flex",gap:8,alignItems:"center",transition:"background .1s"}} onMouseEnter={e=>e.currentTarget.style.background=C.card2} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                  <span style={{width:7,height:7,borderRadius:"50%",background:b.color||C.muted}}/>{b.name}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        <nav style={{flex:1,padding:"10px 10px"}}>
+          {TABS.map(({id,ico,label,badge})=>(
+            <button key={id} onClick={()=>setTab(id)} style={{width:"100%",padding:"9px 10px",borderRadius:8,marginBottom:2,display:"flex",alignItems:"center",gap:9,fontSize:13,fontFamily:"inherit",background:tab===id?C.accentDim:"transparent",color:tab===id?C.accent:C.muted,border:`1px solid ${tab===id?C.accentGlow:"transparent"}`,fontWeight:tab===id?600:400,cursor:"pointer"}}>
+              <span>{ico}</span><span style={{flex:1,textAlign:"left"}}>{label}</span>
+              {badge>0&&<span style={{background:C.accent,color:"#fff",borderRadius:999,padding:"1px 6px",fontSize:10,fontWeight:700}}>{badge}</span>}
+            </button>
+          ))}
+        </nav>
+        <div style={{padding:"12px 14px",borderTop:`1px solid ${C.border}`,display:"flex",alignItems:"center",gap:10}}>
+          <div style={{width:30,height:30,borderRadius:"50%",background:C.accentDim,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,color:C.accent,fontSize:13,flexShrink:0}}>{ini(user?.name)}</div>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{fontSize:13,fontWeight:600,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{user?.name}</div>
+            <div style={{fontSize:11,color:C.muted,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{user?.email}</div>
+          </div>
+          <button onClick={onLogout} style={{...sty.btnG,padding:7}} title="Cerrar sesión">🚪</button>
+        </div>
+      </div>
+      {/* Main */}
+      <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",minWidth:0}}>
+        <div style={{flex:1,overflow:"hidden"}}>
+          {tab==="overview"&&<OvTab convs={convs} businesses={businesses} onNav={c=>{setTab("conversations");setSelConv(c);}}/>}
+          {tab==="conversations"&&<ConvTab convs={convs} selected={selConv} onSelect={setSelConv} messages={msgs} msg={msg} setMsg={setMsg} onSend={sendMsg} businesses={businesses} client={client} onDeleteConv={deleteConv} onDeleteMsg={deleteMsg}/>}
+          {tab==="products"&&<ProdTab client={client} businesses={businesses} selectedBiz={selBiz}/>}
+          {tab==="businesses"&&<BizTab client={client} businesses={businesses} onRefresh={loadBiz}/>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── ROOT ─────────────────────────────────────────────────────
+// ── CONFIGURACIÓN HARDCODEADA ─────────────────────────────
+const SB_URL = "https://cvhxgqpizilmpyieuvkq.supabase.co";
+const SB_KEY = "sb_publishable_mR_0VL5cDZ782aD4D6VKhA_NKMNlccn";
+const AGENT  = { name: "Agente", email: "admin@omnidesk" };
+
+function App() {
+  const client = makeSB(SB_URL, SB_KEY);
+  return <Dashboard user={AGENT} client={client} onLogout={()=>location.reload()}/>;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>

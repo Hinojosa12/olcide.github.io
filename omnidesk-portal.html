@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CaribZoom · Portal</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',system-ui,sans-serif;background:#f5f5f0;color:#1a1a1a;min-height:100vh}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#ccc;border-radius:3px}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.slide{animation:slideUp .35s ease}.fade{animation:fadeIn .3s ease}
+input,textarea{font-family:'DM Sans',system-ui,sans-serif}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+
+// ============================================================
+//  CONFIGURACIÓN — Solo edita estas 2 líneas
+// ============================================================
+const SUPABASE_URL = "https://cvhxgqpizilmpyieuvkq.supabase.co";
+const SUPABASE_KEY = "sb_publishable_mR_0VL5cDZ782aD4D6VKhA_NKMNlccn";
+// ============================================================
+
+const { useState, useEffect, useRef } = React;
+
+// ── SUPABASE CLIENT ───────────────────────────────────────────
+function makeSB(url, key) {
+  const H = { apikey: key, Authorization: "Bearer " + key, "Content-Type": "application/json" };
+  const req = async (path, opts = {}) => {
+    const sep = path.includes("?") ? "&" : "?";
+    const mergedHeaders = Object.assign({}, H, opts.extraHeaders || {});
+    const fetchOpts = { method: opts.method || "GET", headers: mergedHeaders };
+    if (opts.body) fetchOpts.body = opts.body;
+    const res = await fetch(url + path + sep + "apikey=" + encodeURIComponent(key), fetchOpts);
+    if (res.status === 204) return null;
+    const d = await res.json();
+    if (!res.ok) throw new Error(d.message || d.error || "Error " + res.status);
+    return d;
+  };
+  return {
+    from: t => ({
+      select: (cols, qs) => req("/rest/v1/" + t + "?select=" + (cols||"*") + (qs ? "&" + qs : "")),
+      insert: body => req("/rest/v1/" + t, { method:"POST", body:JSON.stringify(body), extraHeaders:{Prefer:"return=representation"} }),
+      update: (body, qs) => req("/rest/v1/" + t + "?" + qs, { method:"PATCH", body:JSON.stringify(body), extraHeaders:{Prefer:"return=representation"} }),
+    }),
+    storage: {
+      upload: async (bucket, path, file) => {
+        const res = await fetch(url+"/storage/v1/object/"+bucket+"/"+path+"?apikey="+encodeURIComponent(key),{
+          method:"POST", headers:{apikey:key,Authorization:"Bearer "+key,"Content-Type":file.type}, body:file
+        });
+        if(!res.ok){const d=await res.json().catch(()=>({}));throw new Error(d.message||"Upload failed");}
+        return url+"/storage/v1/object/public/"+bucket+"/"+path;
+      }
+    }
+  };
+}
+
+const client = makeSB(SUPABASE_URL, SUPABASE_KEY);
+
+async function uploadMedia(convId, file) {
+  const path = convId+"/"+Date.now()+"_"+file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+  return await client.storage.upload("chat-media", path, file);
+}
+
+// ── SELECTOR DE MARCA ─────────────────────────────────────────
+function BrandSelector({ onSelect }) {
+  const [businesses, setBusinesses] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await client.from("businesses").select("*", "order=name.asc");
+        setBusinesses(data || []);
+      } catch(e) { console.error(e); }
+      finally { setLoading(false); }
+    })();
+  }, []);
+
+  return (
+    <div style={{minHeight:"100vh",background:"#f5f5f0",display:"flex",flexDirection:"column"}} className="fade">
+      {/* Header */}
+      <div style={{background:"#1a1a1a",padding:"28px 24px 32px"}}>
+        <div style={{maxWidth:700,margin:"0 auto",textAlign:"center"}}>
+          <div style={{display:"inline-flex",alignItems:"center",gap:10,marginBottom:12}}>
+            <div style={{width:40,height:40,background:"#f97316",borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20}}>⚡</div>
+            <span style={{fontFamily:"'Syne',sans-serif",fontSize:24,fontWeight:800,color:"#fff"}}>CaribZoom</span>
+          </div>
+          <p style={{color:"#aaa",fontSize:16}}>Selecciona una tienda para continuar</p>
+        </div>
+      </div>
+
+      {/* Grid de marcas */}
+      <div style={{flex:1,maxWidth:700,margin:"0 auto",width:"100%",padding:"32px 20px"}}>
+        {loading ? (
+          <div style={{textAlign:"center",padding:60,color:"#999"}}>
+            <span style={{fontSize:36,animation:"spin 1s linear infinite",display:"inline-block"}}>↻</span>
+            <div style={{marginTop:12}}>Cargando tiendas...</div>
+          </div>
+        ) : (
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:16}}>
+            {businesses.map(b => (
+              <div key={b.id} onClick={() => onSelect(b)}
+                className="slide"
+                style={{background:"#fff",borderRadius:16,padding:24,cursor:"pointer",textAlign:"center",
+                  border:"2px solid transparent",transition:"all .2s",boxShadow:"0 2px 8px rgba(0,0,0,0.06)"}}
+                onMouseEnter={e=>{e.currentTarget.style.borderColor=b.color||"#f97316";e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 8px 24px rgba(0,0,0,0.12)";}}
+                onMouseLeave={e=>{e.currentTarget.style.borderColor="transparent";e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 2px 8px rgba(0,0,0,0.06)";}}>
+                <div style={{width:72,height:72,borderRadius:16,background:(b.color||"#f97316")+"15",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 14px",overflow:"hidden",border:"1px solid "+(b.color||"#f97316")+"33"}}>
+                  {b.logo_url
+                    ? <img src={b.logo_url} alt={b.name} style={{width:"100%",height:"100%",objectFit:"contain",padding:8}} onError={e=>e.target.style.display="none"}/>
+                    : <span style={{fontSize:28,fontWeight:800,color:b.color||"#f97316"}}>{b.name[0]}</span>
+                  }
+                </div>
+                <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:15,marginBottom:6,lineHeight:1.3}}>{b.name}</div>
+                {b.description && <div style={{fontSize:12,color:"#888",lineHeight:1.5}}>{b.description}</div>}
+                <div style={{marginTop:14,padding:"7px 0",background:(b.color||"#f97316")+"15",borderRadius:8,fontSize:12,fontWeight:600,color:b.color||"#f97316"}}>
+                  Ver tienda →
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── CHAT WIDGET ───────────────────────────────────────────────
+function ChatWidget({ biz, triggerMsg, triggerProduct, clearTrigger }) {
+  const [open, setOpen] = useState(false);
+  const [step, setStep] = useState("name");
+  const [name, setName] = useState("");
+  const [convId, setConvId] = useState(null);
+  const [msgs, setMsgs] = useState([]);
+  const [msg, setMsg] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [unread, setUnread] = useState(0);
+  const [localProduct, setLocalProduct] = useState(null);
+  const [localTriggerMsg, setLocalTriggerMsg] = useState("");
+  const endRef = useRef(null);
+  const fileRef = useRef(null);
+  const color = biz ? biz.color || "#f97316" : "#f97316";
+
+  useEffect(() => {
+    if (triggerMsg) {
+      setLocalTriggerMsg(triggerMsg);
+      setLocalProduct(triggerProduct || null);
+      setOpen(true);
+      clearTrigger();
+      if (step === "chat") setMsg(triggerMsg);
+    }
+  }, [triggerMsg]);
+  useEffect(() => { if (open) setUnread(0); }, [open]);
+  var prevMsgCount = useRef(0);
+  useEffect(() => {
+    if (msgs.length > prevMsgCount.current) {
+      if (endRef.current) endRef.current.scrollIntoView({ behavior:"smooth" });
+    }
+    prevMsgCount.current = msgs.length;
+  }, [msgs]);
+  useEffect(() => {
+    if (!convId) return;
+    const load = async () => {
+      try {
+        const data = await client.from("messages").select("*", "conversation_id=eq."+convId+"&order=created_at.asc");
+        setMsgs(prev => { if(data&&data.length>prev.length&&!open) setUnread(u=>u+(data.length-prev.length)); return data||[]; });
+      } catch(e) {}
+    };
+    load(); const id = setInterval(load, 3000); return () => clearInterval(id);
+  }, [convId, open]);
+
+  const startChat = async () => {
+    if (!name.trim()) { alert("Por favor ingresa tu nombre"); return; }
+    setLoading(true);
+    try {
+      const firstMsg = localTriggerMsg || "Hola, quiero hacer una consulta";
+      const [cust] = await client.from("customers").insert({ name: name.trim() });
+      const [conv] = await client.from("conversations").insert({
+        business_id: biz.id, customer_id: cust.id, customer_name: name.trim(),
+        status: "open", last_message: firstMsg, last_message_at: new Date().toISOString(), unread_count: 1
+      });
+      // Send message - if product has image, combine both in one message
+      const imgUrl = (localProduct && localProduct.image_url) ? localProduct.image_url : null;
+      const imgExt = imgUrl ? (imgUrl.split(".").pop().split("?")[0].toLowerCase()) : "";
+      const imgType = imgUrl ? (["png","gif","webp","svg"].includes(imgExt) ? "image/"+imgExt : "image/jpeg") : null;
+      await client.from("messages").insert({
+        conversation_id: conv.id, sender_type: "customer",
+        sender_name: name.trim(), content: firstMsg,
+        media_url: imgUrl || null, media_type: imgType || null
+      });
+      clearTrigger();
+      setConvId(conv.id); setStep("chat");
+    } catch(e) { alert("Error: "+e.message); }
+    finally { setLoading(false); }
+  };
+
+  const send = async () => {
+    if (!msg.trim() || !convId) return;
+    const content = msg.trim(); setMsg("");
+    try {
+      await client.from("messages").insert({ conversation_id:convId, sender_type:"customer", sender_name:name, content });
+      await client.from("conversations").update({ last_message:content, last_message_at:new Date().toISOString(), unread_count:1 }, "id=eq."+convId);
+    } catch(e) { console.error(e); }
+  };
+
+  const handleFile = async (e) => {
+    const file = e.target.files[0];
+    if (!file || !convId) return;
+    setUploading(true);
+    try {
+      const mediaUrl = await uploadMedia(convId, file);
+      await client.from("messages").insert({ conversation_id:convId, sender_type:"customer", sender_name:name, content:"", media_url:mediaUrl, media_type:file.type });
+      await client.from("conversations").update({ last_message:"📎 Archivo adjunto", last_message_at:new Date().toISOString(), unread_count:1 }, "id=eq."+convId);
+    } catch(ex) { alert("Error al subir: "+ex.message); }
+    finally { setUploading(false); e.target.value=""; }
+  };
+
+  const renderMedia = (m) => {
+    if (!m.media_url || !m.media_type) return null;
+    const isMe = m.sender_type === "customer";
+    if (m.media_type.startsWith("image/")) return <img src={m.media_url} style={{maxWidth:"100%",borderRadius:8,display:"block",marginBottom:m.content?6:0}} alt="img"/>;
+    if (m.media_type.startsWith("video/")) return <video src={m.media_url} controls style={{maxWidth:"100%",borderRadius:8,display:"block",marginBottom:m.content?6:0}}/>;
+    if (m.media_type.startsWith("audio/")) return <audio src={m.media_url} controls style={{width:"100%",marginBottom:m.content?6:0}}/>;
+    return <a href={m.media_url} target="_blank" style={{color:isMe?"#fff":"#3b82f6",textDecoration:"underline"}}>📎 Archivo</a>;
+  };
+
+  return (
+    <>
+      {open && (
+        <div className="slide" style={{position:"fixed",bottom:90,right:20,width:340,maxHeight:"72vh",background:"#fff",borderRadius:20,boxShadow:"0 8px 40px rgba(0,0,0,0.2)",display:"flex",flexDirection:"column",zIndex:1000,overflow:"hidden"}}>
+          <div style={{padding:"15px 18px",background:color,color:"#fff",display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
+            <div style={{width:36,height:36,borderRadius:"50%",background:"rgba(255,255,255,0.25)",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:16}}>{(biz?.name||"?")[0]}</div>
+            <div style={{flex:1}}>
+              <div style={{fontWeight:700,fontSize:14}}>{biz?.name}</div>
+              <div style={{fontSize:12,opacity:.85}}>● En línea · Responde rápido</div>
+            </div>
+            <button onClick={()=>setOpen(false)} style={{background:"rgba(255,255,255,0.2)",border:"none",color:"#fff",borderRadius:"50%",width:28,height:28,cursor:"pointer",fontSize:14,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+          </div>
+
+          {step === "name" ? (
+            <div style={{padding:26,display:"flex",flexDirection:"column",gap:14}}>
+              <div style={{textAlign:"center"}}><div style={{fontSize:36,marginBottom:10}}>👋</div><div style={{fontWeight:700,fontSize:16,marginBottom:6}}>¡Hola! ¿Cómo te llamas?</div><div style={{fontSize:14,color:"#666"}}>Para poder atenderte mejor</div></div>
+              <input value={name} onChange={e=>setName(e.target.value)} onKeyDown={e=>e.key==="Enter"&&startChat()} placeholder="Tu nombre..."
+                style={{padding:"11px 14px",borderRadius:10,border:"2px solid #eee",fontSize:15,outline:"none",fontFamily:"inherit"}}
+                onFocus={e=>e.target.style.borderColor=color} onBlur={e=>e.target.style.borderColor="#eee"}/>
+              <button onClick={startChat} disabled={loading||!name.trim()} style={{padding:12,background:color,color:"#fff",border:"none",borderRadius:10,fontWeight:600,fontSize:15,cursor:"pointer",fontFamily:"inherit",opacity:(!name.trim()||loading)?.6:1}}>
+                {loading?"Iniciando...":"Iniciar chat →"}
+              </button>
+            </div>
+          ) : (
+            <>
+              <div style={{flex:1,overflowY:"auto",padding:"14px 14px 0",display:"flex",flexDirection:"column",gap:8,minHeight:160}}>
+                <div style={{textAlign:"center",padding:"6px 10px",background:"#f5f5f0",borderRadius:8,fontSize:12,color:"#888",marginBottom:4}}>Un agente te responderá pronto</div>
+                {msgs.map(m => {
+                  const isMe = m.sender_type === "customer";
+                  return (
+                    <div key={m.id} style={{display:"flex",justifyContent:isMe?"flex-end":"flex-start"}}>
+                      <div style={{maxWidth:"80%",padding:"9px 13px",borderRadius:13,fontSize:14,lineHeight:1.5,background:isMe?color:"#f0f0f0",color:isMe?"#fff":"#1a1a1a",borderBottomRightRadius:isMe?4:13,borderBottomLeftRadius:isMe?13:4}}>
+                        {renderMedia(m)}
+                        {m.content && <div>{m.content}</div>}
+                        <div style={{fontSize:10,opacity:.6,marginTop:3,textAlign:"right"}}>{new Date(m.created_at).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+                <div ref={endRef} style={{paddingBottom:10}}/>
+              </div>
+              <div style={{padding:"10px 12px",borderTop:"1px solid #eee",display:"flex",gap:8,flexShrink:0,alignItems:"center"}}>
+                <input ref={fileRef} type="file" accept="image/*,video/*,audio/*" onChange={handleFile} style={{display:"none"}}/>
+                <button onClick={()=>fileRef.current&&fileRef.current.click()} disabled={uploading}
+                  style={{width:36,height:36,borderRadius:"50%",border:"1px solid #e5e5e5",background:"#f5f5f0",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:15,opacity:uploading?.5:1}}>
+                  {uploading?"⏳":"📎"}
+                </button>
+                <input value={msg} onChange={e=>setMsg(e.target.value)} onKeyDown={e=>e.key==="Enter"&&!e.shiftKey&&send()} placeholder="Escribe aquí..."
+                  style={{flex:1,padding:"9px 14px",borderRadius:24,border:"1px solid #e5e5e5",fontSize:14,outline:"none",fontFamily:"inherit"}}/>
+                <button onClick={send} disabled={!msg.trim()} style={{width:40,height:40,borderRadius:"50%",background:msg.trim()?color:"#eee",border:"none",cursor:msg.trim()?"pointer":"default",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0,transition:"all .2s"}}>➤</button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+      <button onClick={()=>setOpen(!open)} style={{position:"fixed",bottom:20,right:20,width:60,height:60,borderRadius:"50%",background:color,border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,boxShadow:"0 6px 24px "+color+"66",zIndex:1001,transition:"all .3s"}}>
+        {open?"✕":"💬"}
+        {!open&&unread>0&&<span style={{position:"absolute",top:0,right:0,width:20,height:20,background:"#ef4444",borderRadius:"50%",border:"2px solid #fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,color:"#fff"}}>{unread}</span>}
+      </button>
+    </>
+  );
+}
+
+// ── PRODUCTO CARD ─────────────────────────────────────────────
+function ProductCard({ p, color, onAsk }) {
+  const [hover, setHover] = useState(false);
+  return (
+    <div onMouseEnter={()=>setHover(true)} onMouseLeave={()=>setHover(false)}
+      style={{background:"#fff",borderRadius:16,overflow:"hidden",boxShadow:hover?"0 8px 32px rgba(0,0,0,0.12)":"0 2px 8px rgba(0,0,0,0.06)",transition:"all .25s",transform:hover?"translateY(-3px)":"none"}}>
+      <div style={{height:200,background:"#ebebeb",display:"flex",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden"}}>
+        {p.image_url?<img src={p.image_url} alt={p.name} style={{width:"100%",height:"100%",objectFit:"cover",transition:"transform .3s",transform:hover?"scale(1.05)":"scale(1)"}} onError={e=>e.target.style.display="none"}/>:<span style={{fontSize:48,opacity:.2}}>📦</span>}
+        {p.category&&<span style={{position:"absolute",top:10,left:10,background:"rgba(0,0,0,0.6)",color:"#fff",borderRadius:999,padding:"3px 10px",fontSize:11,fontWeight:600}}>{p.category}</span>}
+        {p.stock===0&&<span style={{position:"absolute",top:10,right:10,background:"#ef4444",color:"#fff",borderRadius:999,padding:"3px 10px",fontSize:11,fontWeight:600}}>Agotado</span>}
+      </div>
+      <div style={{padding:18}}>
+        <div style={{fontWeight:700,fontSize:16,marginBottom:6,lineHeight:1.3}}>{p.name}</div>
+        {p.description&&<div style={{fontSize:13,color:"#666",lineHeight:1.6,marginBottom:12,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}}>{p.description}</div>}
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+          <div style={{fontSize:20,fontWeight:800,color}}>{p.price?"$"+Number(p.price).toLocaleString():"Consultar"}</div>
+          {p.stock>0&&<div style={{fontSize:12,color:"#999"}}>Stock: {p.stock}</div>}
+        </div>
+        <button onClick={()=>onAsk(p)} style={{width:"100%",padding:"11px",background:color,color:"#fff",border:"none",borderRadius:10,fontWeight:600,fontSize:14,cursor:"pointer",fontFamily:"inherit",transition:"opacity .2s"}} onMouseEnter={e=>e.target.style.opacity=".85"} onMouseLeave={e=>e.target.style.opacity="1"}>
+          💬 Preguntar por este producto
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── TIENDA ────────────────────────────────────────────────────
+function Store({ biz, onChangeBrand }) {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [cat, setCat] = useState("all");
+  const [chatTrigger, setChatTrigger] = useState("");
+  const [triggerProduct, setTriggerProduct] = useState(null);
+  const color = biz.color || "#f97316";
+
+  useEffect(() => {
+    document.title = biz.name + " · CaribZoom";
+    setLoading(true);
+    (async () => {
+      try {
+        const prods = await client.from("products").select("*", "business_id=eq."+biz.id+"&active=eq.true&order=created_at.desc");
+        setProducts(prods || []);
+      } catch(e) { console.error(e); }
+      finally { setLoading(false); }
+    })();
+    return () => { document.title = "CaribZoom · Portal"; };
+  }, [biz.id]);
+
+  const categories = ["all",...[...new Set(products.map(p=>p.category).filter(Boolean))]];
+  const filtered = products.filter(p => {
+    const ms = !search||(p.name||"").toLowerCase().includes(search.toLowerCase())||(p.description||"").toLowerCase().includes(search.toLowerCase());
+    return ms && (cat==="all"||p.category===cat);
+  });
+
+  return (
+    <div style={{minHeight:"100vh",background:"#f5f5f0"}} className="fade">
+      {/* Hero */}
+      <div style={{background:color,color:"#fff",padding:"28px 24px 0"}}>
+        <div style={{maxWidth:1100,margin:"0 auto"}}>
+          <div style={{display:"flex",alignItems:"center",gap:16,marginBottom:18,flexWrap:"wrap"}}>
+            <button onClick={onChangeBrand} title="Cambiar tienda"
+              style={{width:44,height:44,borderRadius:12,background:"rgba(255,255,255,0.2)",border:"none",color:"#fff",cursor:"pointer",fontSize:20,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+              ←
+            </button>
+            <div style={{width:52,height:52,borderRadius:14,background:"rgba(255,255,255,0.2)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,overflow:"hidden"}}>
+                {biz.logo_url
+                  ? <img src={biz.logo_url} alt={biz.name} style={{width:"100%",height:"100%",objectFit:"contain",padding:6}} onError={function(e){e.target.style.display="none";}}/>
+                  : <span style={{fontWeight:800,fontSize:24}}>{biz.name[0]}</span>
+                }
+              </div>
+            <div style={{flex:1,minWidth:0}}>
+              <h1 style={{fontFamily:"'Syne',sans-serif",fontSize:28,fontWeight:800,lineHeight:1}}>{biz.name}</h1>
+              {biz.description&&<p style={{fontSize:14,opacity:.85,marginTop:4}}>{biz.description}</p>}
+            </div>
+            <div onClick={()=>setChatTrigger("Hola, tengo una consulta")} style={{display:"flex",alignItems:"center",gap:8,background:"rgba(255,255,255,0.18)",borderRadius:12,padding:"10px 16px",cursor:"pointer",flexShrink:0}}>
+              <span style={{fontSize:18}}>💬</span><span style={{fontSize:14,fontWeight:600}}>Chatear</span>
+            </div>
+          </div>
+        </div>
+        <svg viewBox="0 0 1440 28" style={{display:"block",width:"100%",marginTop:20}} preserveAspectRatio="none">
+          <path d="M0,0 C360,28 1080,28 1440,0 L1440,28 L0,28 Z" fill="#f5f5f0"/>
+        </svg>
+      </div>
+
+      {/* Contenido */}
+      <div style={{maxWidth:1100,margin:"0 auto",padding:"8px 20px 60px"}}>
+        <div style={{display:"flex",gap:10,marginBottom:22,flexWrap:"wrap",alignItems:"center"}}>
+          <div style={{position:"relative",flex:1,minWidth:200}}>
+            <span style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)"}}>🔍</span>
+            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar productos..."
+              style={{width:"100%",padding:"11px 14px 11px 38px",borderRadius:12,border:"1px solid #e5e5e5",fontSize:15,outline:"none",fontFamily:"inherit",background:"#fff"}}/>
+          </div>
+          <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
+            {categories.map(c=>(
+              <button key={c} onClick={()=>setCat(c)}
+                style={{padding:"8px 16px",borderRadius:999,border:"2px solid "+(cat===c?color:"#e5e5e5"),background:cat===c?color:"#fff",color:cat===c?"#fff":"#444",fontWeight:cat===c?600:400,fontSize:13,cursor:"pointer",fontFamily:"inherit",transition:"all .2s"}}>
+                {c==="all"?"Todo ("+products.length+")":c}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {loading ? (
+          <div style={{textAlign:"center",padding:60,color:"#999"}}><span style={{fontSize:36,animation:"spin 1s linear infinite",display:"inline-block"}}>↻</span></div>
+        ) : filtered.length===0 ? (
+          <div style={{textAlign:"center",padding:"60px 0",color:"#999"}}>
+            <div style={{fontSize:48,marginBottom:16}}>🔍</div>
+            <div style={{fontSize:18,fontWeight:600,marginBottom:8}}>{products.length===0?"Esta tienda aún no tiene productos":"Sin resultados"}</div>
+            {products.length>0&&<button onClick={()=>{setSearch("");setCat("all");}} style={{color,background:"none",border:"none",cursor:"pointer",fontFamily:"inherit",fontSize:14,fontWeight:600}}>Ver todo</button>}
+          </div>
+        ) : (
+          <>
+            <div style={{fontSize:13,color:"#888",marginBottom:14}}>{filtered.length} producto{filtered.length!==1?"s":""}</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:20}}>
+              {filtered.map(p=><ProductCard key={p.id} p={p} color={color} onAsk={p=>{var t="Hola! Me interesa el producto: "+p.name+(p.price?" — $"+Number(p.price).toLocaleString():"")+" ¿Está disponible?";setChatTrigger(t);setTriggerProduct(p);}}/>)}
+            </div>
+          </>
+        )}
+      </div>
+
+      <div style={{borderTop:"1px solid #e5e5e5",padding:"18px 24px",textAlign:"center",fontSize:13,color:"#aaa",background:"#fff"}}>
+        {biz.name} · Powered by <strong style={{color:"#f97316"}}>CaribZoom</strong>
+      </div>
+
+      <ChatWidget biz={biz} triggerMsg={chatTrigger} triggerProduct={triggerProduct} clearTrigger={()=>{setChatTrigger("");setTriggerProduct(null);}}/>
+    </div>
+  );
+}
+
+// ── APP ROOT ──────────────────────────────────────────────────
+function App() {
+  const [selectedBiz, setSelectedBiz] = useState(null);
+  return selectedBiz
+    ? <Store biz={selectedBiz} onChangeBrand={()=>setSelectedBiz(null)}/>
+    : <BrandSelector onSelect={setSelectedBiz}/>;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
